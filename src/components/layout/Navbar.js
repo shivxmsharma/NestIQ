@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { Menu, X, ChevronDown, Home, LogOut, User, LayoutDashboard } from "lucide-react";
 import Image from "next/image";
@@ -10,6 +11,15 @@ export default function Navbar() {
   const { data: session, status } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const navLinks = [
     { label: "Properties", href: "/properties" },
@@ -19,27 +29,29 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm w-full">
+    <header className={`sticky top-0 z-50 w-full transition-all duration-500 ease-out border-b ${scrolled
+      ? "bg-[#0b1120]/80 backdrop-blur-2xl border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.5)] py-0"
+      : "bg-transparent border-transparent shadow-none py-2"
+      }`}>
       <div className="mx-auto px-4 sm:px-6 lg:px-12 w-full">
-        <div className="flex items-center justify-between h-16 w-full relative">
-
+        <div className={`flex items-center justify-between w-full relative transition-[height] duration-500 ease-out ${scrolled ? "h-16" : "h-20"}`}>
           {/* Logo */}
-          <Link href="/" className=" flex items-center gap-2 shrink-0">
-            <div className=" w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
-              <Home className=" w-4 h-4 text-white" />
+          <Link href="/" className="flex items-center gap-2 shrink-0 group">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 bg-indigo-500/20 border border-indigo-400/30 group-hover:bg-indigo-500/40">
+              <Home className="w-5 h-5 text-indigo-300" />
             </div>
-            <span className=" text-xl font-bold text-gray-900">
-              Nest<span className=" text-blue-600">IQ</span>
+            <span className="text-2xl font-bold tracking-tight text-white">
+              Nest<span className="text-indigo-400">IP</span>
             </span>
           </Link>
 
           {/* Desktop Nav */}
-          <nav className=" hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-6">
+          <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-8">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className=" text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors"
+                className="text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 text-slate-300 hover:text-white"
               >
                 {link.label}
               </Link>
@@ -47,94 +59,97 @@ export default function Navbar() {
           </nav>
 
           {/* Right side */}
-          <div className=" hidden md:flex items-center gap-3">
-            {/* CTA Button */}
+          <div className="hidden md:flex items-center gap-4">
             {session && (
               <Link
                 href="/dashboard/list-property"
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-sm hover:shadow transition-all"
+                className="px-5 py-2.5 text-sm font-bold rounded-2xl transition-all duration-300 hover:scale-105 bg-white/10 text-white border border-white/20 hover:bg-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]"
               >
                 List Property
               </Link>
             )}
             {status === "loading" ? (
-              <div className=" w-8 h-8 rounded-full bg-gray-100 animate-pulse" />
+              <div className="w-9 h-9 rounded-full bg-slate-200/50 animate-pulse" />
             ) : session ? (
               <div className="relative">
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className=" flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-2 p-1.5 rounded-2xl transition-colors border hover:bg-white/10 border-transparent hover:border-white/10"
                 >
                   {session.user.avatar ? (
                     <Image
                       src={session.user.avatar}
                       alt={session.user.name}
-                      className=" w-7 h-7 rounded-full object-cover"
+                      width={32}
+                      height={32}
+                      className="w-8 h-8 rounded-full object-cover ring-2 ring-white/20"
                     />
                   ) : (
-                    <div className=" w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center">
-                      <span className=" text-xs font-semibold text-blue-600">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center bg-indigo-500/20 text-indigo-300">
+                      <span className="text-xs font-bold">
                         {session.user.name?.[0]?.toUpperCase()}
                       </span>
                     </div>
                   )}
-                  <span className=" text-sm font-medium text-gray-700">
-                    {session.user.name?.split(" ")[0]}
-                  </span>
-                  <ChevronDown className=" w-4 h-4 text-gray-400" />
+                  <ChevronDown className="w-4 h-4 text-slate-400" />
                 </button>
 
                 {dropdownOpen && (
-                  <div className=" absolute right-0 top-full mt-2 w-full min-w-50 bg-white/90 backdrop-blur-md border border-slate-200 rounded-xl shadow-lg py-1 z-50">
+                  <div className="absolute right-0 top-full mt-3 w-56 bg-[#0b1120]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] py-2 z-50 transform origin-top-right transition-all">
                     <Link
                       href="/dashboard"
-                      className=" flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-200 hover:text-white hover:bg-white/10 transition-colors"
                       onClick={() => setDropdownOpen(false)}
                     >
-                      <LayoutDashboard className=" w-4 h-4" />
+                      <div className="p-1.5 bg-indigo-500/20 text-indigo-400 rounded-lg">
+                        <LayoutDashboard className="w-4 h-4" />
+                      </div>
                       Dashboard
                     </Link>
                     <Link
                       href="/profile"
-                      className=" flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-200 hover:text-white hover:bg-white/10 transition-colors"
                       onClick={() => setDropdownOpen(false)}
                     >
-                      <User className=" w-4 h-4" />
+                      <div className="p-1.5 bg-purple-500/20 text-purple-400 rounded-lg">
+                        <User className="w-4 h-4" />
+                      </div>
                       Profile
                     </Link>
-                    <hr className=" my-1 border-gray-100" />
+                    <div className="h-px bg-white/10 my-2 mx-4" />
                     <button
                       onClick={() => { signOut({ callbackUrl: "/" }); setDropdownOpen(false); }}
-                      className=" flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-50"
+                      className="flex items-center gap-3 w-full px-4 py-2.5 text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors"
                     >
-                      <LogOut className=" w-4 h-4" />
+                      <div className="p-1.5 bg-red-500/20 text-red-400 rounded-lg">
+                        <LogOut className="w-4 h-4" />
+                      </div>
                       Sign out
                     </button>
                   </div>
                 )}
               </div>
             ) : (
-              <>
+              <div className="flex items-center gap-2">
                 <Link
                   href="/auth/login"
-                  className=" text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors px-3 py-2"
+                  className="text-sm font-bold px-4 py-2.5 rounded-2xl transition-colors text-slate-300 hover:text-white hover:bg-white/10"
                 >
-                  Login
+                  Log in
                 </Link>
                 <Link
                   href="/auth/register"
-                  className=" text-sm font-medium bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  className="text-sm font-bold px-5 py-2.5 rounded-2xl transition-all duration-300 shadow-sm hover:shadow-md hover:scale-105 bg-white text-indigo-900"
                 >
                   Sign up
                 </Link>
-              </>
+              </div>
             )}
           </div>
 
           <div className="flex md:hidden items-center gap-4">
-            {/* Mobile hamburger */}
             <button
-              className="p-2 rounded-lg hover:bg-gray-50"
+              className="p-2 rounded-xl transition-colors text-white hover:bg-white/10"
               onClick={() => setMenuOpen(!menuOpen)}
             >
               {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -145,44 +160,48 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className=" md:hidden border-t border-slate-200 bg-white/90 backdrop-blur-md px-4 py-4 space-y-3">
+        <div className="md:hidden px-4 pb-6 pt-2 space-y-2 border-t border-white/10 bg-[#0b1120]/95 backdrop-blur-2xl shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className=" block text-sm font-medium text-gray-700 py-2"
+              className="block px-4 py-3 rounded-xl text-base font-semibold transition-colors text-slate-300 hover:text-white hover:bg-white/10"
               onClick={() => setMenuOpen(false)}
             >
               {link.label}
             </Link>
           ))}
+          <div className="h-px my-4 bg-white/10" />
+
           <Link
             href="/dashboard/list-property"
-            className="block text-center bg-blue-600 text-white py-2 rounded-lg font-medium"
+            className="block text-center py-3 rounded-xl font-bold transition-colors bg-white/10 text-white hover:bg-white/20 shadow-[0_0_15px_rgba(255,255,255,0.05)]"
             onClick={() => setMenuOpen(false)}
           >
             List Property
           </Link>
-          <hr className=" border-gray-100" />
+
+          <div className="h-px my-4 bg-white/10" />
+
           {session ? (
             <button
-              onClick={() => signOut({ callbackUrl: "/" })}
-              className=" w-full text-left text-sm text-red-500 py-2"
+              onClick={() => { signOut({ callbackUrl: "/" }); setMenuOpen(false); }}
+              className="flex items-center justify-center gap-3 w-full px-4 py-3 rounded-xl text-base font-semibold transition-colors text-red-400 hover:bg-red-500/10"
             >
               Sign out
             </button>
           ) : (
-            <div className=" flex gap-3 pt-1">
+            <div className="grid grid-cols-2 gap-3 mt-4">
               <Link
                 href="/auth/login"
-                className=" flex-1 text-center text-sm font-medium border border-gray-200 px-4 py-2 rounded-lg"
+                className="text-center py-2.5 rounded-xl text-base font-bold transition-colors bg-white/10 text-white hover:bg-white/20"
                 onClick={() => setMenuOpen(false)}
               >
                 Login
               </Link>
               <Link
                 href="/auth/register"
-                className=" flex-1 text-center text-sm font-medium bg-blue-600 text-white px-4 py-2 rounded-lg"
+                className="text-center py-2.5 rounded-xl text-base font-bold shadow-sm transition-colors bg-white text-indigo-900 shadow-[0_0_15px_rgba(255,255,255,0.1)]"
                 onClick={() => setMenuOpen(false)}
               >
                 Sign up

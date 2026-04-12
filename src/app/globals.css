@@ -2,8 +2,8 @@
 @import 'leaflet/dist/leaflet.css';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #070b14;
+  --foreground: #f1f5f9;
 }
 
 @theme inline {
@@ -31,16 +31,16 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f8fafc; /* slate-50 */
+  background: rgba(255, 255, 255, 0.05);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c3dafe; /* indigo-200 equivalent */
+  background: rgba(129, 140, 248, 0.4);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #818cf8; /* indigo-400 */
+  background: #818cf8;
 }
 
 ::-webkit-scrollbar-corner {

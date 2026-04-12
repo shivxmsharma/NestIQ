@@ -106,77 +106,126 @@ export default function PropertyDetailPage() {
           <span className="text-gray-800 truncate">{property.title}</span>
         </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left — main content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Photo gallery */}
-            <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
-              <div className="relative h-80 sm:h-[420px]">
-                {photos.length > 0 ? (
-                  <>
-                    <Image
-                      src={photos[activePhoto]?.url}
-                      alt={property.title}
-                      fill
-                      className="object-cover"
-                      priority
-                    />
-                    {photos.length > 1 && (
-                      <>
-                        <button
-                          onClick={() => setActivePhoto((p) => (p - 1 + photos.length) % photos.length)}
-                          className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition"
-                        >
-                          <ChevronLeft className="w-5 h-5" />
-                        </button>
-                        <button
-                          onClick={() => setActivePhoto((p) => (p + 1) % photos.length)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition"
-                        >
-                          <ChevronRight className="w-5 h-5" />
-                        </button>
-                        <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-3 py-1 rounded-full">
-                          {activePhoto + 1} / {photos.length}
-                        </div>
-                      </>
-                    )}
-                  </>
-                ) : (
-                  <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                    <Building2 className="w-16 h-16 text-gray-300" />
+        {/* ── Bento-Box Photo Gallery (Full Width) ── */}
+        <div className="relative w-full h-[300px] md:h-[460px] mb-8 rounded-3xl overflow-hidden flex gap-2 group shadow-sm bg-slate-100">
+
+          {/* Main Hero Photo (Left) */}
+          <div className="relative w-full md:w-[65%] h-full cursor-pointer">
+            {photos.length > 0 ? (
+              <>
+                <Image
+                  src={photos[activePhoto]?.url}
+                  alt={property.title}
+                  fill
+                  className="object-cover transition-transform duration-[600ms] ease-out hover:scale-[1.03]"
+                  priority
+                />
+
+                {/* Mobile Carousel Controls */}
+                {photos.length > 1 && (
+                  <div className="md:hidden">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setActivePhoto((p) => (p - 1 + photos.length) % photos.length); }}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-black/40 backdrop-blur-md hover:bg-black/60 text-white rounded-full transition"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setActivePhoto((p) => (p + 1) % photos.length); }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-black/40 backdrop-blur-md hover:bg-black/60 text-white rounded-full transition"
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                    <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-medium tracking-wide">
+                      {activePhoto + 1} / {photos.length}
+                    </div>
                   </div>
                 )}
-
-                {/* Actions */}
-                <div className="absolute top-3 right-3 flex gap-2">
-                  <button
-                    onClick={() => setSaved(!saved)}
-                    className="p-2 bg-white/90 rounded-full shadow hover:bg-white transition"
-                  >
-                    <Heart className={`w-4 h-4 ${saved ? "fill-red-500 text-red-500" : "text-gray-600"}`} />
-                  </button>
-                  <button className="p-2 bg-white/90 rounded-full shadow hover:bg-white transition">
-                    <Share2 className="w-4 h-4 text-gray-600" />
-                  </button>
-                </div>
+              </>
+            ) : (
+              <div className="w-full h-full bg-slate-100 flex items-center justify-center">
+                <Building2 className="w-16 h-16 text-slate-300" />
               </div>
+            )}
 
-              {/* Thumbnail strip */}
-              {photos.length > 1 && (
-                <div className="flex gap-2 p-3 overflow-x-auto">
-                  {photos.map((photo, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setActivePhoto(i)}
-                      className={`relative w-16 h-12 flex-shrink-0 rounded-lg overflow-hidden border-2 transition ${i === activePhoto ? "border-blue-500" : "border-transparent"
-                        }`}
-                    >
-                      <Image src={photo.url} alt="" fill className="object-cover" />
-                    </button>
-                  ))}
-                </div>
+            {/* Overlaid Badges */}
+            <div className="absolute top-4 left-4 flex gap-2 flex-wrap">
+              <span className={`text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full shadow-sm backdrop-blur-md ${property.listingType === "buy" ? "bg-emerald-600/90 text-white" :
+                  property.listingType === "rent" ? "bg-blue-600/90 text-white" :
+                    "bg-purple-600/90 text-white"
+                }`}>
+                For {property.listingType}
+              </span>
+              {property.isReraVerified && (
+                <span className="bg-white/90 backdrop-blur-md text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1 shadow-sm">
+                  <BadgeCheck className="w-3.5 h-3.5" /> RERA
+                </span>
               )}
             </div>
+
+            {/* Actions (Heart & Share) */}
+            <div className="absolute top-4 right-4 flex gap-2">
+              <button
+                onClick={(e) => { e.stopPropagation(); setSaved(!saved); }}
+                className="p-2.5 bg-white/90 backdrop-blur-md rounded-full shadow-sm hover:bg-white hover:scale-110 active:scale-90 transition-all duration-200"
+              >
+                <Heart className={`w-4 h-4 ${saved ? "fill-rose-500 text-rose-500" : "text-slate-600"}`} />
+              </button>
+              <button className="p-2.5 bg-white/90 backdrop-blur-md rounded-full shadow-sm hover:bg-white hover:scale-110 active:scale-90 transition-all duration-200">
+                <Share2 className="w-4 h-4 text-slate-600" />
+              </button>
+            </div>
+          </div>
+
+          {/* Right side: 2x2 Small Grid (Desktop Only) */}
+          <div className="hidden md:grid grid-cols-2 grid-rows-2 w-[35%] h-full gap-2">
+            {[1, 2, 3, 4].map((gridIndex) => {
+              const photo = photos[gridIndex];
+              const isLast = gridIndex === 4;
+              const hasMore = photos.length > 5;
+
+              return (
+                <div
+                  key={gridIndex}
+                  className="relative w-full h-full overflow-hidden group/thumb cursor-pointer bg-slate-200"
+                  onClick={() => { if (photo) setActivePhoto(gridIndex) }}
+                >
+                  {photo ? (
+                    <Image
+                      src={photo.url}
+                      alt={`Gallery view ${gridIndex}`}
+                      fill
+                      className={`object-cover transition-transform duration-[600ms] ${activePhoto === gridIndex ? 'opacity-50 scale-105' : 'group-hover/thumb:scale-110'}`}
+                    />
+                  ) : null}
+
+                  {/* Dim overlay if active on hero to show selection */}
+                  {activePhoto === gridIndex && photo && (
+                    <div className="absolute inset-0 bg-indigo-900/20 backdrop-blur-[1px] ring-2 ring-inset ring-indigo-500 transition-all" />
+                  )}
+
+                  {/* "View All" overlay for last image block if there are >5 photos */}
+                  {isLast && hasMore && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setActivePhoto(5); }}
+                      className="absolute inset-0 bg-black/40 backdrop-blur-sm flex flex-col items-center justify-center hover:bg-black/60 transition-colors"
+                    >
+                      <Maximize2 className="w-6 h-6 text-white mb-1" />
+                      <span className="text-white font-medium text-sm tracking-wide">
+                        View all {photos.length} photos
+                      </span>
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── Main Layout Split ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left — content column */}
+          <div className="lg:col-span-2 space-y-6">
 
             {/* Details card */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
@@ -295,10 +344,10 @@ export default function PropertyDetailPage() {
             )}
           </div>
 
-          {/* Right — contact + enquiry */}
-          <div className="space-y-4">
+          {/* Right ── contact + enquiry (Sticky) */}
+          <div className="space-y-4 lg:sticky lg:top-24 h-fit">
             {/* Owner/Agent card */}
-            <div className="bg-white rounded-2xl p-5 shadow-sm sticky top-24">
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
               <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
                 <div className="relative w-12 h-12 rounded-full overflow-hidden bg-blue-100 flex-shrink-0">
                   {owner.avatar ? (
