@@ -41,7 +41,7 @@ export default function Navbar() {
               <Home className="w-5 h-5 text-indigo-300" />
             </div>
             <span className="text-2xl font-bold tracking-tight text-white">
-              Nest<span className="text-indigo-400">IP</span>
+              Nest<span className="text-indigo-400">IQ</span>
             </span>
           </Link>
 
