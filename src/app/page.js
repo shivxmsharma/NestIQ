@@ -90,7 +90,7 @@ export default function HomePage() {
           style={{ backgroundImage: "radial-gradient(circle at 25px 25px, white 2%, transparent 0%), radial-gradient(circle at 75px 75px, white 2%, transparent 0%)", backgroundSize: "100px 100px" }}
         />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-28">
+        <div className="relative w-full mx-auto px-4 sm:px-6 lg:px-12 pt-20 pb-28">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white text-xs font-medium px-3 py-1.5 rounded-full mb-6">
               <MapPin className="w-3.5 h-3.5" />
@@ -169,7 +169,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Stats ── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-2 mb-16">
+      <section className="w-full mx-auto px-4 sm:px-6 lg:px-12 -mt-2 mb-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {STATS.map((stat) => (
             <div key={stat.label} className="bg-white border border-slate-100 rounded-2xl p-6 text-center shadow-sm">
@@ -181,7 +181,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Property Types ── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+      <section className="w-full mx-auto px-4 sm:px-6 lg:px-12 mb-20">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-slate-900">Browse by type</h2>
         </div>
@@ -203,7 +203,7 @@ export default function HomePage() {
 
       {/* ── Popular Localities ── */}
       <section className="bg-slate-50 py-20 mb-0">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full mx-auto px-4 sm:px-6 lg:px-12">
           <div className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-2xl font-bold text-slate-900">Popular localities</h2>
@@ -239,7 +239,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Why NestIQ ── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <section className="w-full mx-auto px-4 sm:px-6 lg:px-12 py-20">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-slate-900">Why NestIQ?</h2>
           <p className="text-slate-500 mt-2 max-w-xl mx-auto">
@@ -262,7 +262,7 @@ export default function HomePage() {
 
       {/* ── CTA Banner ── */}
       <section className="bg-gradient-to-r from-indigo-600 to-indigo-600 py-16 mb-0">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="w-full mx-auto px-4 sm:px-6 lg:px-12 text-center">
           <h2 className="text-3xl font-bold text-white mb-3">
             Own a property? List it for free.
           </h2>
@@ -289,7 +289,7 @@ export default function HomePage() {
       </section>
 
       {/* ── How it works ── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <section className="w-full mx-auto px-4 sm:px-6 lg:px-12 py-20">
         <h2 className="text-2xl font-bold text-slate-900 text-center mb-12">How NestIQ works</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[

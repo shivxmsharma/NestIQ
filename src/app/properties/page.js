@@ -431,12 +431,25 @@ function FilterPanel({ open, onClose, activeCount, onClear }) {
 export default function PropertiesPage() {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
-  const initialType = searchParams.get('listing') || null;
+  const urlListingType = searchParams.get('listing') || null;
 
   const [viewMode, setViewMode] = useState('grid');
   const [filterOpen, setFilterOpen] = useState(false);
-  const [activeType, setActiveType] = useState(initialType);
   const [activeFilters, setActiveFilters] = useState(0);
+
+  // Use URL param as the absolute source of truth if it exists, otherwise manual interaction rules
+  const [localActiveType, setLocalActiveType] = useState(urlListingType);
+  const [lastUrlType, setLastUrlType] = useState(urlListingType);
+
+  // If the user clicks a navbar link (URL changes), sync the local state WITHOUT throwing an effect error
+  if (urlListingType !== lastUrlType) {
+    setLocalActiveType(urlListingType);
+    setLastUrlType(urlListingType);
+  }
+
+  // To maintain compatibility with page's Tab switch buttons
+  const activeType = localActiveType;
+  const setActiveType = setLocalActiveType;
 
   const filters = activeType
     ? `listingType:${activeType} AND status:active`
@@ -454,7 +467,7 @@ export default function PropertiesPage() {
 
         {/* ── Sticky top bar ── */}
         <div className="bg-white border-b sticky top-16 z-30 shadow-sm top-bar">
-          <div className="max-w-7xl mx-auto px-4 lg:px-8 py-3 flex items-center justify-between gap-4">
+          <div className="w-full mx-auto px-4 sm:px-6 lg:px-12 py-3 flex items-center justify-between gap-4">
 
             {/* Mobile filter toggle */}
             <button
@@ -526,7 +539,7 @@ export default function PropertiesPage() {
         </div>
 
         {/* ── Body ── */}
-        <div className="max-w-7xl mx-auto py-6 lg:px-8">
+        <div className="w-full mx-auto px-4 sm:px-6 lg:px-12 py-6">
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 px-4 lg:px-0">
 
             {/* Desktop Filter Sidebar */}

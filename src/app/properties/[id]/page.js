@@ -69,7 +69,7 @@ export default function PropertyDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 animate-pulse">
-        <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
+        <div className="w-full mx-auto px-4 sm:px-6 lg:px-12 py-8 space-y-6">
           <div className="h-96 bg-gray-200 rounded-2xl" />
           <div className="grid grid-cols-3 gap-6">
             <div className="col-span-2 space-y-4">
@@ -96,7 +96,7 @@ export default function PropertyDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-6xl mx-auto px-4 py-6">
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-12 py-6">
         {/* Breadcrumb */}
         <nav className="text-sm text-gray-500 mb-5 flex items-center gap-2">
           <Link href="/" className="hover:text-blue-600">Home</Link>
