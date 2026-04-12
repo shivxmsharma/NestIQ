@@ -31,9 +31,9 @@ const formatPrice = (price, listingType) => {
 
 // Custom price pill marker
 const createPriceIcon = (price, listingType, isActive = false) => {
-  const bgColor = isActive ? '#2563eb' : '#ffffff';
-  const textColor = isActive ? '#ffffff' : '#111827';
-  const borderColor = isActive ? '#2563eb' : '#d1d5db';
+  const bgColor = isActive ? '#4f46e5' : '#1e293b';
+  const textColor = isActive ? '#ffffff' : '#f8fafc';
+  const borderColor = isActive ? '#6366f1' : '#334155';
 
   return L.divIcon({
     className: 'bg-transparent border-0',
@@ -102,21 +102,23 @@ export default function PropertyMap({ hits }) {
   const activeHit = activeId ? propertiesWithCoords.find(h => h.objectID === activeId) : null;
 
   return (
-    <div className="w-full h-full relative rounded-xl overflow-hidden border border-gray-200 z-10">
+    <div className="w-full h-full relative rounded-xl overflow-hidden border border-white/10 z-10 backdrop-blur-sm bg-[#0b1120]/50">
       <style>{`
         .custom-popup .leaflet-popup-content-wrapper {
           padding: 0;
           overflow: hidden;
-          border-radius: 12px;
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-          background: transparent;
+          border-radius: 16px;
+          border: 1px solid rgba(255,255,255,0.1);
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+          background: rgba(11, 17, 32, 0.85);
+          backdrop-filter: blur(12px);
         }
         .custom-popup .leaflet-popup-content {
           margin: 0;
           width: 240px !important;
         }
         .custom-popup .leaflet-popup-tip {
-          background: white;
+          background: rgba(11, 17, 32, 0.85);
         }
       `}</style>
       <MapContainer
@@ -149,9 +151,9 @@ export default function PropertyMap({ hits }) {
             closeButton={false}
             className="custom-popup"
           >
-            <div className="w-full overflow-hidden bg-white" style={{ fontFamily: 'system-ui, sans-serif' }}>
+            <div className="w-full overflow-hidden bg-transparent" style={{ fontFamily: 'system-ui, sans-serif' }}>
               {/* Photo */}
-              <div className="relative h-36 bg-gray-100">
+              <div className="relative h-36 bg-white/5">
                 {activeHit.coverPhoto ? (
                   <img
                     src={activeHit.coverPhoto}
@@ -159,33 +161,35 @@ export default function PropertyMap({ hits }) {
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 ) : (
-                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d1d5db' }}>
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
                     <MapPin size={32} />
                   </div>
                 )}
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(11,17,32,0.8), transparent)' }} />
                 <span style={{
                   position: 'absolute', top: 8, left: 8,
-                  background: '#2563eb', color: '#fff',
-                  fontSize: 11, fontWeight: 700,
+                  background: 'rgba(79, 70, 229, 0.2)', color: '#c7d2fe',
+                  border: '1px solid rgba(99, 102, 241, 0.3)',
+                  fontSize: 10, fontWeight: 700,
                   padding: '2px 8px', borderRadius: 999,
-                  textTransform: 'capitalize',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  textTransform: 'uppercase', letterSpacing: '0.05em',
+                  backdropFilter: 'blur(4px)'
                 }}>
-                  {activeHit.listingType}
+                  {activeHit.listingType === 'pg' ? 'PG' : activeHit.listingType}
                 </span>
                 <button
                   onClick={() => setActiveId(null)}
                   style={{
                     position: 'absolute', top: 8, right: 8,
-                    background: 'rgba(255,255,255,0.9)', border: 'none',
+                    background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)',
                     borderRadius: '50%', width: 24, height: 24,
                     cursor: 'pointer', display: 'flex',
                     alignItems: 'center', justifyContent: 'center',
                     boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
-                    color: '#111827', transition: 'all 0.15s ease'
+                    color: '#fff', transition: 'all 0.15s ease'
                   }}
-                  onMouseOver={(e) => e.currentTarget.style.background = '#fff'}
-                  onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.9)'}
+                  onMouseOver={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.6)'}
+                  onMouseOut={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.4)'}
                 >
                   <X size={14} />
                 </button>
@@ -193,17 +197,17 @@ export default function PropertyMap({ hits }) {
 
               {/* Info */}
               <div style={{ padding: '12px 14px' }}>
-                <p style={{ fontWeight: 700, fontSize: 14, lineHeight: 1.3, marginBottom: 4, color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <p style={{ fontWeight: 600, fontSize: 14, lineHeight: 1.3, marginBottom: 4, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {activeHit.title}
                 </p>
-                <p style={{ fontSize: 11, color: '#6b7280', marginBottom: 8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <p style={{ fontSize: 11, color: '#94a3b8', marginBottom: 8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   📍 {activeHit.locality}, {activeHit.city}
                 </p>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                  <p style={{ fontWeight: 800, fontSize: 15, color: '#2563eb' }}>
+                  <p style={{ fontWeight: 800, fontSize: 15, color: '#818cf8', letterSpacing: '-0.02em' }}>
                     {formatPrice(activeHit.price, activeHit.listingType)}
                   </p>
-                  <div style={{ fontSize: 12, color: '#4b5563', display: 'flex', gap: 10, fontWeight: 500 }}>
+                  <div style={{ fontSize: 12, display: 'flex', gap: 10, fontWeight: 500, color: '#cbd5e1' }}>
                     {activeHit.bedrooms > 0 && <span>🛏 {activeHit.bedrooms}</span>}
                     {activeHit.area > 0 && <span>📐 {activeHit.area}</span>}
                   </div>
@@ -212,14 +216,15 @@ export default function PropertyMap({ hits }) {
                   href={`/properties/${activeHit.objectID}`}
                   style={{
                     display: 'block', textAlign: 'center',
-                    background: '#2563eb', color: '#fff',
-                    fontSize: 13, fontWeight: 600,
+                    background: 'rgba(79, 70, 229, 0.15)', color: '#818cf8',
+                    border: '1px solid rgba(79, 70, 229, 0.4)',
+                    fontSize: 12, fontWeight: 600,
                     padding: '8px 0', borderRadius: 8,
                     textDecoration: 'none',
-                    transition: 'background 0.2s'
+                    transition: 'all 0.2s'
                   }}
-                  onMouseOver={(e) => e.currentTarget.style.background = '#1d4ed8'}
-                  onMouseOut={(e) => e.currentTarget.style.background = '#2563eb'}
+                  onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(79, 70, 229, 0.25)'; e.currentTarget.style.color = '#fff'; }}
+                  onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(79, 70, 229, 0.15)'; e.currentTarget.style.color = '#818cf8'; }}
                 >
                   View full details
                 </a>
@@ -234,13 +239,13 @@ export default function PropertyMap({ hits }) {
         propertiesWithCoords.length === 0 && hits.length > 0 && (
           <div style={{
             position: 'absolute', inset: 0, zIndex: 999,
-            background: 'rgba(255,255,255,0.85)',
-            backdropFilter: 'blur(4px)',
+            background: 'rgba(11, 17, 32, 0.85)', /* dark glassmorphic */
+            backdropFilter: 'blur(8px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            flexDirection: 'column', textAlign: 'center', color: '#9ca3af'
+            flexDirection: 'column', textAlign: 'center', color: '#94a3b8'
           }}>
-            <MapPin size={36} style={{ marginBottom: 8, color: '#d1d5db' }} />
-            <p style={{ fontWeight: 600 }}>No pinned locations for current results</p>
+            <MapPin size={36} style={{ marginBottom: 8, color: '#64748b' }} />
+            <p style={{ fontWeight: 600, color: '#e2e8f0' }}>No pinned locations for current results</p>
             <p style={{ fontSize: 13, marginTop: 4 }}>Properties listed without coordinates</p>
           </div>
         )
