@@ -24,7 +24,7 @@ function MapClickHandler({ setLocation }) {
 
 export default function LocationPicker({ location, setLocation, scrollWheelZoom = true }) {
   return (
-    <div className="h-75 w-full rounded-xl overflow-hidden border border-gray-200 relative z-10" style={{ height: '300px' }}>
+    <div className="h-75 w-full rounded-xl overflow-hidden border border-white/10 relative z-10" style={{ height: '300px' }}>
       <MapContainer
         center={[location.lat, location.lng]}
         zoom={13}

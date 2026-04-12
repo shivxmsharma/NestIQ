@@ -46,3 +46,11 @@ html {
 ::-webkit-scrollbar-corner {
   background: transparent;
 }
+
+/* Dark Mode Leaflet Map Reversal */
+.leaflet-layer,
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out,
+.leaflet-control-attribution {
+  filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(90%);
+}

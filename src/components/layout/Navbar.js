@@ -37,9 +37,6 @@ export default function Navbar() {
         <div className={`flex items-center justify-between w-full relative transition-[height] duration-500 ease-out ${scrolled ? "h-16" : "h-20"}`}>
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0 group">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 bg-indigo-500/20 border border-indigo-400/30 group-hover:bg-indigo-500/40">
-              <Home className="w-5 h-5 text-indigo-300" />
-            </div>
             <span className="text-2xl font-bold tracking-tight text-white">
               Nest<span className="text-indigo-400">IQ</span>
             </span>

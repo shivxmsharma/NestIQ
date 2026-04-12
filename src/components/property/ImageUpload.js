@@ -93,17 +93,17 @@ export default function ImageUpload({ images, onChange, maxImages = 10 }) {
   };
 
   return (
-    <div className=" space-y-4 ">
+    <div className="space-y-6">
       {/* Upload zone */}
       <div
         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
-        className={`relative border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-200 ${
+        className={`relative border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all duration-300 ${
           dragOver
-          ? "border-blue-500 bg-blue-50 scale-[1.01]"
-          : "border-gray-200 hover:border-blue-400 hover:bg-gray-50"
+          ? "border-indigo-500 bg-indigo-500/10 scale-[1.02] shadow-[0_0_20px_rgba(79,70,229,0.2)]"
+          : "border-white/20 hover:border-indigo-400 hover:bg-white/5 hover:shadow-lg"
           } ${images.length >= maxImages ? " opacity-40 pointer-events-none" : ""}`}
       >
         <input
@@ -114,20 +114,20 @@ export default function ImageUpload({ images, onChange, maxImages = 10 }) {
           className="hidden"
           onChange={(e) => handleFiles(e.target.files)}
         />
-        <div className=" flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-4">
           {uploading ? (
-            <Loader2 className=" w-10 h-10 text-blue-500 animate-spin" />
+            <Loader2 className="w-12 h-12 text-indigo-400 animate-spin" />
           ) : (
-            <div className=" w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center">
-              <ImagePlus className=" w-7 h-7 text-blue-600" />
+            <div className="w-16 h-16 bg-indigo-500/20 border border-indigo-500/30 rounded-2xl flex items-center justify-center shadow-[0_0_15px_rgba(79,70,229,0.3)]">
+              <ImagePlus className="w-8 h-8 text-indigo-300" />
             </div>
           )}
           <div>
-            <p className=" font-semibold text-gray-700">
-              {uploading ? "Uploading..." : "Drop photos here or click to browse"}
+            <p className="font-bold text-white text-lg">
+              {uploading ? "Uploading..." : "Drop photos here or browse"}
             </p>
-            <p className=" text-sm text-gray-700">
-              JPG, PNG, WEBP up to 10MB · {images.length}/{maxImages} uploaded
+            <p className="text-sm font-medium text-slate-400 mt-1">
+              JPG, PNG, WEBP up to 10MB · <span className="text-indigo-300">{images.length}/{maxImages}</span> uploaded
             </p>
           </div>
         </div>
@@ -135,42 +135,42 @@ export default function ImageUpload({ images, onChange, maxImages = 10 }) {
 
       {/* Preview grid */}
       {images.length > 0 && (
-        <div className=" grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {images.map((img, index) => (
-            <div key={img.publicId || index} className=" relative group rounded-xl overflow-hidden aspect-4/3 bg-gray-100">
+            <div key={img.publicId || index} className="relative group rounded-2xl overflow-hidden aspect-[4/3] bg-white/5 border border-white/10 shadow-sm">
               <Image
                 src={img.url}
                 alt={`Property photo ${index + 1}`}
                 fill
-                className="object-cover"
+                className="object-cover transition-transform duration-[600ms] group-hover:scale-[1.05]"
               />
 
               {/* Cover badge */}
               {index === 0 && (
-                <span className=" absolute top-2 left-2 bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                <span className="absolute top-2 left-2 bg-indigo-600/90 backdrop-blur-md shadow-[0_0_15px_rgba(79,70,229,0.4)] text-white text-[10px] uppercase tracking-wider font-bold px-2.5 py-1 rounded-full border border-indigo-500/50">
                   Cover
                 </span>
               )}
 
               {/* Actions on hover */}
-              <div className=" absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-[2px] flex items-center justify-center gap-2">
                 {index !== 0 && (
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); setCover(index); }}
-                    className=" p-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-white transition"
+                    className="p-2 bg-white/20 hover:bg-white/40 rounded-xl text-white transition-all hover:scale-110"
                     title="Set as cover"
                   >
-                    <Star className="w-4 h-4" />
+                    <Star className="w-5 h-5" />
                   </button>
                 )}
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); removeImage(index); }}
-                  className=" p-1.5 bg-red-500/80 hover:bg-red-600 rounded-lg text-white transition"
+                  className="p-2 bg-rose-500/80 hover:bg-rose-500 rounded-xl text-white transition-all hover:scale-110 shadow-[0_0_10px_rgba(244,63,94,0.4)]"
                   title="Remove"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
             </div>

@@ -11,7 +11,7 @@ import {
 import dynamic from "next/dynamic";
 
 
-const LocationMap = dynamic(() => import('../../../components/map/LocationPicker'));
+const LocationMap = dynamic(() => import('../../../components/map/LocationPicker'), { ssr: false });
 
 const LISTING_TYPES = ["buy", "rent", "pg"];
 const PROPERTY_TYPES = ["Apartment", "Villa", "Independent House", "Plot", "Studio", "Penthouse", "Builder Floor"];
@@ -53,16 +53,16 @@ function StepIndicator({ steps, current }) {
         return (
           <div key={step.id} className="flex items-center">
             <div className={`flex flex-col items-center gap-1.5 ${isCompleted || isActive ? "opacity-100" : "opacity-40"}`}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${isCompleted ? "bg-emerald-500 text-white" :
-                isActive ? "bg-blue-600 text-white ring-4 ring-blue-100" :
-                  "bg-gray-100 text-gray-400"
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${isCompleted ? "bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]" :
+                isActive ? "bg-indigo-600 text-white ring-4 ring-indigo-500/30 shadow-[0_0_15px_rgba(79,70,229,0.4)]" :
+                  "bg-white/5 border border-white/10 text-slate-500"
                 }`}>
                 {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
               </div>
-              <span className="text-xs font-medium text-gray-600 hidden sm:block">{step.label}</span>
+              <span className="text-xs font-bold tracking-wide text-slate-300 hidden sm:block">{step.label}</span>
             </div>
             {i < steps.length - 1 && (
-              <div className={`w-12 sm:w-20 h-0.5 mx-2 mb-5 transition-colors ${step.id < current ? "bg-emerald-400" : "bg-gray-200"}`} />
+              <div className={`w-12 sm:w-20 h-[2px] mx-2 mb-5 transition-colors ${step.id < current ? "bg-emerald-500/50" : "bg-white/10"}`} />
             )}
           </div>
         );
@@ -79,7 +79,7 @@ export default function ListPropertyPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  if (status === "loading") return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-blue-500" /></div>;
+  if (status === "loading") return <div className="min-h-screen bg-[#0b1120] flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-indigo-500" /></div>;
 
   if (!session) {
     router.push("/auth/login?callbackUrl=/dashboard/list-property");
@@ -89,12 +89,13 @@ export default function ListPropertyPage() {
   const allowedRoles = ["seller", "broker", "admin"];
   if (!allowedRoles.includes(session.user.role)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-white rounded-2xl p-8 max-w-md text-center shadow-sm border">
-          <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-800 mb-2">Sellers & Brokers Only</h2>
-          <p className="text-gray-500 mb-6">You need a Seller or Broker account to list properties.</p>
-          <button onClick={() => router.push("/")} className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition">
+      <div className="min-h-screen flex items-center justify-center bg-[#0b1120] relative overflow-hidden z-10 w-full px-4">
+        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 max-w-md text-center shadow-[0_8px_30px_rgba(0,0,0,0.4)] relative z-10">
+          <AlertCircle className="w-12 h-12 text-amber-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">Sellers & Brokers Only</h2>
+          <p className="text-slate-400 mb-8 font-medium">You need a Seller or Broker account to list properties.</p>
+          <button onClick={() => router.push("/")} className="px-6 py-3 bg-indigo-600 w-full text-white rounded-xl font-bold hover:bg-indigo-500 transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)]">
             Go Home
           </button>
         </div>
@@ -196,35 +197,39 @@ export default function ListPropertyPage() {
     }
   };
 
-  const inputClass = "w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white transition";
-  const labelClass = "block text-sm font-medium text-gray-700 mb-1.5";
+  const inputClass = "w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner [&>option]:bg-[#0b1120] [&>option]:text-white";
+  const labelClass = "block text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2";
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-2xl mx-auto px-4">
+    <div className="min-h-screen bg-[#0b1120] relative z-10 w-full py-8 overflow-hidden">
+      {/* Ambient Glows */}
+      <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="max-w-3xl mx-auto px-4 relative z-10">
         {/* Header */}
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">List Your Property</h1>
-          <p className="text-gray-500 text-sm mt-1">Fill in the details to get your property noticed</p>
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-white tracking-tight">List Your Property</h1>
+          <p className="text-slate-400 text-sm mt-2 font-medium">Fill in the details to get your property noticed</p>
         </div>
 
         <StepIndicator steps={STEPS} current={step} />
 
         {/* Error */}
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+          <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-400 text-sm flex items-center gap-2 font-medium shadow-sm">
+            <AlertCircle className="w-5 h-5 flex-shrink-0" />
             {error}
           </div>
         )}
 
         {/* Step card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.4)] p-6 sm:p-8">
 
           {/* STEP 1 — Basic Info */}
           {step === 1 && (
-            <div className="space-y-5">
-              <h2 className="text-lg font-semibold text-gray-800">Basic Information</h2>
+            <div className="space-y-6">
+              <h2 className="text-xl font-bold text-white mb-2">Basic Information</h2>
 
               {/* Listing type */}
               <div>
@@ -235,9 +240,9 @@ export default function ListPropertyPage() {
                       key={type}
                       type="button"
                       onClick={() => updateField("listingType", type)}
-                      className={`flex-1 py-2.5 rounded-xl border-2 text-sm font-semibold capitalize transition ${form.listingType === type
-                        ? "border-blue-500 bg-blue-50 text-blue-700"
-                        : "border-gray-200 text-gray-500 hover:border-gray-300"
+                      className={`flex-1 py-3 rounded-xl border-2 text-sm font-bold capitalize transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${form.listingType === type
+                        ? "border-indigo-500/50 bg-indigo-500/20 text-indigo-300"
+                        : "border-white/5 bg-white/5 text-slate-400 hover:border-white/20 hover:text-white"
                         }`}
                     >
                       {type === "pg" ? "List PG" : `${type.charAt(0).toUpperCase() + type.slice(1)}`}
@@ -249,15 +254,15 @@ export default function ListPropertyPage() {
               {/* Property type */}
               <div>
                 <label className={labelClass}>Property Type</label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {PROPERTY_TYPES.map((type) => (
                     <button
                       key={type}
                       type="button"
                       onClick={() => updateField("propertyType", type)}
-                      className={`py-2.5 px-3 rounded-xl border-2 text-sm font-medium transition ${form.propertyType === type
-                        ? "border-blue-500 bg-blue-50 text-blue-700"
-                        : "border-gray-200 text-gray-500 hover:border-gray-300"
+                      className={`py-2.5 px-3 rounded-xl border-2 text-sm font-bold transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${form.propertyType === type
+                        ? "border-indigo-500/50 bg-indigo-500/20 text-indigo-300"
+                        : "border-white/5 bg-white/5 text-slate-400 hover:border-white/20 hover:text-white"
                         }`}
                     >
                       {type}
@@ -277,7 +282,7 @@ export default function ListPropertyPage() {
                   className={inputClass}
                   maxLength={100}
                 />
-                <p className="text-xs text-gray-400 mt-1">{form.title.length}/100</p>
+                <p className="text-xs font-medium text-slate-500 mt-2 text-right">{form.title.length}/100</p>
               </div>
 
               {/* Price */}
@@ -286,18 +291,18 @@ export default function ListPropertyPage() {
                   {form.listingType === "buy" ? "Sale Price (₹) *" : "Monthly Rent (₹) *"}
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">₹</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">₹</span>
                   <input
                     type="number"
                     placeholder={form.listingType === "buy" ? "e.g. 7500000" : "e.g. 25000"}
                     value={form.price}
                     onChange={(e) => updateField("price", e.target.value)}
-                    className={`${inputClass} pl-8`}
+                    className={`${inputClass} pl-9`}
                     min="0"
                   />
                 </div>
                 {form.price && !isNaN(form.price) && (
-                  <p className="text-xs text-blue-600 mt-1 font-medium">
+                  <p className="text-sm text-indigo-400 mt-2 font-bold tracking-wide">
                     {parseInt(form.price) >= 10000000
                       ? `₹${(form.price / 10000000).toFixed(2)} Crore`
                       : parseInt(form.price) >= 100000
@@ -312,23 +317,23 @@ export default function ListPropertyPage() {
                 <label className={labelClass}>Description</label>
                 <textarea
                   placeholder="Describe the property — highlight key features, nearby landmarks, owner's note..."
-                  rows={4}
+                  rows={5}
                   value={form.description}
                   onChange={(e) => updateField("description", e.target.value)}
                   className={`${inputClass} resize-none`}
                   maxLength={1000}
                 />
-                <p className="text-xs text-gray-400 mt-1">{form.description.length}/1000</p>
+                <p className="text-xs font-medium text-slate-500 mt-2 text-right">{form.description.length}/1000</p>
               </div>
             </div>
           )}
 
           {/* STEP 2 — Location */}
           {step === 2 && (
-            <div className="space-y-5">
-              <h2 className="text-lg font-semibold text-gray-800">Location Details</h2>
+            <div className="space-y-6">
+              <h2 className="text-xl font-bold text-white mb-2">Location Details</h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="sm:col-span-2">
                   <label className={labelClass}>Street Address</label>
                   <input
@@ -384,15 +389,17 @@ export default function ListPropertyPage() {
                     maxLength={6}
                   />
                 </div>
-                {/* Under the City/State inputs in Step 2 */}
-                <div className="sm:col-span-2 mt-4 space-y-2">
+                {/* Map Pitch */}
+                <div className="sm:col-span-2 mt-4 space-y-3">
                   <label className={labelClass}>Pin on Map</label>
-                  <p className="text-xs text-gray-500 mb-2">Click exactly where the property is located to make it searchable on the map.</p>
-                  <LocationMap
-                    location={form.location}
-                    setLocation={(loc) => setForm(prev => ({ ...prev, location: loc }))}
-                    scrollWheelZoom={false}
-                  />
+                  <p className="text-sm font-medium text-slate-400 mb-3">Click exactly where the property is located to make it searchable on the map.</p>
+                  <div className="rounded-2xl overflow-hidden border border-white/10 ring-4 ring-indigo-500/10">
+                    <LocationMap
+                      location={form.location}
+                      setLocation={(loc) => setForm(prev => ({ ...prev, location: loc }))}
+                      scrollWheelZoom={false}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -400,10 +407,10 @@ export default function ListPropertyPage() {
 
           {/* STEP 3 — Details & Amenities */}
           {step === 3 && (
-            <div className="space-y-5">
-              <h2 className="text-lg font-semibold text-gray-800">Property Details</h2>
+            <div className="space-y-6">
+              <h2 className="text-xl font-bold text-white mb-2">Property Details</h2>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 border-b border-white/10 pb-8">
                 {form.propertyType !== "Plot" && (
                   <>
                     <div>
@@ -468,17 +475,17 @@ export default function ListPropertyPage() {
               </div>
 
               {/* Amenities */}
-              <div>
+              <div className="pt-4">
                 <label className={labelClass}>Amenities</label>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3">
                   {AMENITIES.map((amenity) => (
                     <button
                       key={amenity}
                       type="button"
                       onClick={() => toggleAmenity(amenity)}
-                      className={`px-3 py-1.5 rounded-xl border text-sm font-medium transition ${form.amenities.includes(amenity)
-                        ? "border-blue-500 bg-blue-50 text-blue-700"
-                        : "border-gray-200 text-gray-500 hover:border-gray-300"
+                      className={`px-4 py-2.5 rounded-xl border-2 text-sm font-bold transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${form.amenities.includes(amenity)
+                        ? "border-indigo-500/50 bg-indigo-500/20 text-indigo-300 shadow-[0_0_10px_rgba(79,70,229,0.2)]"
+                        : "border-white/5 bg-white/5 text-slate-400 hover:border-white/20 hover:text-white"
                         }`}
                     >
                       {amenity}
@@ -491,50 +498,52 @@ export default function ListPropertyPage() {
 
           {/* STEP 4 — Photos */}
           {step === 4 && (
-            <div className="space-y-5">
+            <div className="space-y-6">
               <div>
-                <h2 className="text-lg font-semibold text-gray-800">Property Photos</h2>
-                <p className="text-sm text-gray-500 mt-1">
-                  Listings with 5+ photos get <span className="font-semibold text-blue-600">3x more enquiries</span>. Add your best shots first — it becomes the cover.
+                <h2 className="text-xl font-bold text-white mb-2">Property Photos</h2>
+                <p className="text-sm font-medium text-slate-400 mt-1">
+                  Listings with 5+ photos get <span className="font-bold text-indigo-400">3x more enquiries</span>. Add your best shots first — it becomes the cover.
                 </p>
               </div>
-              <ImageUpload
-                images={form.photos}
-                onChange={(photos) => updateField("photos", photos)}
-                maxImages={10}
-              />
+              <div className="p-1">
+                <ImageUpload
+                  images={form.photos}
+                  onChange={(photos) => updateField("photos", photos)}
+                  maxImages={10}
+                />
+              </div>
             </div>
           )}
 
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-between mt-5">
+        <div className="flex justify-between mt-8">
           <button
             onClick={prevStep}
             disabled={step === 1}
-            className="flex items-center gap-2 px-5 py-2.5 border border-gray-200 text-gray-600 rounded-xl font-medium hover:bg-gray-50 disabled:opacity-0 transition"
+            className="flex items-center gap-2 px-6 py-3.5 bg-white/5 border border-white/10 text-slate-300 rounded-xl font-bold hover:bg-white/10 hover:text-white hover:border-white/20 disabled:opacity-0 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-            <ChevronLeft className="w-4 h-4" /> Back
+            <ChevronLeft className="w-5 h-5" /> Back
           </button>
 
           {step < STEPS.length ? (
             <button
               onClick={nextStep}
-              className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition"
+              className="flex items-center gap-2 px-8 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(79,70,229,0.4)] hover:shadow-[0_0_30px_rgba(79,70,229,0.6)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-[#0b1120]"
             >
-              Next <ChevronRight className="w-4 h-4" />
+              Next <ChevronRight className="w-5 h-5" />
             </button>
           ) : (
             <button
               onClick={handleSubmit}
               disabled={submitting}
-              className="flex items-center gap-2 px-8 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold transition disabled:opacity-60"
+              className="flex items-center gap-2 px-8 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] disabled:opacity-60 disabled:hover:shadow-none focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-[#0b1120]"
             >
               {submitting ? (
-                <><Loader2 className="w-4 h-4 animate-spin" /> Publishing...</>
+                <><Loader2 className="w-5 h-5 animate-spin" /> Publishing...</>
               ) : (
-                <><CheckCircle2 className="w-4 h-4" /> Publish Listing</>
+                <><CheckCircle2 className="w-5 h-5" /> Publish Listing</>
               )}
             </button>
           )}
