@@ -32,16 +32,16 @@ export default function PropertyCard({ property, saved = false, onSave }) {
             src={coverImage}
             alt={title}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
+            className="object-cover group-hover:scale-110 transition-transform duration-[600ms] ease-out"
           />
 
           {/* Badges top-left */}
           <div className="absolute top-3 left-3 flex gap-2 flex-wrap">
-            <span className={`${listingColors[listingType] || "bg-gray-600"} text-white text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full`}>
+            <span className={`${listingColors[listingType] || "bg-gray-600"} text-white text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full shadow-sm backdrop-blur-md`}>
               {listingType === "pg" ? "PG" : listingType}
             </span>
             {isReraVerified && (
-              <span className="bg-white/95 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+              <span className="bg-white/90 backdrop-blur-md text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
                 <BadgeCheck className="w-3 h-3" /> RERA
               </span>
             )}
@@ -51,16 +51,16 @@ export default function PropertyCard({ property, saved = false, onSave }) {
           {onSave && (
             <button
               onClick={(e) => { e.preventDefault(); onSave(_id); }}
-              className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full shadow transition-all"
+              className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-md hover:bg-white rounded-full shadow-sm transition-all hover:scale-110 active:scale-90 duration-200"
             >
-              <Heart className={`w-4 h-4 transition-colors ${saved ? "fill-red-500 text-red-500" : "text-gray-500"}`} />
+              <Heart className={`w-4 h-4 transition-colors ${saved ? "fill-rose-500 text-rose-500" : "text-slate-500"}`} />
             </button>
           )}
 
           {/* Trust score */}
           {trustScore >= 80 && (
-            <div className="absolute bottom-3 right-3 bg-black/70 text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1">
-              <Zap className="w-3 h-3 text-yellow-400" />
+            <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+              <Zap className="w-3 h-3 text-amber-400" />
               Trust {trustScore}%
             </div>
           )}

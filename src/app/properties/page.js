@@ -200,6 +200,25 @@ function HitCard({ hit }) {
 // ── Grid of hits ──────────────────────────────────────────────────────────────
 function HitsGrid() {
   const { hits } = useHits();
+  const { status } = useInstantSearch();
+
+  // Skeleton Loader for Global Polish
+  if (status === 'stalled' || status === 'loading') {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+          <div key={i} className="animate-pulse bg-white border border-gray-100 shadow-sm overflow-hidden flex flex-col rounded-2xl h-[340px]">
+            <div className="h-48 bg-slate-200" />
+            <div className="p-4 flex-1 flex flex-col gap-3">
+              <div className="h-4 bg-slate-200 rounded w-3/4" />
+              <div className="h-3 bg-slate-200 rounded w-1/2" />
+              <div className="mt-auto h-8 bg-slate-200 rounded w-full" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   if (hits.length === 0) {
     return (

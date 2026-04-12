@@ -18,3 +18,31 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ── Global Polish & Smoothness ── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom Sleek Indigo Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f8fafc; /* slate-50 */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c3dafe; /* indigo-200 equivalent */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #818cf8; /* indigo-400 */
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
