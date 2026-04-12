@@ -19,9 +19,9 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm">
-      <div className=" max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className=" flex items-center justify-between h-16">
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm w-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
 
           {/* Logo */}
           <Link href="/" className=" flex items-center gap-2 shrink-0">
@@ -131,13 +131,15 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile hamburger */}
-          <button
-            className=" md:hidden p-2 rounded-lg hover:bg-gray-50"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            {menuOpen ? <X className=" w-5 h-5" /> : <Menu className=" w-5 h-5" />}
-          </button>
+          <div className="flex md:hidden items-center gap-4">
+            {/* Mobile hamburger */}
+            <button
+              className="p-2 rounded-lg hover:bg-gray-50"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
       </div>
 

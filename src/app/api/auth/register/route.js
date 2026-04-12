@@ -48,7 +48,7 @@ export async function POST(request) {
       name: name.trim(),
       email: email.toLowerCase().trim(),
       passwordHash,
-      phone: phone || "",
+      phone: phone || undefined,
       role: role || "buyer",
     });
 

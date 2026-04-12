@@ -5,11 +5,14 @@ import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import dynamic from "next/dynamic";
 import {
   MapPin, BedDouble, Bath, Maximize2, BadgeCheck, Zap,
   Phone, MessageSquare, Calendar, Share2, Heart, ChevronLeft,
   ChevronRight, Eye, Home, Building2, CheckCircle2
 } from "lucide-react";
+
+const SinglePropertyMap = dynamic(() => import("../../../components/map/SinglePropertyMap"), { ssr: false });
 
 function formatPrice(price, listingType) {
   if (listingType === "rent" || listingType === "pg") {
@@ -280,6 +283,16 @@ export default function PropertyDetailPage() {
                 ))}
               </div>
             </div>
+
+            {/* Map Section */}
+            {property.location?.coordinates && property.location.coordinates.length > 0 && (
+              <div className="bg-white rounded-2xl p-6 shadow-sm">
+                <h2 className="font-semibold text-gray-800 mb-4">Location on Map</h2>
+                <div className="h-[300px] w-full">
+                  <SinglePropertyMap location={property.location} />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Right — contact + enquiry */}

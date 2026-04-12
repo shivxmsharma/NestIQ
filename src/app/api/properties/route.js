@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from '../../../lib/auth';
 import connectDB from "../../../lib/db";
 import Property from '../../../lib/models/Property';
+import { syncPropertiesToAlgolia } from "../../../lib/algolia";
 
 // GET /api/properties - browse/filter listings
 export async function GET(request) {
@@ -31,7 +32,7 @@ export async function GET(request) {
     if (minPrice || maxPrice) {
       query.price = {};
       if (minPrice) query.price.$gte = parseInt(minPrice);
-      if (maxPrice) query.price.$gte = parseInt(maxPrice);
+      if (maxPrice) query.price.$lte = parseInt(maxPrice);
     }
 
     const skip = (page - 1) * limit;
@@ -86,7 +87,7 @@ export async function POST(request) {
     for (const field of required) {
       if (!body[field]) {
         return NextResponse.json(
-          { error: `${field} id required` },
+          { error: `${field} is required` },
           { status: 400 },
         );
       }
@@ -97,6 +98,8 @@ export async function POST(request) {
       owner: session.user.id,
       status: "active",
     });
+
+    await syncPropertiesToAlgolia(property.toObject());
 
     return NextResponse.json(
       { message: "Property listed successfully", property },

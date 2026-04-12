@@ -8,6 +8,10 @@ import {
   Home, MapPin, List, Image as ImageIcon,
   CheckCircle2, ChevronRight, ChevronLeft, Loader2, AlertCircle
 } from "lucide-react";
+import dynamic from "next/dynamic";
+
+
+const LocationMap = dynamic(() => import('../../../components/map/LocationPicker'));
 
 const LISTING_TYPES = ["buy", "rent", "pg"];
 const PROPERTY_TYPES = ["Apartment", "Villa", "Independent House", "Plot", "Studio", "Penthouse", "Builder Floor"];
@@ -29,7 +33,8 @@ const initialForm = {
   listingType: "buy",
   propertyType: "Apartment",
   price: "",
-  address: { street: "", locality: "", city: "Chandigarh", state: "Punjab", pincode: "" },
+  address: { street: "", locality: "", city: "Chandigarh", state: "Chandigarh", pincode: "" },
+  location: { lat: 30.7333, lng: 76.7794 },
   details: {
     bedrooms: "", bathrooms: "", area: "", floor: "", totalFloors: "",
     furnishing: "", constructionStatus: "", facing: "", ageOfProperty: "",
@@ -49,8 +54,8 @@ function StepIndicator({ steps, current }) {
           <div key={step.id} className="flex items-center">
             <div className={`flex flex-col items-center gap-1.5 ${isCompleted || isActive ? "opacity-100" : "opacity-40"}`}>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${isCompleted ? "bg-emerald-500 text-white" :
-                  isActive ? "bg-blue-600 text-white ring-4 ring-blue-100" :
-                    "bg-gray-100 text-gray-400"
+                isActive ? "bg-blue-600 text-white ring-4 ring-blue-100" :
+                  "bg-gray-100 text-gray-400"
                 }`}>
                 {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
               </div>
@@ -155,6 +160,10 @@ export default function ListPropertyPage() {
     try {
       const payload = {
         ...form,
+        location: {
+          type: "Point",
+          coordinates: [form.location.lng, form.location.lat]
+        },
         price: parseInt(form.price),
         details: {
           ...form.details,
@@ -227,8 +236,8 @@ export default function ListPropertyPage() {
                       type="button"
                       onClick={() => updateField("listingType", type)}
                       className={`flex-1 py-2.5 rounded-xl border-2 text-sm font-semibold capitalize transition ${form.listingType === type
-                          ? "border-blue-500 bg-blue-50 text-blue-700"
-                          : "border-gray-200 text-gray-500 hover:border-gray-300"
+                        ? "border-blue-500 bg-blue-50 text-blue-700"
+                        : "border-gray-200 text-gray-500 hover:border-gray-300"
                         }`}
                     >
                       {type === "pg" ? "List PG" : `${type.charAt(0).toUpperCase() + type.slice(1)}`}
@@ -247,8 +256,8 @@ export default function ListPropertyPage() {
                       type="button"
                       onClick={() => updateField("propertyType", type)}
                       className={`py-2.5 px-3 rounded-xl border-2 text-sm font-medium transition ${form.propertyType === type
-                          ? "border-blue-500 bg-blue-50 text-blue-700"
-                          : "border-gray-200 text-gray-500 hover:border-gray-300"
+                        ? "border-blue-500 bg-blue-50 text-blue-700"
+                        : "border-gray-200 text-gray-500 hover:border-gray-300"
                         }`}
                     >
                       {type}
@@ -375,6 +384,16 @@ export default function ListPropertyPage() {
                     maxLength={6}
                   />
                 </div>
+                {/* Under the City/State inputs in Step 2 */}
+                <div className="sm:col-span-2 mt-4 space-y-2">
+                  <label className={labelClass}>Pin on Map</label>
+                  <p className="text-xs text-gray-500 mb-2">Click exactly where the property is located to make it searchable on the map.</p>
+                  <LocationMap
+                    location={form.location}
+                    setLocation={(loc) => setForm(prev => ({ ...prev, location: loc }))}
+                    scrollWheelZoom={false}
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -458,8 +477,8 @@ export default function ListPropertyPage() {
                       type="button"
                       onClick={() => toggleAmenity(amenity)}
                       className={`px-3 py-1.5 rounded-xl border text-sm font-medium transition ${form.amenities.includes(amenity)
-                          ? "border-blue-500 bg-blue-50 text-blue-700"
-                          : "border-gray-200 text-gray-500 hover:border-gray-300"
+                        ? "border-blue-500 bg-blue-50 text-blue-700"
+                        : "border-gray-200 text-gray-500 hover:border-gray-300"
                         }`}
                     >
                       {amenity}
