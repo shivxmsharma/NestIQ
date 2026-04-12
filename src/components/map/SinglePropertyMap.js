@@ -19,7 +19,7 @@ export default function SinglePropertyMap({ location }) {
   const center = [location.coordinates[1], location.coordinates[0]];
 
   return (
-    <div className='w-full h-full relative rounded-xl overflow-hidden border border-gray-200 z-10'>
+    <div className='w-full h-full relative rounded-2xl overflow-hidden border border-white/10 z-10'>
       <MapContainer
         center={center}
         zoom={14}
