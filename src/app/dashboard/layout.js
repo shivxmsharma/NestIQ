@@ -16,7 +16,7 @@ export default async function DashboardLayout({ children }) {
         <div className="absolute bottom-0 right-0 w-125 h-125 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12 z-10 w-full">
+      <div className="relative w-full  mx-auto px-4 sm:px-6 lg:px-12 py-8 md:py-12 z-10">
         <div className="flex flex-col md:flex-row gap-8 items-start">
           <DashboardSidebar user={session.user} />
           <main className="flex-1 min-w-0 w-full">{children}</main>

@@ -4,7 +4,9 @@ import connectDB from '../../../../lib/db';
 import Enquiry from '../../../../lib/models/Enquiry';
 import { NextResponse } from 'next/server';
 
-export async function GET(request, { params }) {
+export async function GET(request, context) {
+  const params = await context.params;
+
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -28,7 +30,9 @@ export async function GET(request, { params }) {
   return NextResponse.json({ enquiry });
 }
 
-export async function PUT(request, { params }) {
+export async function PUT(request, context) {
+  const params = await context.params;
+
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
