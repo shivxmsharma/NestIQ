@@ -38,6 +38,10 @@ export default function PropertyDetailPage() {
   const [enquirySent, setEnquirySent] = useState(false);
   const [enquiryLoading, setEnquiryLoading] = useState(false);
   const [showChat, setShowChat] = useState(false);
+  const [activeTab, setActiveTab] = useState("message"); // "message" | "visit"
+  const [visitForm, setVisitForm] = useState({ name: "", email: "", phone: "", date: "", time: "", note: "", error: "" });
+  const [visitSent, setVisitSent] = useState(false);
+  const [visitLoading, setVisitLoading] = useState(false);
 
   useEffect(() => {
     if (session?.user) {
@@ -91,6 +95,39 @@ export default function PropertyDetailPage() {
       setEnquiryForm(p => ({ ...p, error: "Network error. Please try again." }));
     } finally {
       setEnquiryLoading(false);
+    }
+  };
+
+  const handleVisit = async (e) => {
+    e.preventDefault();
+    setVisitLoading(true);
+    setVisitForm(p => ({ ...p, error: "" }));
+
+    try {
+      const res = await fetch("/api/enquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          propertyId: id,
+          name: visitForm.name || session?.user?.name || "",
+          email: visitForm.email || session?.user?.email || "",
+          phone: visitForm.phone,
+          message: visitForm.note || "I'd like to schedule a site visit.",
+          enquiryType: "visit",
+          visitDate: visitForm.date,
+          visitTime: visitForm.time,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setVisitSent(true);
+      } else {
+        setVisitForm(p => ({ ...p, error: data.error || "Failed to schedule visit." }));
+      }
+    } catch {
+      setVisitForm(p => ({ ...p, error: "Network error. Please try again." }));
+    } finally {
+      setVisitLoading(false);
     }
   };
 
@@ -187,11 +224,10 @@ export default function PropertyDetailPage() {
 
             {/* Overlaid Badges */}
             <div className="absolute top-4 left-4 flex gap-2 flex-wrap">
-              <span className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-sm backdrop-blur-md border ${
-                property.listingType === "buy" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" :
-                property.listingType === "rent" ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" :
-                "bg-purple-500/20 text-purple-300 border-purple-500/30"
-              }`}>
+              <span className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-sm backdrop-blur-md border ${property.listingType === "buy" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" :
+                  property.listingType === "rent" ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" :
+                    "bg-purple-500/20 text-purple-300 border-purple-500/30"
+                }`}>
                 For {property.listingType}
               </span>
               {property.isReraVerified && (
@@ -270,11 +306,10 @@ export default function PropertyDetailPage() {
               <div className="flex items-start justify-between flex-wrap gap-3 mb-6">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${
-                      property.listingType === "buy" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" :
-                      property.listingType === "rent" ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" :
-                      "bg-purple-500/20 text-purple-300 border-purple-500/30"
-                    }`}>
+                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${property.listingType === "buy" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" :
+                        property.listingType === "rent" ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" :
+                          "bg-purple-500/20 text-purple-300 border-purple-500/30"
+                      }`}>
                       For {property.listingType?.toUpperCase()}
                     </span>
                     {property.isReraVerified && (
@@ -422,22 +457,45 @@ export default function PropertyDetailPage() {
                 </div>
               )}
 
-              {/* Enquiry form */}
-              {enquirySent ? (
-                <div className="text-center py-8 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
-                  <CheckCircle2 className="w-14 h-14 text-emerald-400 mx-auto mb-4" />
-                  <p className="font-bold text-white text-lg">Enquiry Sent!</p>
-                  <p className="text-sm text-slate-400 mt-2 font-medium">The owner will contact you shortly.</p>
-                </div>
-              ) : (
-                  <form onSubmit={handleEnquiry} className="space-y-4">
+              {/* ── Tabs ── */}
+              <div className="flex rounded-xl bg-white/5 border border-white/10 p-1 mb-5">
+                <button
+                  onClick={() => setActiveTab("message")}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === "message"
+                    ? "bg-indigo-600 text-white shadow-[0_0_12px_rgba(79,70,229,0.4)]"
+                    : "text-slate-400 hover:text-white"
+                    }`}
+                >
+                  <MessageCircle className="w-3.5 h-3.5" /> Message
+                </button>
+                <button
+                  onClick={() => setActiveTab("visit")}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === "visit"
+                    ? "bg-indigo-600 text-white shadow-[0_0_12px_rgba(79,70,229,0.4)]"
+                    : "text-slate-400 hover:text-white"
+                    }`}
+                >
+                  <Calendar className="w-3.5 h-3.5" /> Schedule Visit
+                </button>
+              </div>
+
+              {/* ── Message Tab ── */}
+              {activeTab === "message" && (
+                enquirySent ? (
+                  <div className="text-center py-8 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
+                    <CheckCircle2 className="w-14 h-14 text-emerald-400 mx-auto mb-4" />
+                    <p className="font-bold text-white text-lg">Message Sent!</p>
+                    <p className="text-sm text-slate-400 mt-2 font-medium">The owner will contact you shortly.</p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleEnquiry} className="space-y-3">
                     <input
                       type="text"
                       placeholder="Your Name *"
                       required
                       value={enquiryForm.name}
                       onChange={(e) => setEnquiryForm(p => ({ ...p, name: e.target.value }))}
-                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                     />
                     <input
                       type="email"
@@ -445,7 +503,7 @@ export default function PropertyDetailPage() {
                       required
                       value={enquiryForm.email}
                       onChange={(e) => setEnquiryForm(p => ({ ...p, email: e.target.value }))}
-                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                     />
                     <input
                       type="tel"
@@ -453,14 +511,14 @@ export default function PropertyDetailPage() {
                       required
                       value={enquiryForm.phone}
                       onChange={(e) => setEnquiryForm(p => ({ ...p, phone: e.target.value }))}
-                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                     />
                     <textarea
                       placeholder="I'm interested in this property..."
                       rows={3}
                       value={enquiryForm.message}
                       onChange={(e) => setEnquiryForm(p => ({ ...p, message: e.target.value }))}
-                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner resize-none"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
                     />
                     {enquiryForm.error && (
                       <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 p-3 rounded-xl">
@@ -472,22 +530,107 @@ export default function PropertyDetailPage() {
                       disabled={enquiryLoading}
                       className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)] disabled:opacity-60"
                     >
-                      {enquiryLoading ? "Sending..." : "Contact Owner"}
+                      {enquiryLoading ? "Sending..." : "Send Message"}
                     </button>
                   </form>
+                )
               )}
 
-              <div className="grid grid-cols-2 gap-3 mt-4">
-                <a
-                  href={`tel:${owner.phone}`}
-                  className="flex items-center justify-center gap-2 py-3 bg-white/5 border border-white/10 rounded-xl text-sm font-semibold text-white hover:bg-white/10 hover:border-white/20 transition-all"
-                >
-                  <Phone className="w-4 h-4 text-indigo-400" /> Call
-                </a>
-                <button className="flex items-center justify-center gap-2 py-3 bg-white/5 border border-white/10 rounded-xl text-sm font-semibold text-white hover:bg-white/10 hover:border-white/20 transition-all">
-                  <Calendar className="w-4 h-4 text-indigo-400" /> Visit
-                </button>
-              </div>
+              {/* ── Schedule Visit Tab ── */}
+              {activeTab === "visit" && (
+                visitSent ? (
+                  <div className="text-center py-8 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
+                    <CheckCircle2 className="w-14 h-14 text-emerald-400 mx-auto mb-4" />
+                    <p className="font-bold text-white text-lg">Visit Requested!</p>
+                    <p className="text-sm text-slate-400 mt-2 font-medium">The owner will confirm your slot shortly.</p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleVisit} className="space-y-3">
+                    <input
+                      type="text"
+                      placeholder="Your Name *"
+                      required
+                      value={visitForm.name}
+                      onChange={(e) => setVisitForm(p => ({ ...p, name: e.target.value }))}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    />
+                    <input
+                      type="email"
+                      placeholder="Email Address *"
+                      required
+                      value={visitForm.email}
+                      onChange={(e) => setVisitForm(p => ({ ...p, email: e.target.value }))}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    />
+                    <input
+                      type="tel"
+                      placeholder="Phone Number *"
+                      required
+                      value={visitForm.phone}
+                      onChange={(e) => setVisitForm(p => ({ ...p, phone: e.target.value }))}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    />
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">
+                          Preferred Date *
+                        </label>
+                        <input
+                          type="date"
+                          required
+                          min={new Date().toISOString().split("T")[0]}
+                          value={visitForm.date}
+                          onChange={(e) => setVisitForm(p => ({ ...p, date: e.target.value }))}
+                          className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all scheme-dark"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">
+                          Preferred Time *
+                        </label>
+                        <select
+                          required
+                          value={visitForm.time}
+                          onChange={(e) => setVisitForm(p => ({ ...p, time: e.target.value }))}
+                          className="w-full px-3 py-2.5 bg-[#0f1929] border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                        >
+                          <option value="" disabled>Select</option>
+                          {["9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM", "6:00 PM"].map(t => (
+                            <option key={t} value={t}>{t}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    <textarea
+                      placeholder="Any specific requirements? (optional)"
+                      rows={2}
+                      value={visitForm.note}
+                      onChange={(e) => setVisitForm(p => ({ ...p, note: e.target.value }))}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
+                    />
+                    {visitForm.error && (
+                      <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 p-3 rounded-xl">
+                        {visitForm.error}
+                      </p>
+                    )}
+                    <button
+                      type="submit"
+                      disabled={visitLoading}
+                      className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)] disabled:opacity-60"
+                    >
+                      {visitLoading ? "Requesting..." : "Request Site Visit"}
+                    </button>
+                  </form>
+                )
+              )}
+
+              {/* Call button */}
+              <a
+                href={`tel:${owner.phone}`}
+                className="mt-4 w-full flex items-center justify-center gap-2 py-3 bg-white/5 border border-white/10 rounded-xl text-sm font-semibold text-white hover:bg-white/10 hover:border-white/20 transition-all"
+              >
+                <Phone className="w-4 h-4 text-indigo-400" /> Call Owner
+              </a>
 
               {/* Chat with Owner */}
               {session && owner._id && session.user.id !== owner._id?.toString() && (
