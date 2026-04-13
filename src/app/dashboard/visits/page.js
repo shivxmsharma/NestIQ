@@ -24,15 +24,35 @@ export default function VisitsPage() {
   const isSeller = ['seller', 'broker'].includes(session?.user?.role);
 
   useEffect(() => {
-    fetch('/api/enquiries')
-      .then((r) => r.json())
-      .then((data) => {
-        // Only show enquiries that have a visit date set
-        setVisits(Array.isArray(data) ? data.filter((e) => e.visitDate) : []);
+    if (!session?.user?.id) return;
+
+    const fetchVisits = async () => {
+      try {
+        const [sentRes, receivedRes] = await Promise.all([
+          fetch('/api/enquiries?type=sent&limit=50'),
+          fetch('/api/enquiries?type=received&limit=50')
+        ]);
+
+        const sentData = await sentRes.json();
+        const receivedData = await receivedRes.json();
+
+        const sentItems = sentData.enquiries || (Array.isArray(sentData) ? sentData : []);
+        const receivedItems = receivedData.enquiries || (Array.isArray(receivedData) ? receivedData : []);
+
+        // Deduplicate in case a user is both buyer and seller on the same property (rare but possible)
+        const allItems = [...sentItems, ...receivedItems];
+        const uniqueItems = Array.from(new Map(allItems.map(item => [item._id, item])).values());
+
+        setVisits(uniqueItems.filter((e) => e.visitDate || e.enquiryType === 'visit'));
+      } catch (error) {
+        console.error(error);
+      } finally {
         setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+      }
+    };
+
+    fetchVisits();
+  }, [session?.user?.id]);
 
   async function updateStatus(enquiryId, visitStatus) {
     const res = await fetch(`/api/enquiries/${enquiryId}`, {
@@ -87,8 +107,8 @@ export default function VisitsPage() {
               key={f}
               onClick={() => setFilter(f)}
               className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize transition-all duration-300 border ${filter === f
-                  ? "bg-indigo-500/20 border-indigo-500/30 text-indigo-300 shadow-[0_0_15px_rgba(79,70,229,0.2)]"
-                  : "bg-white/5 border-transparent text-slate-300 hover:bg-white/10"
+                ? "bg-indigo-500/20 border-indigo-500/30 text-indigo-300 shadow-[0_0_15px_rgba(79,70,229,0.2)]"
+                : "bg-white/5 border-transparent text-slate-300 hover:bg-white/10"
                 }`}
             >
               {f === "all" ? "All" : f}
