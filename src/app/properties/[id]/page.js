@@ -8,8 +8,8 @@ import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import {
   MapPin, BedDouble, Bath, Maximize2, BadgeCheck, Zap,
-  Phone, MessageSquare, Calendar, Share2, Heart, ChevronLeft,
-  ChevronRight, Eye, Home, Building2, CheckCircle2
+  Phone, Calendar, Share2, Heart, ChevronLeft,
+  ChevronRight, Eye, Building2, CheckCircle2
 } from "lucide-react";
 
 const SinglePropertyMap = dynamic(() => import("../../../components/map/SinglePropertyMap"), { ssr: false });
@@ -70,7 +70,7 @@ export default function PropertyDetailPage() {
     return (
       <div className="min-h-screen bg-[#0b1120] relative z-10 w-full">
         {/* Background Ambient Glow beneath content */}
-        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-0 left-0 w-125 h-125 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-12 py-8 space-y-6 relative z-10 animate-pulse">
           <div className="h-96 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-sm" />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -99,8 +99,8 @@ export default function PropertyDetailPage() {
   return (
     <div className="min-h-screen bg-[#0b1120] relative z-10 w-full">
       {/* Background Ambient Glow beneath content */}
-      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 left-0 w-125 h-125 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-125 h-125 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-12 py-6 relative z-10">
         {/* Breadcrumb */}
@@ -113,7 +113,7 @@ export default function PropertyDetailPage() {
         </nav>
 
         {/* ── Bento-Box Photo Gallery (Full Width) ── */}
-        <div className="relative w-full h-[300px] md:h-[460px] mb-8 rounded-3xl overflow-hidden flex gap-2 group shadow-[0_8px_30px_rgba(0,0,0,0.4)] bg-white/5 border border-white/10 backdrop-blur-sm">
+        <div className="relative w-full h-75 md:h-115 mb-8 rounded-3xl overflow-hidden flex gap-2 group shadow-[0_8px_30px_rgba(0,0,0,0.4)] bg-white/5 border border-white/10 backdrop-blur-sm">
 
           {/* Main Hero Photo (Left) */}
           <div className="relative w-full md:w-[65%] h-full cursor-pointer">
@@ -123,7 +123,7 @@ export default function PropertyDetailPage() {
                   src={photos[activePhoto]?.url}
                   alt={property.title}
                   fill
-                  className="object-cover transition-transform duration-[600ms] ease-out hover:scale-[1.03]"
+                  className="object-cover transition-transform duration-600 ease-out hover:scale-[1.03]"
                   priority
                 />
 
@@ -155,7 +155,7 @@ export default function PropertyDetailPage() {
             )}
 
             {/* Subtle overlay gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0b1120] via-transparent to-transparent opacity-60 pointer-events-none" />
+            <div className="absolute inset-0 bg-linear-to-t from-[#0b1120] via-transparent to-transparent opacity-60 pointer-events-none" />
 
             {/* Overlaid Badges */}
             <div className="absolute top-4 left-4 flex gap-2 flex-wrap">
@@ -205,7 +205,7 @@ export default function PropertyDetailPage() {
                       src={photo.url}
                       alt={`Gallery view ${gridIndex}`}
                       fill
-                      className={`object-cover transition-transform duration-[600ms] ${activePhoto === gridIndex ? "opacity-50 scale-105" : "group-hover/thumb:scale-110"}`}
+                      className={`object-cover transition-transform duration-600 ${activePhoto === gridIndex ? "opacity-50 scale-105" : "group-hover/thumb:scale-110"}`}
                     />
                   ) : null}
 
@@ -348,7 +348,7 @@ export default function PropertyDetailPage() {
             {property.location?.coordinates && property.location.coordinates.length > 0 && (
               <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 lg:p-8 shadow-lg">
                 <h2 className="font-bold text-white text-lg mb-6">Location on Map</h2>
-                <div className="h-[350px] w-full rounded-2xl overflow-hidden border border-white/10">
+                <div className="h-87.5 w-full rounded-2xl overflow-hidden border border-white/10">
                   <SinglePropertyMap location={property.location} />
                 </div>
               </div>
@@ -360,7 +360,7 @@ export default function PropertyDetailPage() {
             {/* Owner/Agent card */}
             <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 lg:p-8 shadow-lg">
               <div className="flex items-center gap-4 mb-6 pb-6 border-b border-white/10">
-                <div className="relative w-14 h-14 rounded-2xl overflow-hidden bg-indigo-500/20 border border-indigo-500/30 flex-shrink-0">
+                <div className="relative w-14 h-14 rounded-2xl overflow-hidden bg-indigo-500/20 border border-indigo-500/30 shrink-0">
                   {owner.avatar ? (
                     <Image src={owner.avatar} alt={owner.name} fill className="object-cover" />
                   ) : (

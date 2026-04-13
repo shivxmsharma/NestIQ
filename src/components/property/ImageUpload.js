@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import Image from "next/image";
-import { Upload, X, ImagePlus, Loader2, Star } from "lucide-react";
+import { X, ImagePlus, Loader2, Star } from "lucide-react";
 
 export default function ImageUpload({ images, onChange, maxImages = 10 }) {
   const [uploading, setUploading] = useState(false);
@@ -13,7 +13,7 @@ export default function ImageUpload({ images, onChange, maxImages = 10 }) {
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
   const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
-  const uploadToCloudinary = async (file) => {
+  const uploadToCloudinary = useCallback(async (file) => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", uploadPreset);
@@ -32,7 +32,7 @@ export default function ImageUpload({ images, onChange, maxImages = 10 }) {
       width: data.width,
       height: data.height,
     };
-  };
+  }, [cloudName, uploadPreset]);
 
   const handleFiles = useCallback(
     async (files) => {
@@ -71,7 +71,7 @@ export default function ImageUpload({ images, onChange, maxImages = 10 }) {
       onChange(newImages);
       setUploading(false);
     },
-    [images, maxImages, onChange]
+    [images, maxImages, onChange, uploadToCloudinary]
   );
 
   const handleDrop = (e) => {
@@ -137,12 +137,12 @@ export default function ImageUpload({ images, onChange, maxImages = 10 }) {
       {images.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {images.map((img, index) => (
-            <div key={img.publicId || index} className="relative group rounded-2xl overflow-hidden aspect-[4/3] bg-white/5 border border-white/10 shadow-sm">
+            <div key={img.publicId || index} className="relative group rounded-2xl overflow-hidden aspect-4/3 bg-white/5 border border-white/10 shadow-sm">
               <Image
                 src={img.url}
                 alt={`Property photo ${index + 1}`}
                 fill
-                className="object-cover transition-transform duration-[600ms] group-hover:scale-[1.05]"
+                className="object-cover transition-transform duration-600 group-hover:scale-[1.05]"
               />
 
               {/* Cover badge */}

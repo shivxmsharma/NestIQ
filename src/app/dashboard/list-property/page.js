@@ -62,7 +62,7 @@ function StepIndicator({ steps, current }) {
               <span className="text-xs font-bold tracking-wide text-slate-300 hidden sm:block">{step.label}</span>
             </div>
             {i < steps.length - 1 && (
-              <div className={`w-12 sm:w-20 h-[2px] mx-2 mb-5 transition-colors ${step.id < current ? "bg-emerald-500/50" : "bg-white/10"}`} />
+              <div className={`w-12 sm:w-20 h-0.5 mx-2 mb-5 transition-colors ${step.id < current ? "bg-emerald-500/50" : "bg-white/10"}`} />
             )}
           </div>
         );
@@ -90,7 +90,7 @@ export default function ListPropertyPage() {
   if (!allowedRoles.includes(session.user.role)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0b1120] relative overflow-hidden z-10 w-full px-4">
-        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-0 left-0 w-125 h-125 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 max-w-md text-center shadow-[0_8px_30px_rgba(0,0,0,0.4)] relative z-10">
           <AlertCircle className="w-12 h-12 text-amber-400 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-white mb-2">Sellers & Brokers Only</h2>
@@ -203,8 +203,8 @@ export default function ListPropertyPage() {
   return (
     <div className="min-h-screen bg-[#0b1120] relative z-10 w-full py-8 overflow-hidden">
       {/* Ambient Glows */}
-      <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 left-0 w-150 h-150 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-125 h-125 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="max-w-3xl mx-auto px-4 relative z-10">
         {/* Header */}
@@ -218,7 +218,7 @@ export default function ListPropertyPage() {
         {/* Error */}
         {error && (
           <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-400 text-sm flex items-center gap-2 font-medium shadow-sm">
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            <AlertCircle className="w-5 h-5 shrink-0" />
             {error}
           </div>
         )}

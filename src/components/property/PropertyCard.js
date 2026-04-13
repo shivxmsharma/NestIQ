@@ -32,7 +32,7 @@ export default function PropertyCard({ property, saved = false, onSave }) {
             src={coverImage}
             alt={title}
             fill
-            className="object-cover group-hover:scale-110 transition-transform duration-[600ms] ease-out"
+            className="object-cover group-hover:scale-110 transition-transform duration-600 ease-out"
           />
 
           {/* Badges top-left */}
@@ -75,7 +75,7 @@ export default function PropertyCard({ property, saved = false, onSave }) {
               {title}
             </h3>
             <p className="text-xs text-slate-500 font-medium flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-slate-400" />
+              <MapPin className="w-3.5 h-3.5 shrink-0 text-slate-400" />
               <span className="line-clamp-1">
                 {address?.locality && `${address.locality}, `}{address?.city}
               </span>

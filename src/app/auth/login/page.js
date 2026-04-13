@@ -5,7 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { Home, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -66,7 +66,7 @@ export default function LoginPage() {
         </Link>
 
         {/* Card Container */}
-        <div className="bg-[#0b1120]/80 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/5 p-8 sm:p-12 relative overflow-hidden">
+        <div className="bg-[#0b1120]/80 backdrop-blur-2xl rounded-4xl shadow-2xl border border-white/5 p-8 sm:p-12 relative overflow-hidden">
           
           {/* Subtle glow effect behind card */}
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-indigo-500/20 rounded-full blur-[80px] pointer-events-none" />
@@ -158,7 +158,7 @@ export default function LoginPage() {
                 disabled={loading}
                 className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-500/60 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 mt-4 shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)] border border-indigo-500 hover:border-indigo-400"
               >
-                {loading && <Loader2 className="w-4 h-4 animate-spin flex-shrink-0" />}
+                {loading && <Loader2 className="w-4 h-4 animate-spin shrink-0" />}
                 <span>{loading ? "Signing in..." : "Sign in"}</span>
               </button>
             </form>

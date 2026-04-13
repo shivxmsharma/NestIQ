@@ -119,7 +119,7 @@ function HitCard({ hit }) {
           )}
           
           {/* Subtle overlay gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0b1120] via-transparent to-transparent opacity-60" />
+          <div className="absolute inset-0 bg-linear-to-t from-[#0b1120] via-transparent to-transparent opacity-60" />
 
           {/* Badges */}
           <div className="absolute top-3 left-3 flex gap-2">
@@ -211,7 +211,7 @@ function HitsGrid() {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-          <div key={i} className="animate-pulse bg-white/5 border border-white/10 overflow-hidden flex flex-col rounded-2xl h-[380px] backdrop-blur-sm">
+          <div key={i} className="animate-pulse bg-white/5 border border-white/10 overflow-hidden flex flex-col rounded-2xl h-95 backdrop-blur-sm">
             <div className="h-52 bg-white/10" />
             <div className="p-5 flex-1 flex flex-col gap-4">
               <div className="h-4 bg-white/10 rounded w-3/4" />
@@ -250,9 +250,9 @@ function MapLayout() {
   const { hits } = useHits();
 
   return (
-    <div className="flex gap-5 h-[calc(100vh-220px)] min-h-[500px]">
+    <div className="flex gap-5 h-[calc(100vh-220px)] min-h-125">
       {/* Compact list */}
-      <div className="w-80 flex-shrink-0 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+      <div className="w-80 shrink-0 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
         {hits.length === 0 ? (
           <div className="text-center text-slate-400 pt-10 text-sm">
             No properties match your search
@@ -264,7 +264,7 @@ function MapLayout() {
               href={`/properties/${hit.objectID}`}
               className="flex gap-3 bg-white/5 border border-white/10 rounded-xl p-3 hover:bg-white/10 hover:border-indigo-400/30 hover:shadow-[0_0_20px_rgba(79,70,229,0.15)] transition-all duration-300 group backdrop-blur-sm"
             >
-              <div className="relative w-24 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white/5">
+              <div className="relative w-24 h-20 shrink-0 rounded-lg overflow-hidden bg-white/5">
                 {hit.coverPhoto ? (
                   <Image src={hit.coverPhoto} alt="" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
@@ -356,7 +356,7 @@ function FilterPanel({ open, onClose, activeCount, onClear }) {
           </button>
         </div>
 
-        <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl p-5 space-y-6 min-w-[240px] shadow-lg">
+        <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl p-5 space-y-6 min-w-60 shadow-lg">
           <div className="flex items-center gap-2 pb-4 border-b border-white/10">
             <SlidersHorizontal size={16} className="text-indigo-400" />
             <p className="text-sm font-bold text-white uppercase tracking-wider">Filters</p>
@@ -414,7 +414,7 @@ function FilterPanel({ open, onClose, activeCount, onClear }) {
                       onChange={() => furnishing.refine(item.value)}
                       className="peer appearance-none w-5 h-5 border border-white/20 rounded bg-white/5 checked:bg-indigo-500 checked:border-indigo-500 transition-colors cursor-pointer"
                     />
-                    <svg className="absolute w-3.5 h-3.5 left-[3px] pointer-events-none opacity-0 peer-checked:opacity-100 text-white transition-opacity" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10l4 4 8-8"/></svg>
+                    <svg className="absolute w-3.5 h-3.5 left-0.75 pointer-events-none opacity-0 peer-checked:opacity-100 text-white transition-opacity" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10l4 4 8-8"/></svg>
                   </div>
                   <span className="text-[14px] text-slate-300 group-hover:text-white transition-colors">{item.label}</span>
                   <span className="text-[11px] text-slate-500 ml-auto bg-white/5 px-2 py-0.5 rounded-md">({item.count})</span>
@@ -435,7 +435,7 @@ function FilterPanel({ open, onClose, activeCount, onClear }) {
                     onChange={() => rera.refine(reraItem.value)}
                     className="peer appearance-none w-5 h-5 border border-white/20 rounded bg-white/5 checked:bg-emerald-500 checked:border-emerald-500 transition-colors cursor-pointer"
                   />
-                  <svg className="absolute w-3.5 h-3.5 left-[3px] pointer-events-none opacity-0 peer-checked:opacity-100 text-white transition-opacity" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10l4 4 8-8"/></svg>
+                  <svg className="absolute w-3.5 h-3.5 left-0.75 pointer-events-none opacity-0 peer-checked:opacity-100 text-white transition-opacity" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10l4 4 8-8"/></svg>
                 </div>
                 <span className="text-[14px] text-slate-300 group-hover:text-white transition-colors flex items-center gap-1.5">
                   <BadgeCheck size={16} className="text-emerald-400" /> RERA Verified
@@ -528,7 +528,7 @@ export default function PropertiesPage() {
             {/* Right Side Options */}
             <div className="hidden lg:flex items-center gap-5">
               {/* Listing type tabs */}
-              <div className="flex bg-white/5 border border-white/10 rounded-[14px] p-1 gap-1 flex-shrink-0 backdrop-blur-sm">
+              <div className="flex bg-white/5 border border-white/10 rounded-[14px] p-1 gap-1 shrink-0 backdrop-blur-sm">
                 {[null, ...LISTING_TYPES].map((type) => (
                   <button
                     key={type ?? 'all'}
@@ -544,7 +544,7 @@ export default function PropertiesPage() {
               </div>
 
               {/* Grid / Map toggle */}
-              <div className="flex items-center bg-white/5 border border-white/10 rounded-[14px] p-1 flex-shrink-0 backdrop-blur-sm">
+              <div className="flex items-center bg-white/5 border border-white/10 rounded-[14px] p-1 shrink-0 backdrop-blur-sm">
                 <button
                   onClick={() => setViewMode('grid')}
                   title="Grid view"
@@ -573,14 +573,14 @@ export default function PropertiesPage() {
         {/* ── Body ── */}
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-12 py-8 relative">
           {/* Background Ambient Glow beneath content */}
-          <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
-          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute top-0 left-0 w-125 h-125 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute bottom-0 right-0 w-125 h-125 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
           
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 px-4 lg:px-0 relative z-10">
 
             {/* Desktop Filter Sidebar */}
             <div className="hidden lg:block w-72 shrink-0">
-              <div className="sticky top-[120px]">
+              <div className="sticky top-30">
                 <FilterPanel
                   open={false}
                   onClose={() => { }}

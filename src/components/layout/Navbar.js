@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { Menu, X, ChevronDown, Home, LogOut, User, LayoutDashboard } from "lucide-react";
+import { Menu, X, ChevronDown, LogOut, User, LayoutDashboard } from "lucide-react";
 import Image from "next/image";
 
 export default function Navbar() {
@@ -198,7 +197,7 @@ export default function Navbar() {
               </Link>
               <Link
                 href="/auth/register"
-                className="text-center py-2.5 rounded-xl text-base font-bold shadow-sm transition-colors bg-white text-indigo-900 shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+                className="text-center py-2.5 rounded-xl text-base font-bold shadow-sm transition-colors bg-white text-indigo-900"
                 onClick={() => setMenuOpen(false)}
               >
                 Sign up

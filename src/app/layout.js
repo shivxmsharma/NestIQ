@@ -32,7 +32,7 @@ export default function RootLayout({ children }) {
               priority
             />
             {/* Ambient Dark Gradient overlays the fixed image */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#070b14]/70 via-[#070b14]/90 to-[#070b14] backdrop-blur-[4px]" />
+            <div className="absolute inset-0 bg-linear-to-b from-[#070b14]/70 via-[#070b14]/90 to-[#070b14] backdrop-blur-xs" />
           </div>
 
           {/* App Layout */}

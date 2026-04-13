@@ -3,9 +3,7 @@
 import { useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
-import Link from 'next/link';
-import Image from 'next/image';
-import { MapPin, BedDouble, Maximize2, X } from 'lucide-react';
+import { MapPin, X } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 
 // Fix Leaflet's broken default icon paths in Next.js
@@ -156,6 +154,7 @@ export default function PropertyMap({ hits }) {
               {/* Photo */}
               <div className="relative h-36 bg-white/5">
                 {activeHit.coverPhoto ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     src={activeHit.coverPhoto}
                     alt={activeHit.title}

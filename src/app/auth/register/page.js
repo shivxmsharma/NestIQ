@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { Home, Eye, EyeOff, Loader2, AlertCircle, CheckCircle } from "lucide-react";
+import { Eye, EyeOff, Loader2, AlertCircle, CheckCircle } from "lucide-react";
 
 const ROLES = [
   { value: "buyer", label: "Buyer / Tenant", desc: "Looking to buy or rent" },
@@ -99,7 +99,7 @@ export default function RegisterPage() {
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4 relative z-10 w-full">
-        <div className="text-center bg-[#0b1120]/80 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/5 p-12 relative overflow-hidden max-w-sm w-full">
+        <div className="text-center bg-[#0b1120]/80 backdrop-blur-2xl rounded-4xl shadow-2xl border border-white/5 p-12 relative overflow-hidden max-w-sm w-full">
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/20 rounded-full blur-[80px] pointer-events-none" />
           <div className="relative z-10">
             <div className="w-20 h-20 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
@@ -115,7 +115,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-8 relative z-10 w-full">
-      <div className="w-full max-w-[28rem] mt-10">
+      <div className="w-full max-w-md mt-10">
 
         {/* Logo */}
         <Link href="/" className="flex items-center justify-center gap-2 mb-8 group">
@@ -125,7 +125,7 @@ export default function RegisterPage() {
         </Link>
 
         {/* Card Container */}
-        <div className="bg-[#0b1120]/80 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/5 p-8 sm:p-10 relative overflow-hidden">
+        <div className="bg-[#0b1120]/80 backdrop-blur-2xl rounded-4xl shadow-2xl border border-white/5 p-8 sm:p-10 relative overflow-hidden">
 
           {/* Subtle glow effect behind card */}
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-indigo-500/20 rounded-full blur-[80px] pointer-events-none" />

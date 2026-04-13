@@ -74,7 +74,7 @@ export default function HomePage() {
             {/* Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-6 tracking-tight drop-shadow-2xl">
               Find your perfect
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-100 via-amber-200 to-yellow-500 mt-2 pb-2">
+              <span className="block text-transparent bg-clip-text bg-linear-to-r from-yellow-100 via-amber-200 to-yellow-500 mt-2 pb-2">
                 home in the tricity.
               </span>
             </h1>
@@ -84,7 +84,7 @@ export default function HomePage() {
             </p>
 
             {/* Glassmorphic Omnisearch */}
-            <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-3 shadow-[0_0_50px_rgba(0,0,0,0.5)] max-w-3xl mx-auto">
+            <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-4xl p-3 shadow-[0_0_50px_rgba(0,0,0,0.5)] max-w-3xl mx-auto">
               
               {/* Type Tabs */}
               <div className="flex justify-start gap-2 mb-3 px-3 pt-2">
@@ -196,11 +196,11 @@ export default function HomePage() {
         {/* —— CTA Banner —— */}
         <section className="py-16 pb-32 relative z-20">
           <div className="relative rounded-[3rem] overflow-hidden bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.5)]">
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-indigo-600/5 mix-blend-overlay" />
+            <div className="absolute inset-0 bg-linear-to-br from-indigo-500/5 via-purple-500/5 to-indigo-600/5 mix-blend-overlay" />
 
             <div className="relative px-8 py-20 text-center">
               <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6 tracking-tight drop-shadow-lg">
-                Own a property? <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-amber-400">List it for free.</span>
+                Own a property? <span className="text-transparent bg-clip-text bg-linear-to-r from-yellow-200 to-amber-400">List it for free.</span>
               </h2>
               <p className="text-slate-300 mb-12 max-w-2xl mx-auto text-xl font-light">
                 Reach thousands of genuine buyers and tenants in Chandigarh. Zero brokerage for owners.

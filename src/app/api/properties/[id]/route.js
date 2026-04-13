@@ -4,16 +4,16 @@ import { authOptions } from "../../../../lib/auth";
 import connectDB from "../../../../lib/db";
 import Property from "../../../../lib/models/Property";
 import {
-  syncPropertiesToAlgolia,         // ✅ fix #4 — singular
+  syncPropertiesToAlgolia,         
   deletePropertyFromAlgolia,
 } from "../../../../lib/algolia";
 
 export async function GET(request, { params }) {
   try {
-    const { id } = await params;  // ✅ fix #7 — await params
+    const { id } = await params;  
 
     await connectDB();
-    const property = await Property.findById(id)  // ✅ fix #1 — was params.is
+    const property = await Property.findById(id)  
       .populate("owner", "name avatar phone email reaId agencyName rating")
       .lean();
 
@@ -36,7 +36,7 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;  // ✅ fix #7
+    const { id } = await params;  
 
     await connectDB();
     const property = await Property.findById(id);
@@ -45,10 +45,10 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: "Property not found" }, { status: 404 });
     }
 
-    const isOwner = property.owner.toString() === session.user.id;  // ✅ fix #2 — was ession
+    const isOwner = property.owner.toString() === session.user.id;  
     const isAdmin = session.user.role === "admin";
 
-    if (!isOwner && !isAdmin) {  // ✅ fix #3 — was || (blocks everyone)
+    if (!isOwner && !isAdmin) {  
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -58,7 +58,7 @@ export async function PUT(request, { params }) {
       runValidators: true,
     });
 
-    await syncPropertiesToAlgolia(updated.toObject());  // ✅ fix #6 — was never called
+    await syncPropertiesToAlgolia(updated.toObject());  
 
     return NextResponse.json({ property: updated });
   } catch (error) {
@@ -73,7 +73,7 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;  // ✅ fix #7
+    const { id } = await params;  
 
     await connectDB();
     const property = await Property.findById(id);
@@ -85,14 +85,14 @@ export async function DELETE(request, { params }) {
     const isOwner = property.owner.toString() === session.user.id;
     const isAdmin = session.user.role === "admin";
 
-    if (!isOwner && !isAdmin) {  // ✅ fix #3 — was ||
+    if (!isOwner && !isAdmin) {  
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     await Property.findByIdAndDelete(id);
-    await deletePropertyFromAlgolia(id);  // ✅ fix #6 — was never called
+    await deletePropertyFromAlgolia(id);  
 
-    return NextResponse.json({ message: "Property deleted" });  // ✅ fix #5 — was .jsi
+    return NextResponse.json({ message: "Property deleted" });  
   } catch (error) {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
