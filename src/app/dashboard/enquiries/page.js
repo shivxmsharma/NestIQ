@@ -71,7 +71,7 @@ export default function ReceivedEnquiriesPage() {
           {enquiries.map((e) => (
             <div
               key={e._id}
-              className={`bg-white rounded-2xl shadow-sm border overflow-hidden ${!e.isRead ? 'border-blue-300' : 'border-white/10'
+              className={`bg-white/5 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.4)] rounded-3xl border overflow-hidden ${!e.isRead ? 'border-indigo-500/50' : 'border-white/10'
                 }`}
             >
               <div className="p-5">
@@ -82,7 +82,7 @@ export default function ReceivedEnquiriesPage() {
                 )}
 
                 <div className="flex gap-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold shrink-0">
                     {e.name?.[0]?.toUpperCase() || '?'}
                   </div>
 
@@ -94,13 +94,13 @@ export default function ReceivedEnquiriesPage() {
                       </div>
                       <div className="flex items-center gap-2 shrink-0 flex-wrap">
                         <span className={`text-xs px-2.5 py-1 rounded-full font-medium capitalize ${e.status === 'pending' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-                            e.status === 'responded' ? 'bg-green-100  text-green-700' :
-                              'bg-white/5  text-slate-400'
+                          e.status === 'responded' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
+                            'bg-white/5  text-slate-400'
                           }`}>
                           {e.status}
                         </span>
                         {e.enquiryType === 'visit' && (
-                          <span className="text-xs bg-purple-100 text-purple-700 px-2.5 py-1 rounded-full font-medium">
+                          <span className="text-xs bg-purple-500/20 text-purple-400 border border-purple-500/30 px-2.5 py-1 rounded-full font-medium">
                             Visit Request
                           </span>
                         )}
@@ -132,13 +132,13 @@ export default function ReceivedEnquiriesPage() {
                       <div className="flex gap-2 mt-4">
                         <button
                           onClick={() => updateVisit(e._id, 'confirmed')}
-                          className="flex items-center gap-1.5 text-sm bg-green-600 text-white px-4 py-1.5 rounded-xl hover:bg-green-700 transition-colors"
+                          className="flex items-center gap-1.5 text-sm bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 px-4 py-1.5 rounded-xl hover:bg-emerald-500/30 transition-colors"
                         >
                           <Check size={13} /> Confirm Visit
                         </button>
                         <button
                           onClick={() => updateVisit(e._id, 'cancelled')}
-                          className="flex items-center gap-1.5 text-sm bg-white/5 text-gray-700 px-4 py-1.5 rounded-xl hover:bg-[#0b1120]/50 border border-white/5 shadow-inner transition-colors"
+                          className="flex items-center gap-1.5 text-sm bg-white/5 border border-white/10 text-slate-300 px-4 py-1.5 rounded-xl hover:bg-white/10 hover:text-white transition-colors"
                         >
                           <X size={13} /> Decline
                         </button>
@@ -146,8 +146,8 @@ export default function ReceivedEnquiriesPage() {
                     )}
 
                     {e.visitStatus && e.visitStatus !== 'requested' && (
-                      <p className={`text-xs mt-2 font-semibold ${e.visitStatus === 'confirmed' ? 'text-green-600' :
-                          e.visitStatus === 'cancelled' ? 'text-red-500' : 'text-indigo-400 transition-colors'
+                      <p className={`text-xs mt-2 font-semibold ${e.visitStatus === 'confirmed' ? 'text-emerald-400' :
+                        e.visitStatus === 'cancelled' ? 'text-rose-400' : 'text-indigo-400 transition-colors'
                         }`}>
                         Visit {e.visitStatus}
                       </p>
@@ -161,15 +161,15 @@ export default function ReceivedEnquiriesPage() {
                             <textarea
                               value={replyText}
                               onChange={ev => setReplyText(ev.target.value)}
-                              placeholder="Write your response…"
+                              placeholder="Write your response..."
                               rows={3}
-                              className="w-full border border-white/10 rounded-xl p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full bg-[#0b1120]/50 border border-white/10 rounded-xl p-3 text-sm text-white placeholder-slate-500 resize-none focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
                             />
                             <div className="flex gap-2">
                               <button
                                 onClick={() => sendReply(e._id)}
                                 disabled={submitting}
-                                className="text-sm bg-indigo-600 shadow-[0_0_15px_rgba(79,70,229,0.3)] hover:shadow-[0_0_20px_rgba(79,70,229,0.5)] text-white px-4 py-1.5 rounded-xl hover:bg-indigo-500 hover:shadow-[0_0_20px_rgba(79,70,229,0.5)] transition-colors disabled:opacity-60"
+                                className="text-sm bg-indigo-600 shadow-[0_0_15px_rgba(79,70,229,0.3)] text-white px-4 py-1.5 rounded-xl hover:bg-indigo-500 hover:shadow-[0_0_20px_rgba(79,70,229,0.5)] transition-colors disabled:opacity-60"
                               >
                                 {submitting ? 'Sending…' : 'Send Reply'}
                               </button>
@@ -191,9 +191,9 @@ export default function ReceivedEnquiriesPage() {
                         )}
 
                         {e.ownerResponse && activeId !== e._id && (
-                          <div className="mt-3 bg-blue-50 border border-blue-100 rounded-xl p-3">
-                            <p className="text-xs text-blue-500 font-semibold mb-1">Your reply:</p>
-                            <p className="text-sm text-gray-700">{e.ownerResponse}</p>
+                          <div className="mt-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-3">
+                            <p className="text-xs text-indigo-400 font-semibold mb-1">Your reply:</p>
+                            <p className="text-sm text-slate-300">{e.ownerResponse}</p>
                           </div>
                         )}
                       </div>
