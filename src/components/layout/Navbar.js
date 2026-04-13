@@ -14,7 +14,11 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled((prev) => {
+        if (!prev && window.scrollY > 60) return true;
+        if (prev && window.scrollY < 20) return false;
+        return prev;
+      });
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
