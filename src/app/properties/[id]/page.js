@@ -33,9 +33,19 @@ export default function PropertyDetailPage() {
   const [loading, setLoading] = useState(true);
   const [activePhoto, setActivePhoto] = useState(0);
   const [saved, setSaved] = useState(false);
-  const [enquiryForm, setEnquiryForm] = useState({ name: "", phone: "", message: "" });
+  const [enquiryForm, setEnquiryForm] = useState({ name: "", email: "", phone: "", message: "", error: "" });
   const [enquirySent, setEnquirySent] = useState(false);
   const [enquiryLoading, setEnquiryLoading] = useState(false);
+
+  useEffect(() => {
+    if (session?.user) {
+      setEnquiryForm(prev => ({
+        ...prev,
+        name: prev.name || session.user.name || "",
+        email: prev.email || session.user.email || "",
+      }));
+    }
+  }, [session]);
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -54,13 +64,29 @@ export default function PropertyDetailPage() {
   const handleEnquiry = async (e) => {
     e.preventDefault();
     setEnquiryLoading(true);
+    setEnquiryForm(p => ({ ...p, error: "" }));
+
     try {
-      await fetch("/api/enquiries", {
+      const res = await fetch("/api/enquiries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...enquiryForm, propertyId: id }),
+        body: JSON.stringify({
+          propertyId: id,
+          name: enquiryForm.name || session?.user?.name || "",
+          email: enquiryForm.email || session?.user?.email || "",
+          phone: enquiryForm.phone,
+          message: enquiryForm.message,
+          enquiryType: "general",
+        }),
       });
-      setEnquirySent(true);
+      const data = await res.json();
+      if (res.ok) {
+        setEnquirySent(true);
+      } else {
+        setEnquiryForm(p => ({ ...p, error: data.error || "Failed to send enquiry." }));
+      }
+    } catch {
+      setEnquiryForm(p => ({ ...p, error: "Network error. Please try again." }));
     } finally {
       setEnquiryLoading(false);
     }
@@ -402,38 +428,51 @@ export default function PropertyDetailPage() {
                   <p className="text-sm text-slate-400 mt-2 font-medium">The owner will contact you shortly.</p>
                 </div>
               ) : (
-                <form onSubmit={handleEnquiry} className="space-y-4">
-                  <input
-                    type="text"
-                    placeholder="Your Name"
-                    required
-                    value={session?.user?.name || enquiryForm.name}
-                    onChange={(e) => setEnquiryForm((p) => ({ ...p, name: e.target.value }))}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
-                  />
-                  <input
-                    type="tel"
-                    placeholder="Phone Number"
-                    required
-                    value={enquiryForm.phone}
-                    onChange={(e) => setEnquiryForm((p) => ({ ...p, phone: e.target.value }))}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
-                  />
-                  <textarea
-                    placeholder="I'm interested in this property..."
-                    rows={4}
-                    value={enquiryForm.message}
-                    onChange={(e) => setEnquiryForm((p) => ({ ...p, message: e.target.value }))}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner resize-none"
-                  />
-                  <button
-                    type="submit"
-                    disabled={enquiryLoading}
-                    className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)] disabled:opacity-60 disabled:hover:shadow-none"
-                  >
-                    {enquiryLoading ? "Sending..." : "Contact Owner"}
-                  </button>
-                </form>
+                  <form onSubmit={handleEnquiry} className="space-y-4">
+                    <input
+                      type="text"
+                      placeholder="Your Name *"
+                      required
+                      value={enquiryForm.name}
+                      onChange={(e) => setEnquiryForm(p => ({ ...p, name: e.target.value }))}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
+                    />
+                    <input
+                      type="email"
+                      placeholder="Email Address *"
+                      required
+                      value={enquiryForm.email}
+                      onChange={(e) => setEnquiryForm(p => ({ ...p, email: e.target.value }))}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
+                    />
+                    <input
+                      type="tel"
+                      placeholder="Phone Number *"
+                      required
+                      value={enquiryForm.phone}
+                      onChange={(e) => setEnquiryForm(p => ({ ...p, phone: e.target.value }))}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
+                    />
+                    <textarea
+                      placeholder="I'm interested in this property..."
+                      rows={3}
+                      value={enquiryForm.message}
+                      onChange={(e) => setEnquiryForm(p => ({ ...p, message: e.target.value }))}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner resize-none"
+                    />
+                    {enquiryForm.error && (
+                      <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 p-3 rounded-xl">
+                        {enquiryForm.error}
+                      </p>
+                    )}
+                    <button
+                      type="submit"
+                      disabled={enquiryLoading}
+                      className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)] disabled:opacity-60"
+                    >
+                      {enquiryLoading ? "Sending..." : "Contact Owner"}
+                    </button>
+                  </form>
               )}
 
               <div className="grid grid-cols-2 gap-3 mt-4">
