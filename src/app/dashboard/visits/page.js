@@ -1,138 +1,236 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar, MapPin, Clock } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { Calendar, Clock, MapPin, CheckCircle, XCircle, Loader2, User, Phone } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
+
+const STATUS_CONFIG = {
+  requested: { label: 'Pending Confirmation', color: 'bg-amber-500/10 border-amber-500/20 text-amber-400', icon: Clock },
+  confirmed: { label: 'Confirmed', color: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400', icon: CheckCircle },
+  cancelled: { label: 'Cancelled', color: 'bg-rose-500/10 border-rose-500/20 text-rose-400', icon: XCircle },
+  completed: { label: 'Completed', color: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400', icon: CheckCircle },
+};
+
+const FILTERS = ['all', 'requested', 'confirmed', 'completed', 'cancelled'];
 
 export default function VisitsPage() {
+  const { data: session } = useSession();
   const [visits, setVisits] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState('upcoming');
+  const [filter, setFilter] = useState('all');
+
+  const isSeller = ['seller', 'broker'].includes(session?.user?.role);
 
   useEffect(() => {
-    Promise.all([
-      fetch('/api/enquiries?type=sent').then(r => r.json()),
-      fetch('/api/enquiries?type=received').then(r => r.json()),
-    ]).then(([sent, received]) => {
-      const all = [
-        ...(sent.enquiries || []).filter(e => e.enquiryType === 'visit').map(v => ({ ...v, role: 'buyer' })),
-        ...(received.enquiries || []).filter(e => e.enquiryType === 'visit').map(v => ({ ...v, role: 'owner' })),
-      ];
-      setVisits(all);
-      setLoading(false);
-    });
+    fetch('/api/enquiries')
+      .then((r) => r.json())
+      .then((data) => {
+        // Only show enquiries that have a visit date set
+        setVisits(Array.isArray(data) ? data.filter((e) => e.visitDate) : []);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
 
-  const now = new Date();
-  const upcoming = visits.filter(v => !v.visitDate || new Date(v.visitDate) >= now);
-  const past = visits.filter(v => v.visitDate && new Date(v.visitDate) < now);
-  const shown = tab === 'upcoming' ? upcoming : past;
+  async function updateStatus(enquiryId, visitStatus) {
+    const res = await fetch(`/api/enquiries/${enquiryId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ visitStatus }),
+    });
+    if (res.ok) {
+      setVisits((prev) =>
+        prev.map((v) => (v._id === enquiryId ? { ...v, visitStatus } : v))
+      );
+    }
+  }
+
+  const filtered =
+    filter === "all" ? visits : visits.filter((v) => v.visitStatus === filter);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+      <div className="flex items-center justify-center h-40">
+        <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white tracking-tight">Visits</h1>
-        <p className="text-sm text-slate-400 mt-1">All scheduled property visits</p>
-      </div>
-
-      <div className="flex gap-2 mb-6">
-        {[
-          { key: 'upcoming', count: upcoming.length },
-          { key: 'past', count: past.length },
-        ].map(({ key, count }) => (
-          <button
-            key={key}
-            onClick={() => setTab(key)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors capitalize ${tab === key
-              ? 'bg-indigo-600 shadow-[0_0_15px_rgba(79,70,229,0.3)] hover:shadow-[0_0_20px_rgba(79,70,229,0.5)] text-white'
-              : 'bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10'
-              }`}
+    <div className="max-w-5xl">
+      {/* Page header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Site Visits</h1>
+          <p className="text-sm text-slate-400 mt-1">
+            {visits.length} visit{visits.length !== 1 ? "s" : ""} scheduled
+          </p>
+        </div>
+        {!isSeller && (
+          <Link
+            href="/properties"
+            className="text-sm text-indigo-400 hover:text-indigo-300 font-medium hover:underline transition-colors"
           >
-            {key} ({count})
-          </button>
-        ))}
+            Browse properties →
+          </Link>
+        )}
       </div>
 
-      {shown.length === 0 ? (
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.4)] rounded-3xl p-16 text-center">
-          <Calendar size={44} className="text-gray-300 mx-auto mb-3" />
-          <p className="text-slate-400">No {tab} visits</p>
-          {tab === 'upcoming' && (
-            <Link href="/properties" className="inline-block mt-4 text-sm text-indigo-400 transition-colors hover:underline">
-              Browse properties to schedule a visit →
+      {/* Filter tabs */}
+      <div className="flex gap-2 mb-6 flex-wrap">
+        {FILTERS.map((f) => {
+          const count = f === "all" ? visits.length : visits.filter((v) => v.visitStatus === f).length;
+          return (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize transition-all duration-300 border ${filter === f
+                  ? "bg-indigo-500/20 border-indigo-500/30 text-indigo-300 shadow-[0_0_15px_rgba(79,70,229,0.2)]"
+                  : "bg-white/5 border-transparent text-slate-300 hover:bg-white/10"
+                }`}
+            >
+              {f === "all" ? "All" : f}
+              <span className={`ml-1.5 text-xs py-0.5 px-2 rounded-full ${filter === f ? "bg-indigo-500/20 text-indigo-200" : "bg-white/10 text-slate-400"}`}>
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Visit cards */}
+      {filtered.length === 0 ? (
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl text-center py-16 text-slate-400">
+          <Calendar className="w-12 h-12 mx-auto mb-3 text-slate-500" />
+          <p className="font-medium text-slate-300 text-lg">No visits found</p>
+          {!isSeller && (
+            <Link href="/properties" className="text-indigo-400 text-sm hover:underline hover:text-indigo-300 mt-2 inline-block transition-colors">
+              Schedule a visit →
             </Link>
           )}
         </div>
       ) : (
-        <div className="space-y-4">
-          {shown.map((v) => (
-            <div key={v._id} className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.4)] rounded-3xl p-5">
-              <div className="flex gap-4">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${v.visitStatus === 'confirmed' ? 'bg-emerald-500/20' :
-                  v.visitStatus === 'cancelled' ? 'bg-rose-500/20' : 'bg-indigo-500/20'
-                  }`}>
-                  <Calendar size={22} className={
-                    v.visitStatus === 'confirmed' ? 'text-emerald-400' :
-                      v.visitStatus === 'cancelled' ? 'text-rose-400' : 'text-indigo-400'
-                  } />
+        <div className="grid gap-4">
+          {filtered.map((visit) => {
+            const cfg = STATUS_CONFIG[visit.visitStatus] || STATUS_CONFIG.requested;
+            const Icon = cfg.icon;
+            const photo = visit.property?.photos?.[0]?.url;
+            const addr = visit.property?.address;
+
+            return (
+              <div
+                key={visit._id}
+                className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.4)] rounded-3xl p-5 flex flex-col sm:flex-row gap-5 hover:border-white/20 transition-all duration-300 group"
+              >
+                {/* Property thumbnail */}
+                <div className="w-full sm:w-28 h-40 sm:h-28 rounded-2xl overflow-hidden bg-white/5 ring-1 ring-white/10 shrink-0 relative group-hover:ring-white/20 transition-all">
+                  {photo ? (
+                    <Image
+                      src={photo}
+                      alt="property"
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <MapPin className="w-8 h-8 text-slate-600" />
+                    </div>
+                  )}
                 </div>
 
-                <div className="flex-1">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <Link
-                        href={`/properties/${v.property?._id}`}
-                        className="font-semibold text-white tracking-tight hover:text-indigo-400 transition-colors line-clamp-1"
-                      >
-                        {v.property?.title || 'Property'}
-                      </Link>
-                      {v.property?.address && (
-                        <p className="text-sm text-slate-500 text-[13px] font-light flex items-center gap-1 mt-0.5">
-                          <MapPin size={11} />
-                          {v.property.address.locality}, {v.property.address.city}
-                        </p>
+                {/* Details */}
+                <div className="flex-1 min-w-0 flex flex-col py-1">
+                  <div className="flex items-start justify-between gap-4 mb-2 flex-col sm:flex-row">
+                    <Link
+                      href={`/properties/${visit.property?._id}`}
+                      className="font-semibold text-white text-lg hover:text-indigo-400 transition-colors line-clamp-1"
+                    >
+                      {addr?.locality ? `${addr.locality}, ${addr.city}` : "Property Listing"}
+                    </Link>
+                    <span
+                      className={`flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-medium shrink-0 ${cfg.color}`}
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                      {cfg.label}
+                    </span>
+                  </div>
+
+                  {/* Date + time */}
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400 mb-3 bg-white/5 w-fit px-3 py-1.5 rounded-xl border border-white/5">
+                    <span className="flex items-center gap-1.5">
+                      <Calendar className="w-4 h-4 text-slate-300" />
+                      {new Date(visit.visitDate).toLocaleDateString("en-IN", {
+                        day: "numeric", month: "short", year: "numeric",
+                      })}
+                    </span>
+                    {visit.visitTime && (
+                      <>
+                        <span className="w-1 h-1 rounded-full bg-white/20"></span>
+                        <span className="flex items-center gap-1.5">
+                          <Clock className="w-4 h-4 text-slate-300" />
+                          {visit.visitTime}
+                        </span>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Buyer info (for sellers) */}
+                  {isSeller && (
+                    <div className="flex flex-wrap items-center gap-4 text-sm text-slate-300 mb-3 bg-[#0b1120]/50 w-fit px-4 py-2 rounded-xl border border-white/5">
+                      <div className="flex items-center gap-2 font-medium">
+                        <div className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-bold text-xs uppercase">
+                          {visit.name?.charAt(0) || 'U'}
+                        </div>
+                        {visit.name}
+                      </div>
+                      {visit.phone && (
+                        <>
+                          <span className="w-1 h-1 rounded-full bg-white/20"></span>
+                          <a href={`tel:${visit.phone}`} className="flex items-center gap-1.5 hover:text-indigo-400 transition-colors">
+                            <Phone className="w-4 h-4" />
+                            {visit.phone}
+                          </a>
+                        </>
                       )}
                     </div>
-                    <span className={`text-xs px-2.5 py-1 rounded-full font-medium shrink-0 capitalize ${v.visitStatus === 'confirmed' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
-                      v.visitStatus === 'cancelled' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' :
-                        v.visitStatus === 'completed' ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' :
-                          'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                      }`}>
-                      {v.visitStatus || 'requested'}
-                    </span>
-                  </div>
+                  )}
 
-                  <div className="flex items-center gap-4 mt-2 text-sm text-slate-400 flex-wrap">
-                    {v.visitDate && (
-                      <span className="flex items-center gap-1.5">
-                        <Calendar size={13} />
-                        {new Date(v.visitDate).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
-                      </span>
-                    )}
-                    {v.visitTime && (
-                      <span className="flex items-center gap-1.5">
-                        <Clock size={13} /> {v.visitTime}
-                      </span>
-                    )}
-                    <span className={`text-xs px-2 py-0.5 rounded-full border ${v.role === 'buyer' ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-300' : 'bg-purple-500/10 border-purple-500/20 text-purple-300'
-                      }`}>
-                      {v.role === 'buyer'
-                        ? 'You requested'
-                        : `Requested by ${v.buyer?.name || 'buyer'}`}
-                    </span>
-                  </div>
+                  <div className="grow"></div>
+
+                  {/* Actions */}
+                  {isSeller && visit.visitStatus === "requested" && (
+                    <div className="flex flex-wrap gap-3 mt-3 sm:mt-0">
+                      <button
+                        onClick={() => updateStatus(visit._id, "confirmed")}
+                        className="px-4 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 hover:shadow-[0_0_15px_rgba(16,185,129,0.2)] text-sm font-semibold transition-all duration-300 flex-1 sm:flex-none text-center"
+                      >
+                        Confirm Visit
+                      </button>
+                      <button
+                        onClick={() => updateStatus(visit._id, "cancelled")}
+                        className="px-4 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 hover:shadow-[0_0_15px_rgba(244,63,94,0.2)] text-sm font-semibold transition-all duration-300 flex-1 sm:flex-none text-center"
+                      >
+                        Decline
+                      </button>
+                    </div>
+                  )}
+
+                  {isSeller && visit.visitStatus === "confirmed" && (
+                    <div className="flex mt-3 sm:mt-0">
+                      <button
+                        onClick={() => updateStatus(visit._id, "completed")}
+                        className="px-4 py-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/30 hover:shadow-[0_0_15px_rgba(79,70,229,0.2)] text-sm font-semibold transition-all duration-300 sm:w-auto w-full"
+                      >
+                        Mark as Completed
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

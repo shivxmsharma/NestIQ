@@ -3,6 +3,7 @@ import { authOptions } from '../../../../lib/auth';
 import connectDB from '../../../../lib/db';
 import Enquiry from '../../../../lib/models/Enquiry';
 import { NextResponse } from 'next/server';
+import { sendVisitStatusEmail } from '../../../../lib/emailTemplates';
 
 export async function GET(request, context) {
   const params = await context.params;
@@ -64,6 +65,26 @@ export async function PUT(request, context) {
     .populate('property', 'title photos price listingType address')
     .populate('buyer', 'name email phone avatar')
     .populate('owner', 'name email phone avatar');
+
+  if (
+    isOwner &&
+    (body.visitStatus === "confirmed" || body.visitStatus === "cancelled") &&
+    updated.buyer?.email
+  ) {
+    const addr = updated.property?.address;
+    const propertyAddress = addr
+      ? `${addr.locality}, ${addr.city}`
+      : "the property";
+
+    sendVisitStatusEmail({
+      buyerEmail: updated.buyer.email,
+      buyerName: updated.buyer.name || updated.name,
+      propertyAddress,
+      visitDate: updated.visitDate,
+      visitTime: updated.visitTime,
+      status: body.visitStatus,
+    }).catch(() => { }); // fire-and-forget — email failure won't break the response
+  }
 
   return NextResponse.json({ enquiry: updated });
 }

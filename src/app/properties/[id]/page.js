@@ -9,8 +9,9 @@ import dynamic from "next/dynamic";
 import {
   MapPin, BedDouble, Bath, Maximize2, BadgeCheck, Zap,
   Phone, Calendar, Share2, Heart, ChevronLeft,
-  ChevronRight, Eye, Building2, CheckCircle2
+  ChevronRight, Eye, Building2, CheckCircle2, MessageCircle
 } from "lucide-react";
+import ChatWindow from "../../../components/chat/ChatWindow";
 
 const SinglePropertyMap = dynamic(() => import("../../../components/map/SinglePropertyMap"), { ssr: false });
 
@@ -36,6 +37,7 @@ export default function PropertyDetailPage() {
   const [enquiryForm, setEnquiryForm] = useState({ name: "", email: "", phone: "", message: "", error: "" });
   const [enquirySent, setEnquirySent] = useState(false);
   const [enquiryLoading, setEnquiryLoading] = useState(false);
+  const [showChat, setShowChat] = useState(false);
 
   useEffect(() => {
     if (session?.user) {
@@ -94,7 +96,7 @@ export default function PropertyDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0b1120] relative z-10 w-full">
+      <div className="min-h-screen bg-[#0b1120] relative w-full">
         {/* Background Ambient Glow beneath content */}
         <div className="absolute top-0 left-0 w-125 h-125 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-12 py-8 space-y-6 relative z-10 animate-pulse">
@@ -123,7 +125,7 @@ export default function PropertyDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b1120] relative z-10 w-full">
+    <div className="min-h-screen bg-[#0b1120] relative w-full">
       {/* Background Ambient Glow beneath content */}
       <div className="absolute top-0 left-0 w-125 h-125 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-125 h-125 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
@@ -486,9 +488,29 @@ export default function PropertyDetailPage() {
                   <Calendar className="w-4 h-4 text-indigo-400" /> Visit
                 </button>
               </div>
+
+              {/* Chat with Owner */}
+              {session && owner._id && session.user.id !== owner._id?.toString() && (
+                <button
+                  onClick={() => setShowChat(true)}
+                  className="w-full mt-3 flex items-center justify-center gap-2 py-3 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 hover:border-indigo-500/50 rounded-xl text-sm font-semibold text-indigo-300 hover:text-indigo-200 transition-all"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  Chat with Owner
+                </button>
+              )}
+
             </div>
           </div>
         </div>
+        {/* floating chat window */}
+        {showChat && (
+          <ChatWindow
+            propertyId={id}
+            onClose={() => setShowChat(false)}
+          />
+        )}
+
       </div>
     </div >
   );

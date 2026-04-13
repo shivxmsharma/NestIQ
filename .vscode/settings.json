@@ -24,6 +24,7 @@
     "/^powershell -c \"Select-String -Path d:\\\\nestiq\\\\src\\\\app\\\\auth\\\\login\\\\page\\.js -Pattern 'className=' -Context 0, 5 \\| Select-Object -First 2\"$/": {
       "approve": true,
       "matchCommandLine": true
-    }
+    },
+    "Copy-Item": true
   }
 }

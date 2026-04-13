@@ -29,7 +29,7 @@ const footerLinks = {
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0b1120]/80 backdrop-blur-2xl border-t border-white/5 text-slate-300 relative z-10 w-full overflow-hidden">
+    <footer className="bg-[#0b1120]/80 backdrop-blur-2xl border-t border-white/5 text-slate-300 relative w-full overflow-hidden">
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-12 py-12">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           {/* Brand */}
