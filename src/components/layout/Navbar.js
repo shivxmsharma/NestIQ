@@ -24,6 +24,8 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const isSeller = ['seller', 'broker'].includes(session?.user?.role);
+
   const navLinks = [
     { label: "Properties", href: "/properties" },
     { label: "Buy", href: "/properties?listing=buy" },
@@ -60,7 +62,7 @@ export default function Navbar() {
 
           {/* Right side */}
           <div className="hidden md:flex items-center gap-4">
-            {session && (
+            {session && isSeller && (
               <Link
                 href="/dashboard/list-property"
                 className="px-5 py-2.5 text-sm font-bold rounded-2xl transition-all duration-300 hover:scale-105 bg-white/10 text-white border border-white/20 hover:bg-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]"
@@ -173,13 +175,15 @@ export default function Navbar() {
           ))}
           <div className="h-px my-4 bg-white/10" />
 
-          <Link
-            href="/dashboard/list-property"
-            className="block text-center py-3 rounded-xl font-bold transition-colors bg-white/10 text-white hover:bg-white/20 shadow-[0_0_15px_rgba(255,255,255,0.05)]"
-            onClick={() => setMenuOpen(false)}
-          >
-            List Property
-          </Link>
+          {isSeller && (
+            <Link
+              href="/dashboard/list-property"
+              className="block text-center py-3 rounded-xl font-bold transition-colors bg-white/10 text-white hover:bg-white/20 shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+              onClick={() => setMenuOpen(false)}
+            >
+              List Property
+            </Link>
+          )}
 
           <div className="h-px my-4 bg-white/10" />
 

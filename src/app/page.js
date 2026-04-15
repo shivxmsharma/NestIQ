@@ -46,6 +46,7 @@ const WHY_NESTIQ = [
 export default function HomePage() {
   const router = useRouter();
   const { data: session } = useSession();
+  const isSeller = ['seller', 'broker'].includes(session?.user?.role);
   const [activeTab, setActiveTab] = useState("Buy");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -206,12 +207,14 @@ export default function HomePage() {
                 Reach thousands of genuine buyers and tenants in Chandigarh. Zero brokerage for owners.
               </p>
               <div className="flex flex-col sm:flex-row gap-5 justify-center">
-                <Link
-                  href="/dashboard/list-property"
-                  className="bg-white text-indigo-900 font-bold px-8 py-4 rounded-full shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:scale-105 transition-all duration-300 text-lg"
-                >
-                  List your property
-                </Link>
+                {(!session || isSeller) && (
+                  <Link
+                    href="/dashboard/list-property"
+                    className="bg-white text-indigo-900 font-bold px-8 py-4 rounded-full shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:scale-105 transition-all duration-300 text-lg"
+                  >
+                    List your property
+                  </Link>
+                )}
                 {!session && (
                   <Link
                     href="/auth/register"

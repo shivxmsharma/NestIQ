@@ -5,7 +5,6 @@ const footerLinks = {
     { label: "Buy Property", href: "/properties?listing=buy" },
     { label: "Rent Property", href: "/properties?listing=rent" },
     { label: "PG / Hostel", href: "/properties?listing=pg" },
-    { label: "List your Property", href: "/list-property" },
   ],
   Company: [
     { label: "About NestIQ", href: "/about" },
