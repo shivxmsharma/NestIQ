@@ -185,127 +185,127 @@ export default function PropertyDetailPage() {
           {/* Bento-Box Photo Gallery (Left) */}
           <div className="relative w-full xl:w-[70%] h-80 md:h-[460px] rounded-3xl overflow-hidden flex gap-2 group shadow-[0_8px_30px_rgba(0,0,0,0.4)] bg-white/5 border border-white/10 backdrop-blur-sm shrink-0">
 
-          {/* Main Hero Photo (Left) */}
-          <div className="relative w-full md:w-[65%] h-full cursor-pointer">
-            {photos.length > 0 ? (
-              <>
-                <Image
-                  src={photos[activePhoto]?.url}
-                  alt={property.title}
-                  fill
-                  className="object-cover transition-transform duration-600 ease-out hover:scale-[1.03]"
-                  priority
-                />
+            {/* Main Hero Photo (Left) */}
+            <div className="relative w-full md:w-[65%] h-full cursor-pointer">
+              {photos.length > 0 ? (
+                <>
+                  <Image
+                    src={photos[activePhoto]?.url}
+                    alt={property.title}
+                    fill
+                    className="object-cover transition-transform duration-600 ease-out hover:scale-[1.03]"
+                    priority
+                  />
 
-                {/* Mobile Carousel Controls */}
-                {photos.length > 1 && (
-                  <div className="md:hidden">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setActivePhoto((p) => (p - 1 + photos.length) % photos.length); }}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-black/40 backdrop-blur-md hover:bg-black/60 text-white rounded-full transition border border-white/10"
-                    >
-                      <ChevronLeft className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setActivePhoto((p) => (p + 1) % photos.length); }}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-black/40 backdrop-blur-md hover:bg-black/60 text-white rounded-full transition border border-white/10"
-                    >
-                      <ChevronRight className="w-5 h-5" />
-                    </button>
-                    <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-medium tracking-wide border border-white/10">
-                      {activePhoto + 1} / {photos.length}
+                  {/* Mobile Carousel Controls */}
+                  {photos.length > 1 && (
+                    <div className="md:hidden">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setActivePhoto((p) => (p - 1 + photos.length) % photos.length); }}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-black/40 backdrop-blur-md hover:bg-black/60 text-white rounded-full transition border border-white/10"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setActivePhoto((p) => (p + 1) % photos.length); }}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-black/40 backdrop-blur-md hover:bg-black/60 text-white rounded-full transition border border-white/10"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                      <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-medium tracking-wide border border-white/10">
+                        {activePhoto + 1} / {photos.length}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-white/5">
-                <Building2 className="w-16 h-16 text-slate-500" />
-              </div>
-            )}
-
-            {/* Subtle overlay gradient */}
-            <div className="absolute inset-0 bg-linear-to-t from-[#0b1120] via-transparent to-transparent opacity-60 pointer-events-none" />
-
-            {/* Overlaid Badges */}
-            <div className="absolute top-4 left-4 flex gap-2 flex-wrap">
-              <span className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-sm backdrop-blur-md border ${property.listingType === "buy" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" :
-                property.listingType === "rent" ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" :
-                  "bg-purple-500/20 text-purple-300 border-purple-500/30"
-                }`}>
-                For {property.listingType}
-              </span>
-              {property.isReraVerified && (
-                <span className="bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 text-emerald-300 text-[10px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1 shadow-sm">
-                  <BadgeCheck size={14} /> RERA
-                </span>
-              )}
-            </div>
-
-            {/* Actions (Heart & Share) */}
-            <div className="absolute top-4 right-4 flex gap-2">
-              <button
-                onClick={(e) => { e.stopPropagation(); setSaved(!saved); }}
-                className="p-2.5 bg-black/40 backdrop-blur-md border border-white/10 rounded-full shadow-sm hover:bg-black/60 hover:border-white/20 transition-all duration-200"
-              >
-                <Heart className={`w-4 h-4 ${saved ? "fill-rose-500 text-rose-500" : "text-white"}`} />
-              </button>
-              <button className="p-2.5 bg-black/40 backdrop-blur-md border border-white/10 rounded-full shadow-sm hover:bg-black/60 hover:border-white/20 transition-all duration-200">
-                <Share2 className="w-4 h-4 text-white" />
-              </button>
-            </div>
-          </div>
-
-          {/* Right side: 2x2 Small Grid (Desktop Only) */}
-          <div className="hidden md:grid grid-cols-2 grid-rows-2 w-[35%] h-full gap-2 bg-transparent">
-            {[1, 2, 3, 4].map((gridIndex) => {
-              const photo = photos[gridIndex];
-              const isLast = gridIndex === 4;
-              const hasMore = photos.length > 5;
-
-              return (
-                <div
-                  key={gridIndex}
-                  className="relative w-full h-full overflow-hidden group/thumb cursor-pointer bg-white/5"
-                  onClick={() => { if (photo) setActivePhoto(gridIndex) }}
-                >
-                  {photo ? (
-                    <Image
-                      src={photo.url}
-                      alt={`Gallery view ${gridIndex}`}
-                      fill
-                      className={`object-cover transition-transform duration-600 ${activePhoto === gridIndex ? "opacity-50 scale-105" : "group-hover/thumb:scale-110"}`}
-                    />
-                  ) : null}
-
-                  {/* Dim overlay if active on hero to show selection */}
-                  {activePhoto === gridIndex && photo && (
-                    <div className="absolute inset-0 bg-indigo-900/40 backdrop-blur-[1px] ring-2 ring-inset ring-indigo-500 transition-all" />
                   )}
-
-                  {/* "View All" overlay for last image block if there are >5 photos */}
-                  {isLast && hasMore && (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setActivePhoto(5); }}
-                      className="absolute inset-0 bg-[#0b1120]/60 backdrop-blur-sm flex flex-col items-center justify-center hover:bg-[#0b1120]/80 transition-colors border border-white/10"
-                    >
-                      <Maximize2 className="w-6 h-6 text-white mb-1" />
-                      <span className="text-white font-medium text-sm tracking-wide">
-                        View all {photos.length} photos
-                      </span>
-                    </button>
-                  )}
+                </>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-white/5">
+                  <Building2 className="w-16 h-16 text-slate-500" />
                 </div>
-              );
-            })}
+              )}
+
+              {/* Subtle overlay gradient */}
+              <div className="absolute inset-0 bg-linear-to-t from-[#0b1120] via-transparent to-transparent opacity-60 pointer-events-none" />
+
+              {/* Overlaid Badges */}
+              <div className="absolute top-4 left-4 flex gap-2 flex-wrap">
+                <span className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-sm backdrop-blur-md border ${property.listingType === "buy" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" :
+                  property.listingType === "rent" ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" :
+                    "bg-purple-500/20 text-purple-300 border-purple-500/30"
+                  }`}>
+                  For {property.listingType}
+                </span>
+                {property.isReraVerified && (
+                  <span className="bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 text-emerald-300 text-[10px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1 shadow-sm">
+                    <BadgeCheck size={14} /> RERA
+                  </span>
+                )}
+              </div>
+
+              {/* Actions (Heart & Share) */}
+              <div className="absolute top-4 right-4 flex gap-2">
+                <button
+                  onClick={(e) => { e.stopPropagation(); setSaved(!saved); }}
+                  className="p-2.5 bg-black/40 backdrop-blur-md border border-white/10 rounded-full shadow-sm hover:bg-black/60 hover:border-white/20 transition-all duration-200"
+                >
+                  <Heart className={`w-4 h-4 ${saved ? "fill-rose-500 text-rose-500" : "text-white"}`} />
+                </button>
+                <button className="p-2.5 bg-black/40 backdrop-blur-md border border-white/10 rounded-full shadow-sm hover:bg-black/60 hover:border-white/20 transition-all duration-200">
+                  <Share2 className="w-4 h-4 text-white" />
+                </button>
+              </div>
+            </div>
+
+            {/* Right side: 2x2 Small Grid (Desktop Only) */}
+            <div className="hidden md:grid grid-cols-2 grid-rows-2 w-[35%] h-full gap-2 bg-transparent">
+              {[1, 2, 3, 4].map((gridIndex) => {
+                const photo = photos[gridIndex];
+                const isLast = gridIndex === 4;
+                const hasMore = photos.length > 5;
+
+                return (
+                  <div
+                    key={gridIndex}
+                    className="relative w-full h-full overflow-hidden group/thumb cursor-pointer bg-white/5"
+                    onClick={() => { if (photo) setActivePhoto(gridIndex) }}
+                  >
+                    {photo ? (
+                      <Image
+                        src={photo.url}
+                        alt={`Gallery view ${gridIndex}`}
+                        fill
+                        className={`object-cover transition-transform duration-600 ${activePhoto === gridIndex ? "opacity-50 scale-105" : "group-hover/thumb:scale-110"}`}
+                      />
+                    ) : null}
+
+                    {/* Dim overlay if active on hero to show selection */}
+                    {activePhoto === gridIndex && photo && (
+                      <div className="absolute inset-0 bg-indigo-900/40 backdrop-blur-[1px] ring-2 ring-inset ring-indigo-500 transition-all" />
+                    )}
+
+                    {/* "View All" overlay for last image block if there are >5 photos */}
+                    {isLast && hasMore && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setActivePhoto(5); }}
+                        className="absolute inset-0 bg-[#0b1120]/60 backdrop-blur-sm flex flex-col items-center justify-center hover:bg-[#0b1120]/80 transition-colors border border-white/10"
+                      >
+                        <Maximize2 className="w-6 h-6 text-white mb-1" />
+                        <span className="text-white font-medium text-sm tracking-wide">
+                          View all {photos.length} photos
+                        </span>
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* AI Insights Section (Right) */}
+          <div className="w-full xl:w-[30%] h-[500px] md:h-[460px] shrink-0">
+            <PropertyAIInsights propertyId={property._id.toString()} />
           </div>
         </div>
-
-        {/* AI Insights Section (Right) */}
-        <div className="w-full xl:w-[30%] h-[500px] md:h-[460px] shrink-0">
-          <PropertyAIInsights propertyId={property._id.toString()} />
-        </div>
-      </div>
 
         {/* ── Main Layout Split ── */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
