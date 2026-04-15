@@ -137,16 +137,6 @@ export default function Navbar() {
                       </div>
                       Dashboard
                     </Link>
-                    <Link
-                      href="/profile"
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-200 hover:text-white hover:bg-white/10 transition-colors"
-                      onClick={() => setDropdownOpen(false)}
-                    >
-                      <div className="p-1.5 bg-purple-500/20 text-purple-400 rounded-lg">
-                        <User className="w-4 h-4" />
-                      </div>
-                      Profile
-                    </Link>
                     <div className="h-px bg-white/10 my-2 mx-4" />
                     <button
                       onClick={() => { signOut({ callbackUrl: "/" }); setDropdownOpen(false); }}
@@ -225,6 +215,17 @@ export default function Navbar() {
               onClick={() => setMenuOpen(false)}
             >
               List Property
+            </Link>
+          )}
+
+          {session && (
+            <Link
+              href="/dashboard"
+              className="flex items-center justify-center gap-3 w-full px-4 py-3 mt-4 rounded-xl text-base font-semibold transition-colors bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30"
+              onClick={() => setMenuOpen(false)}
+            >
+              <LayoutDashboard className="w-5 h-5" />
+              Go to Dashboard
             </Link>
           )}
 
