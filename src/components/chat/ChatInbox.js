@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { getPusherClient } from "../../lib/pusherClient";
 import { MessageCircle, Home, Loader2 } from "lucide-react";
@@ -11,6 +11,11 @@ export default function ChatInbox({ onSelectConversation, selectedId }) {
   const { data: session } = useSession();
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const selectedIdRef = useRef(selectedId);
+
+  useEffect(() => {
+    selectedIdRef.current = selectedId;
+  }, [selectedId]);
 
   useEffect(() => {
     fetch("/api/chat/conversations")
@@ -29,13 +34,15 @@ export default function ChatInbox({ onSelectConversation, selectedId }) {
     if (!pusher) return;
 
     const channelNames = conversations.map((c) => {
-      const ch = pusher.subscribe(`conversation-${c._id}`);
-      ch.bind("new-message", (msg) => {
+      const channelName = `conversation-${c._id}`;
+      const ch = pusher.subscribe(channelName);
+
+      const handleNewMessage = (msg) => {
         setConversations((prev) =>
           prev.map((conv) => {
             if (conv._id !== c._id) return conv;
-            const isMine = msg.sender?._id === session.user.id;
-            const isOpen = selectedId === c._id;
+            const isMine = msg.sender?._id === session.user.id || msg.sender === session.user.id;
+            const isOpen = selectedIdRef.current === c._id;
             return {
               ...conv,
               lastMessage: msg.text,
@@ -51,14 +58,26 @@ export default function ChatInbox({ onSelectConversation, selectedId }) {
             };
           })
         );
-      });
-      return `conversation-${c._id}`;
+      };
+
+      ch.bind("new-message", handleNewMessage);
+
+      // Store the handler on the channel instance so we can unbind it later easily
+      ch._inboxHandler = handleNewMessage;
+
+      return channelName;
     });
 
     return () => {
-      channelNames.forEach((name) => pusher.unsubscribe(name));
+      channelNames.forEach((name) => {
+        const ch = pusher.channel(name);
+        if (ch && ch._inboxHandler) {
+          ch.unbind("new-message", ch._inboxHandler);
+        }
+      });
     };
-  }, [conversations.length, session, selectedId]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversations.map(c => c._id).join(","), session]);
 
   // Separate effect for user-level channel subscription
   useEffect(() => {
@@ -111,7 +130,17 @@ export default function ChatInbox({ onSelectConversation, selectedId }) {
         return (
           <button
             key={c._id}
-            onClick={() => onSelectConversation(c)}
+            onClick={() => {
+              onSelectConversation(c);
+              // Optimistically clear the unread counter for the selected conversation
+              setConversations((prev) =>
+                prev.map((conv) =>
+                  conv._id === c._id
+                    ? { ...conv, buyerUnread: 0, sellerUnread: 0 }
+                    : conv
+                )
+              );
+            }}
             className={`w-full text-left px-4 py-3 flex items-start gap-3 hover:bg-indigo-500/10 transition ${isActive ? "bg-indigo-500/10 border-l-2 border-indigo-500" : ""
               }`}
           >

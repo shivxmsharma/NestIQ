@@ -33,19 +33,28 @@ export default function ChatPage() {
     const pusher = getPusherClient();
     if (!pusher) return;
 
-    const channel = pusher.subscribe(`conversation-${selected._id}`);
-    channel.bind("new-message", (data) => {
+    const channelName = `conversation-${selected._id}`;
+    const channel = pusher.subscribe(channelName);
+
+    const handleNewMessage = (data) => {
       setMessages((prev) => {
         if (prev.some((m) => m._id === data._id)) return prev;
         return [...prev, data];
       });
-    });
+      // Automatically mark as read if the message is incoming and we have the window open
+      const isMine = data.sender?._id === session?.user?.id || data.sender === session?.user?.id;
+      if (!isMine) {
+        fetch(`/api/chat/conversations/${selected._id}`, { method: "POST" }).catch(() => { });
+      }
+    };
+
+    channel.bind("new-message", handleNewMessage);
 
     return () => {
-      channel.unbind_all();
-      pusher.unsubscribe(`conversation-${selected._id}`);
+      channel.unbind("new-message", handleNewMessage);
+      // Do NOT unsubscribe or unbind_all here, as ChatInbox shares this channel
     };
-  }, [selected?._id]);
+  }, [selected?._id, session?.user?.id]);
 
   // Scroll on new message
   useEffect(() => {
@@ -77,26 +86,23 @@ export default function ChatPage() {
     : null;
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Messages</h1>
+    <div className="h-[calc(100vh-100px)] flex flex-col">
+      <h1 className="text-2xl font-bold text-white mb-4 shrink-0">Messages</h1>
 
-      <div
-        className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.4)] rounded-3xl overflow-hidden flex"
-        style={{ height: "600px" }}
-      >
+      <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.4)] rounded-3xl overflow-hidden flex flex-1 min-h-0">
         {/* Inbox sidebar */}
-        <div className="w-72 border-r border-white/10 shrink-0 flex flex-col overflow-hidden">
-          <div className="px-4 py-3 border-b border-white/10">
-            <h2 className="font-semibold text-slate-400 text-sm">Conversations</h2>
+        <div className="w-full md:w-80 lg:w-96 border-r border-white/10 shrink-0 flex flex-col overflow-hidden">
+          <div className="px-4 py-4 border-b border-white/10 bg-white/5 shrink-0">
+            <h2 className="font-semibold text-slate-300">Conversations</h2>
           </div>
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto bg-[#0b1120]/20">
             <ChatInbox onSelectConversation={selectConversation} selectedId={selected?._id} />
           </div>
         </div>
 
         {/* Chat panel */}
         {selected ? (
-          <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="hidden md:flex flex-1 flex-col overflow-hidden bg-[#0b1120]/40">
             {/* Header */}
             <div className="px-4 py-3 border-b border-white/10 flex items-center gap-3 shrink-0">
               <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center">
@@ -163,10 +169,10 @@ export default function ChatPage() {
             </form>
           </div>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
-            <MessageCircle className="w-16 h-16 text-slate-400 mb-4" />
-            <p className="font-semibold text-slate-400">Select a conversation</p>
-            <p className="text-sm text-slate-400 mt-1">Pick one from the list to start messaging</p>
+          <div className="hidden md:flex flex-1 flex-col items-center justify-center text-center p-8 bg-[#0b1120]/40">
+            <MessageCircle className="w-16 h-16 text-slate-500 mb-4" />
+            <p className="text-lg font-semibold text-slate-300">Select a conversation</p>
+            <p className="text-sm text-slate-400 mt-2">Pick one from the list to start messaging</p>
           </div>
         )}
       </div>

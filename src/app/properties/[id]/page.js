@@ -183,7 +183,7 @@ export default function PropertyDetailPage() {
         {/* Top Section: Bento-Box Photo Gallery & AI Insights */}
         <div className="flex flex-col xl:flex-row gap-4 w-full mb-8">
           {/* Bento-Box Photo Gallery (Left) */}
-          <div className="relative w-full xl:w-[70%] h-80 md:h-[460px] rounded-3xl overflow-hidden flex gap-2 group shadow-[0_8px_30px_rgba(0,0,0,0.4)] bg-white/5 border border-white/10 backdrop-blur-sm shrink-0">
+          <div className="relative w-full xl:w-[70%] h-80 md:h-115 rounded-3xl overflow-hidden flex gap-2 group shadow-[0_8px_30px_rgba(0,0,0,0.4)] bg-white/5 border border-white/10 backdrop-blur-sm shrink-0">
 
             {/* Main Hero Photo (Left) */}
             <div className="relative w-full md:w-[65%] h-full cursor-pointer">
@@ -302,7 +302,7 @@ export default function PropertyDetailPage() {
           </div>
 
           {/* AI Insights Section (Right) */}
-          <div className="w-full xl:w-[30%] h-[500px] md:h-[460px] shrink-0">
+          <div className="w-full xl:w-[30%] h-125 md:h-115 shrink-0">
             <PropertyAIInsights propertyId={property._id.toString()} />
           </div>
         </div>

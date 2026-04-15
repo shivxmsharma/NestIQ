@@ -40,3 +40,33 @@ export async function GET(req, context) {
 
   return NextResponse.json(messages);
 }
+
+// POST — mark incoming messages as read instantly when viewing
+export async function POST(req, context) {
+  const session = await getServerSession(authOptions);
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  await connectDB();
+  const params = await context.params;
+  const id = params.id;
+  const userId = session.user.id;
+
+  const conversation = await Conversation.findById(id);
+  if (!conversation) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  const isBuyer = conversation.buyer.toString() === userId;
+  const isSeller = conversation.seller.toString() === userId;
+  if (!isBuyer && !isSeller) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  await Message.updateMany(
+    { conversation: id, sender: { $ne: userId }, isRead: false },
+    { isRead: true }
+  );
+
+  const unreadField = isBuyer ? { buyerUnread: 0 } : { sellerUnread: 0 };
+  await Conversation.findByIdAndUpdate(id, unreadField);
+
+  return NextResponse.json({ success: true });
+}

@@ -63,9 +63,9 @@ export default function AIAssistant({ propertyContext = null }) {
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
       {/* Chat panel */}
       {open && (
-        <div className="w-[360px] bg-[#0b1120]/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 flex flex-col overflow-hidden">
+        <div className="w-90 bg-[#0b1120]/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 flex flex-col overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-3 flex items-center justify-between">
+          <div className="bg-linear-to-r from-indigo-600 to-purple-600 px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
                 <Sparkles className="w-4 h-4 text-white" />
@@ -84,7 +84,7 @@ export default function AIAssistant({ propertyContext = null }) {
           </div>
 
           {/* Messages */}
-          <div className="flex flex-col gap-3 p-4 overflow-y-auto min-h-[220px] max-h-[340px] custom-scrollbar">
+          <div className="flex flex-col gap-3 p-4 overflow-y-auto min-h-55 max-h-85 custom-scrollbar">
             {messages.length === 0 && (
               <>
                 <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-3">
@@ -162,7 +162,7 @@ export default function AIAssistant({ propertyContext = null }) {
         onClick={() => setOpen((v) => !v)}
         className={`flex items-center gap-2 px-4 py-3 rounded-full shadow-lg transition-all text-white ${open
           ? "bg-white/10 hover:bg-white/20 border border-white/10"
-          : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-indigo-500/25 hover:shadow-xl"
+          : "bg-linear-to-r from-indigo-600 to-purple-600 hover:shadow-indigo-500/25 hover:shadow-xl"
           }`}
       >
         {open ? <X className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
