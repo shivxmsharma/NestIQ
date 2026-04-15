@@ -3,7 +3,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from '../../../lib/auth';
 import connectDB from "../../../lib/db";
 import Property from '../../../lib/models/Property';
+import User from '../../../lib/models/User';
 import { syncPropertiesToAlgolia } from "../../../lib/algolia";
+import { calculateTrustScore } from "../../../lib/trustScore";
 
 // GET /api/properties - browse/filter listings
 export async function GET(request) {
@@ -98,6 +100,15 @@ export async function POST(request) {
       owner: session.user.id,
       status: "active",
     });
+
+    try {
+      const owner = await User.findById(session.user.id).select("phone isVerified").lean();
+      const score = calculateTrustScore(property, owner);
+      property.trustScore = score;
+      await property.save();
+    } catch (e) {
+      console.warn("[TrustScore] Could not calculate:", e.message);
+    }
 
     await syncPropertiesToAlgolia(property.toObject());
 

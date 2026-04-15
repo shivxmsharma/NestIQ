@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { MapPin, BedDouble, Bath, Maximize2, Heart, BadgeCheck, Zap, Eye } from "lucide-react";
+import TrustBadge from "./TrustBadge";
 
 function formatPrice(price, listingType) {
   if (listingType === "rent" || listingType === "pg") {
@@ -110,20 +111,25 @@ export default function PropertyCard({ property, saved = false, onSave }) {
           )}
 
           {/* ── Price + View button ── */}
-          <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-            <div>
-              <span className="text-xl font-bold text-gray-900 tracking-tight">
-                {formatPrice(price, listingType)}
+          <div className="flex flex-col gap-3 pt-3 border-t border-slate-100">
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl font-bold text-gray-900 tracking-tight">
+                    {formatPrice(price, listingType)}
+                  </span>
+                  {trustScore && <TrustBadge score={trustScore} size="sm" />}
+                </div>
+                {views > 0 && (
+                  <span className="flex items-center gap-1 text-xs text-gray-400 font-medium mt-0.5">
+                    <Eye className="w-3.5 h-3.5" /> {views} views
+                  </span>
+                )}
+              </div>
+              <span className="bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all duration-200">
+                View
               </span>
-              {views > 0 && (
-                <span className="flex items-center gap-1 text-xs text-gray-400 font-medium mt-0.5">
-                  <Eye className="w-3.5 h-3.5" /> {views} views
-                </span>
-              )}
             </div>
-            <span className="bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all duration-200">
-              View
-            </span>
           </div>
 
         </div>

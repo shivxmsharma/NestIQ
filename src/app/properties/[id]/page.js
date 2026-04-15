@@ -12,6 +12,9 @@ import {
   ChevronRight, Eye, Building2, CheckCircle2, MessageCircle
 } from "lucide-react";
 import ChatWindow from "../../../components/chat/ChatWindow";
+import TrustBadge from "../../../components/property/TrustBadge";
+import PropertyAIInsights from "../../../components/ai/PropertyAiInsights";
+import AIAssistant from "../../../components/ai/AiAssistant";
 
 const SinglePropertyMap = dynamic(() => import("../../../components/map/SinglePropertyMap"), { ssr: false });
 
@@ -177,8 +180,10 @@ export default function PropertyDetailPage() {
           <span className="text-slate-200 truncate font-medium">{property.title}</span>
         </nav>
 
-        {/* ── Bento-Box Photo Gallery (Full Width) ── */}
-        <div className="relative w-full h-75 md:h-115 mb-8 rounded-3xl overflow-hidden flex gap-2 group shadow-[0_8px_30px_rgba(0,0,0,0.4)] bg-white/5 border border-white/10 backdrop-blur-sm">
+        {/* Top Section: Bento-Box Photo Gallery & AI Insights */}
+        <div className="flex flex-col xl:flex-row gap-4 w-full mb-8">
+          {/* Bento-Box Photo Gallery (Left) */}
+          <div className="relative w-full xl:w-[70%] h-80 md:h-[460px] rounded-3xl overflow-hidden flex gap-2 group shadow-[0_8px_30px_rgba(0,0,0,0.4)] bg-white/5 border border-white/10 backdrop-blur-sm shrink-0">
 
           {/* Main Hero Photo (Left) */}
           <div className="relative w-full md:w-[65%] h-full cursor-pointer">
@@ -225,8 +230,8 @@ export default function PropertyDetailPage() {
             {/* Overlaid Badges */}
             <div className="absolute top-4 left-4 flex gap-2 flex-wrap">
               <span className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-sm backdrop-blur-md border ${property.listingType === "buy" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" :
-                  property.listingType === "rent" ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" :
-                    "bg-purple-500/20 text-purple-300 border-purple-500/30"
+                property.listingType === "rent" ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" :
+                  "bg-purple-500/20 text-purple-300 border-purple-500/30"
                 }`}>
                 For {property.listingType}
               </span>
@@ -296,6 +301,12 @@ export default function PropertyDetailPage() {
           </div>
         </div>
 
+        {/* AI Insights Section (Right) */}
+        <div className="w-full xl:w-[30%] h-[500px] md:h-[460px] shrink-0">
+          <PropertyAIInsights propertyId={property._id.toString()} />
+        </div>
+      </div>
+
         {/* ── Main Layout Split ── */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left — content column */}
@@ -307,8 +318,8 @@ export default function PropertyDetailPage() {
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${property.listingType === "buy" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" :
-                        property.listingType === "rent" ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" :
-                          "bg-purple-500/20 text-purple-300 border-purple-500/30"
+                      property.listingType === "rent" ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" :
+                        "bg-purple-500/20 text-purple-300 border-purple-500/30"
                       }`}>
                       For {property.listingType?.toUpperCase()}
                     </span>
@@ -325,9 +336,12 @@ export default function PropertyDetailPage() {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-3xl lg:text-4xl font-bold text-white tracking-tight">
-                    {formatPrice(property.price, property.listingType)}
-                  </p>
+                  <div className="flex flex-col items-end gap-2">
+                    <p className="text-3xl lg:text-4xl font-bold text-white tracking-tight">
+                      {formatPrice(property.price, property.listingType)}
+                    </p>
+                    {property.trustScore && <TrustBadge score={property.trustScore} size="lg" />}
+                  </div>
                   {property.views > 0 && (
                     <p className="text-xs text-slate-500 mt-1 flex items-center gap-1 justify-end font-medium">
                       <Eye className="w-3.5 h-3.5" /> {property.views} views
@@ -654,7 +668,11 @@ export default function PropertyDetailPage() {
           />
         )}
 
+        <AIAssistant
+          propertyContext={`${property.propertyType} for ${property.listingType} in ${property.address?.locality}, ${property.address?.city} at ₹${Number(property.price).toLocaleString("en-IN")}, ${property.details?.bedrooms} BHK, ${property.details?.area} sq ft`}
+        />
       </div>
     </div >
   );
 }
+

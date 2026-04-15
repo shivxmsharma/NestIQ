@@ -3,6 +3,7 @@ import "./globals.css";
 import SessionProvider from "../components/providers/SessionProvider";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
+import AIAssistant from "../components/ai/AiAssistant";
 import Image from "next/image";
 
 const geist = Geist({
@@ -40,6 +41,7 @@ export default function RootLayout({ children }) {
             <Navbar />
             <main className="flex-1">{children}</main>
             <Footer />
+            <AIAssistant />
           </div>
         </SessionProvider>
       </body>
