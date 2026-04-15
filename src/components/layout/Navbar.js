@@ -27,10 +27,17 @@ export default function Navbar() {
   const isSeller = ['seller', 'broker'].includes(session?.user?.role);
 
   const navLinks = [
-    { label: "Properties", href: "/properties" },
+    { label: "Explore", href: "/properties" },
     { label: "Buy", href: "/properties?listing=buy" },
     { label: "Rent", href: "/properties?listing=rent" },
     { label: "PG", href: "/properties?listing=pg" },
+  ];
+
+  const toolLinks = [
+    { label: "EMI Calculator", href: "/tools/emi-calculator" },
+    { label: "Stamp Duty", href: "/tools/stamp-duty" },
+    { label: "AI Valuation", href: "/tools/valuation" },
+    { label: "AI Assistant", href: "/ai-assistant" },
   ];
 
   return (
@@ -58,6 +65,28 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+
+            {/* Tools Dropdown */}
+            <div className="relative group">
+              <button className="flex items-center gap-1 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 text-slate-300 hover:text-white">
+                Tools <ChevronDown className="w-4 h-4 transition-transform group-hover:rotate-180" />
+              </button>
+              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none group-hover:pointer-events-auto z-50">
+                <div className="pt-2">
+                  <div className="bg-[#0b1120]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] overflow-hidden">
+                    {toolLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className="block px-4 py-3 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
           </nav>
 
           {/* Right side */}
@@ -173,6 +202,20 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
+
+          <div className="h-px my-2 bg-white/10" />
+          <div className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-500">Tools</div>
+          {toolLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="block px-4 py-2 rounded-xl text-sm font-medium transition-colors text-slate-300 hover:text-white hover:bg-white/10"
+              onClick={() => setMenuOpen(false)}
+            >
+              {link.label}
+            </Link>
+          ))}
+
           <div className="h-px my-4 bg-white/10" />
 
           {isSeller && (
