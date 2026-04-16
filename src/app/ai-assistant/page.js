@@ -6,7 +6,7 @@ import ReactMarkdown from "react-markdown";
 
 export default function AIAssistantPage() {
   const [messages, setMessages] = useState([
-    { role: "ai", text: "Hi! I am the NestIQ Real Estate Assistant. How can I help you regarding properties in Chandigarh, Punjab, or Haryana?" }
+    { role: "ai", text: "Hi! I am Nia, your NestIQ Intelligent Assistant. How can I help you regarding properties in Chandigarh, Punjab, or Haryana?" }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -62,8 +62,8 @@ export default function AIAssistantPage() {
             <Bot className="w-8 h-8 text-indigo-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-extrabold text-white tracking-tight">Real Estate AI Assistant</h1>
-            <p className="text-slate-400 text-sm mt-1">Chat with our AI bot to get property insights and guidelines.</p>
+            <h1 className="text-2xl font-extrabold text-white tracking-tight">Nia - AI Assistant</h1>
+            <p className="text-slate-400 text-sm mt-1">Chat with Nia to get property insights and guidelines.</p>
           </div>
         </div>
 

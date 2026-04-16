@@ -42,7 +42,7 @@ export default function PrivacyPolicyPage() {
           <ul className="list-disc pl-6 space-y-2 mt-4 marker:text-indigo-500">
             <li><strong>Account Information:</strong> When you register for an Account, we may ask for your contact information, including items such as name, email address, and telephone number.</li>
             <li><strong>Property Data:</strong> Information you provide when listing a property, including photos, addresses, and pricing details.</li>
-            <li><strong>Usage Data:</strong> Information on how you interact with our website, AI Assistant, and services.</li>
+            <li><strong>Usage Data:</strong> Information on how you interact with our website, Nia (AI Assistant), and services.</li>
           </ul>
 
           <h2 className="text-2xl font-semibold text-white mt-8 mb-4 border-b border-white/10 pb-2">How We Use Your Information</h2>

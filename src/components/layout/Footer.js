@@ -22,7 +22,7 @@ const footerLinks = {
     { label: "EMI Calculator", href: "/tools/emi-calculator" },
     { label: "Stamp Duty Calculator", href: "/tools/stamp-duty" },
     { label: "Property Valuation", href: "/tools/valuation" },
-    { label: "AI Assistant", href: "/ai-assistant" },
+    { label: "Nia - AI Assistant", href: "/ai-assistant" },
   ],
 };
 

@@ -71,8 +71,8 @@ export default function AIAssistant({ propertyContext = null }) {
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
               <div>
-                <p className="text-white font-semibold text-sm leading-tight">NestIQ Assistant</p>
-                <p className="text-indigo-200 text-xs">AI real estate guide</p>
+                <p className="text-white font-semibold text-sm leading-tight">Nia</p>
+                <p className="text-indigo-200 text-xs">NestIQ Intelligent Assistant</p>
               </div>
             </div>
             <button
@@ -89,7 +89,7 @@ export default function AIAssistant({ propertyContext = null }) {
               <>
                 <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-3">
                   <p className="text-sm text-indigo-200">
-                    👋 Hi! I'm your NestIQ AI guide — ask me anything about buying, renting, or investing in property across India.
+                    👋 Hi! I'm Nia, your NestIQ Intelligent Assistant — ask me anything about buying, renting, or investing in property across India.
                   </p>
                 </div>
                 <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
@@ -166,7 +166,7 @@ export default function AIAssistant({ propertyContext = null }) {
           }`}
       >
         {open ? <X className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
-        {!open && <span className="text-sm font-medium">AI Assistant</span>}
+        {!open && <span className="text-sm font-medium">Ask Nia</span>}
       </button>
     </div>
   );

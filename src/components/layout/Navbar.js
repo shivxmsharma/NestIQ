@@ -100,7 +100,7 @@ export default function Navbar() {
               className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold rounded-xl text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 transition-all"
             >
               <Sparkles className="w-4 h-4" />
-              AI Assistant
+              Ask Nia (AI)
             </Link>
           </nav>
 
