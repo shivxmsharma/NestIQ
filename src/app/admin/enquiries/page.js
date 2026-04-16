@@ -195,7 +195,7 @@ export default function AdminEnquiriesPage() {
                   </tr>
                 ) : (
                   filteredEnquiries.map((enq) => (
-                    <tr key={enq._id} className="hover:bg-white/[0.02] transition-colors">
+                    <tr key={enq._id} className="hover:bg-white/2 transition-colors">
                       {/* Meta */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2 mb-2 text-xs font-bold uppercase tracking-widest text-indigo-400">
@@ -231,7 +231,7 @@ export default function AdminEnquiriesPage() {
                       </td>
 
                       {/* Message / Context */}
-                      <td className="px-6 py-4 max-w-[250px]">
+                      <td className="px-6 py-4 max-w-62.5">
                         {enq.property ? (
                           <Link href={`/properties/${enq.property._id}`} target="_blank" className="font-bold text-sm text-indigo-300 hover:text-indigo-400 underline truncate block">
                             {enq.property.title}

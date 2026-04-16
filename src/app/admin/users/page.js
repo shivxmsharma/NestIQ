@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -143,7 +144,7 @@ export default function AdminUsersPage() {
                   </tr>
                 ) : (
                   filteredUsers.map((user) => (
-                    <tr key={user._id} className="hover:bg-white/[0.02] transition-colors group">
+                    <tr key={user._id} className="hover:bg-white/2 transition-colors group">
                       {/* Identity */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">

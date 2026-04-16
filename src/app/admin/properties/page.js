@@ -220,9 +220,9 @@ export default function AdminPropertiesPage() {
                   </tr>
                 ) : (
                   filteredProperties.map((property) => (
-                    <tr key={property._id} className="hover:bg-white/[0.02] transition-colors">
+                    <tr key={property._id} className="hover:bg-white/2 transition-colors">
                       {/* Property Primary Info */}
-                      <td className="px-6 py-4 max-w-[300px]">
+                      <td className="px-6 py-4 max-w-75">
                         <div className="flex items-center gap-4">
                           <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-slate-800 border border-white/10">
                             {property.photos?.[0]?.url ? (
@@ -240,7 +240,7 @@ export default function AdminPropertiesPage() {
                             )}
                           </div>
                           <div className="truncate">
-                            <h3 className="font-bold text-white text-sm truncate max-w-[200px]" title={property.title}>
+                            <h3 className="font-bold text-white text-sm truncate max-w-50" title={property.title}>
                               {property.title}
                             </h3>
                             <p className="text-xs text-slate-400 mt-0.5 truncate">

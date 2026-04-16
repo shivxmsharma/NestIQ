@@ -109,7 +109,7 @@ export default function StampDutyPage() {
           </div>
 
           {/* Results */}
-          <div className="bg-gradient-to-b from-indigo-900/40 to-[#111827]/80 backdrop-blur-xl border border-indigo-500/20 rounded-[2.5rem] p-8 sm:p-10 relative overflow-hidden">
+          <div className="bg-linear-to-b from-indigo-900/40 to-[#111827]/80 backdrop-blur-xl border border-indigo-500/20 rounded-[2.5rem] p-8 sm:p-10 relative overflow-hidden">
             <h3 className="text-xl font-bold text-white mb-8 border-b border-white/10 pb-4">
               Estimated Charges
             </h3>
@@ -137,7 +137,7 @@ export default function StampDutyPage() {
               <div className="pt-8 mt-2 border-t border-white/10">
                 <div className="flex justify-between items-end">
                   <span className="text-lg text-slate-300 font-bold">Total Additional Cost</span>
-                  <span className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-300">
+                  <span className="text-4xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-cyan-300">
                     ₹ {results.total.toLocaleString('en-IN')}
                   </span>
                 </div>
