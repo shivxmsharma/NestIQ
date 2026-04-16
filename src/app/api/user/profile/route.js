@@ -39,7 +39,13 @@ export async function PUT(req) {
     // Build update object based on allowed fields and user role
     const updates = {};
     if (name !== undefined) updates.name = name;
-    if (phone !== undefined) updates.phone = phone;
+    if (phone !== undefined) {
+      if (phone === "") {
+        updates.$unset = { phone: "" };
+      } else {
+        updates.phone = phone;
+      }
+    }
     if (avatar !== undefined) updates.avatar = avatar;
 
     if (session.user.role === "broker" || session.user.role === "seller") {
@@ -47,10 +53,20 @@ export async function PUT(req) {
       if (reraId !== undefined) updates.reraId = reraId;
     }
 
+    const updateQuery = Object.keys(updates).includes("$unset")
+      ? updates
+      : { $set: updates };
+
+    if (updateQuery.phone) delete updateQuery.$unset;
+    if (Object.keys(updates).some(k => k !== "$unset")) {
+      updateQuery.$set = { ...updates };
+      delete updateQuery.$set.$unset;
+    }
+
     const user = await User.findByIdAndUpdate(
       session.user.id,
-      { $set: updates },
-      { new: true, runValidators: true }
+      updateQuery,
+      { returnDocument: 'after', runValidators: true }
     ).lean();
 
     return NextResponse.json({ message: "Profile updated successfully", user }, { status: 200 });
