@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import { useState } from "react";
@@ -45,8 +46,8 @@ export default function ValuationPage() {
   return (
     <div className="min-h-screen bg-[#0b1120] relative w-full pt-12 pb-24 overflow-hidden">
       {/* Ambient background glows */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute top-0 right-0 w-125 h-125 bg-indigo-600/10 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-125 h-125 bg-emerald-500/10 rounded-full blur-[150px] pointer-events-none" />
 
       <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
@@ -80,7 +81,7 @@ export default function ValuationPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Location */}
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+                <label className="block text-sm font-medium text-slate-300 mb-2 items-center gap-2">
                   <MapPin className="w-4 h-4 text-indigo-400" /> Locality / Sector
                 </label>
                 <input
@@ -96,7 +97,7 @@ export default function ValuationPage() {
               <div className="grid grid-cols-2 gap-4">
                 {/* Size */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+                  <label className="block text-sm font-medium text-slate-300 mb-2 items-center gap-2">
                     <Maximize2 className="w-4 h-4 text-emerald-400" /> Size (sq.ft)
                   </label>
                   <input
@@ -110,7 +111,7 @@ export default function ValuationPage() {
                 </div>
                 {/* Bedrooms */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+                  <label className="block text-sm font-medium text-slate-300 mb-2 items-center gap-2">
                     <BedDouble className="w-4 h-4 text-rose-400" /> Bedrooms
                   </label>
                   <select
@@ -129,7 +130,7 @@ export default function ValuationPage() {
 
               {/* Property Type */}
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+                <label className="block text-sm font-medium text-slate-300 mb-2 items-center gap-2">
                   <Building className="w-4 h-4 text-purple-400" /> Property Type
                 </label>
                 <select
@@ -146,7 +147,7 @@ export default function ValuationPage() {
 
               {/* Condition */}
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+                <label className="block text-sm font-medium text-slate-300 mb-2 items-center gap-2">
                   <Hammer className="w-4 h-4 text-amber-400" /> Condition & Age
                 </label>
                 <select
@@ -217,7 +218,7 @@ export default function ValuationPage() {
 
                 {/* Main Price Tag */}
                 <div className="bg-linear-to-br from-indigo-900/40 to-[#0b1120] border border-indigo-500/30 rounded-3xl p-8 relative overflow-hidden">
-                  <div className="absolute -right-4 -top-4 w-32 h-32 bg-indigo-500/20 rounded-full blur-[40px] pointer-events-none" />
+                  <div className="absolute -right-4 -top-4 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none" />
 
                   <p className="text-sm font-medium text-indigo-300 mb-2 uppercase tracking-widest flex items-center gap-2">
                     <Target className="w-4 h-4" /> Estimated Value Range

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../../lib/auth";
 import connectDB from "../../../../../lib/db";
-import Property from "../../../../../lib/models/Property";
+import Enquiry from "../../../../../lib/models/Enquiry";
 
 export async function PUT(req, { params }) {
   try {
@@ -15,17 +15,13 @@ export async function PUT(req, { params }) {
     const { id } = await params;
     const body = await req.json();
 
-    // Body could contain `status` or `isFeatured` flag.
-    const updateData = {};
-    if (body.status) {
-      const allowedStatuses = ["active", "inactive", "pending-review", "sold", "rented"];
-      if (allowedStatuses.includes(body.status)) updateData.status = body.status;
-      else return NextResponse.json({ error: "Invalid status value" }, { status: 400 });
+    const allowedStatuses = ["pending", "responded", "closed", "spam"];
+    if (body.status && !allowedStatuses.includes(body.status)) {
+      return NextResponse.json({ error: "Invalid status value" }, { status: 400 });
     }
 
-    if (typeof body.isFeatured === "boolean") {
-      updateData.isFeatured = body.isFeatured;
-    }
+    const updateData = {};
+    if (body.status) updateData.status = body.status;
 
     if (Object.keys(updateData).length === 0) {
       return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
@@ -33,23 +29,27 @@ export async function PUT(req, { params }) {
 
     await connectDB();
 
-    const updatedProperty = await Property.findByIdAndUpdate(
+    const updatedEnquiry = await Enquiry.findByIdAndUpdate(
       id,
       { $set: updateData },
       { new: true, runValidators: true }
-    ).populate('owner', 'name email').lean();
+    )
+      .populate('buyer', 'name email avatar')
+      .populate('owner', 'name email avatar')
+      .populate('property', 'title')
+      .lean();
 
-    if (!updatedProperty) {
-      return NextResponse.json({ error: "Property not found" }, { status: 404 });
+    if (!updatedEnquiry) {
+      return NextResponse.json({ error: "Enquiry not found" }, { status: 404 });
     }
 
     return NextResponse.json({
-      message: "Property updated successfully",
-      property: updatedProperty
+      message: "Enquiry updated successfully",
+      enquiry: updatedEnquiry
     }, { status: 200 });
 
   } catch (error) {
-    console.error("Admin Property Update Error:", error);
+    console.error("Admin Enquiry Update Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

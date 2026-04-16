@@ -8,11 +8,12 @@ import { useUnreadCount } from '../../hooks/useUnreadCount';
 import {
   LayoutDashboard, Building2, MessageSquare,
   Heart, Calendar, PlusCircle, LogOut, ChevronRight,
-  MessageCircle,
+  MessageCircle, Settings,
 } from 'lucide-react';
 
 const BUYER_NAV = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Overview' },
+  { href: '/dashboard/profile', icon: Settings, label: 'Profile Settings' },
   { href: '/dashboard/saved', icon: Heart, label: 'Saved Properties' },
   { href: '/dashboard/my-enquiries', icon: MessageSquare, label: 'My Enquiries' },
   { href: '/dashboard/visits', icon: Calendar, label: 'Visits' },
@@ -48,8 +49,8 @@ export default function DashboardSidebar({ user }) {
             <p className="font-semibold text-white text-sm truncate tracking-tight">{user?.name}</p>
             <p className="text-xs text-slate-400 truncate font-light">{user?.email}</p>
             <span className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-lg mt-1 capitalize backdrop-blur-sm ${user?.role === 'broker' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
-                user?.role === 'seller' ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' :
-                  'bg-slate-500/20 text-slate-300 border border-slate-500/30'
+              user?.role === 'seller' ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' :
+                'bg-slate-500/20 text-slate-300 border border-slate-500/30'
               }`}>
               {user?.role || 'buyer'}
             </span>
@@ -67,8 +68,8 @@ export default function DashboardSidebar({ user }) {
               key={href}
               href={href}
               className={`flex items-center gap-3 px-5 py-3 text-sm transition-all duration-300 border-l-4 ${active
-                  ? 'bg-indigo-500/10 text-indigo-400 font-medium border-indigo-500 shadow-[inset_0_0_20px_rgba(79,70,229,0.05)]'
-                  : 'text-slate-400 hover:text-white hover:bg-white/5 border-transparent'
+                ? 'bg-indigo-500/10 text-indigo-400 font-medium border-indigo-500 shadow-[inset_0_0_20px_rgba(79,70,229,0.05)]'
+                : 'text-slate-400 hover:text-white hover:bg-white/5 border-transparent'
                 }`}
             >
               <Icon size={16} className={active ? 'text-indigo-400' : 'text-slate-500'} />
@@ -99,8 +100,8 @@ export default function DashboardSidebar({ user }) {
                   key={href}
                   href={href}
                   className={`flex items-center gap-3 px-5 py-3 text-sm transition-all duration-300 border-l-4 ${active
-                      ? 'bg-indigo-500/10 text-indigo-400 font-medium border-indigo-500 shadow-[inset_0_0_20px_rgba(79,70,229,0.05)]'
-                      : 'text-slate-400 hover:text-white hover:bg-white/5 border-transparent'
+                    ? 'bg-indigo-500/10 text-indigo-400 font-medium border-indigo-500 shadow-[inset_0_0_20px_rgba(79,70,229,0.05)]'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5 border-transparent'
                     }`}
                 >
                   <Icon size={16} className={active ? 'text-indigo-400' : 'text-slate-500'} />

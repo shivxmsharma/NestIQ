@@ -54,7 +54,7 @@ export default function AdminUsersPage() {
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to update role");
-      
+
     } catch (err) {
       alert(err.message);
       // Revert if failed
@@ -81,8 +81,8 @@ export default function AdminUsersPage() {
   };
 
   // Filter based on search query
-  const filteredUsers = users.filter((u) => 
-    u.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+  const filteredUsers = users.filter((u) =>
+    u.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     u.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 

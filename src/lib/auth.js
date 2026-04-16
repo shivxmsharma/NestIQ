@@ -99,7 +99,13 @@ export const authOptions = {
       return true;
     },
 
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger, session }) {
+      // Handle manual session updates
+      if (trigger === "update" && session?.user) {
+        if (session.user.name) token.name = session.user.name;
+        if (session.user.avatar !== undefined) token.avatar = session.user.avatar;
+      }
+
       if (user) {
         //on initial sign-in, user object is available
         token.id = user.id;

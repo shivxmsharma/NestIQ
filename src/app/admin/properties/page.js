@@ -12,7 +12,8 @@ import {
   XCircle,
   Eye,
   RefreshCw,
-  Star
+  Star,
+  ChevronDown
 } from "lucide-react";
 
 export default function AdminPropertiesPage() {
@@ -21,6 +22,14 @@ export default function AdminPropertiesPage() {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all"); // 'all', 'active', 'pending-review', 'inactive'
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const statusOptions = [
+    { value: "all", label: "All Statuses", color: "text-slate-300", badgeColor: "text-slate-400" },
+    { value: "active", label: "Active (Approved)", color: "text-emerald-400", badgeColor: "bg-emerald-500/20 text-emerald-400" },
+    { value: "pending-review", label: "Pending Review", color: "text-amber-400", badgeColor: "bg-amber-500/20 text-amber-400" },
+    { value: "inactive", label: "Inactive (Suspended)", color: "text-red-400", badgeColor: "bg-red-500/20 text-red-400" },
+  ];
 
   const fetchProperties = async () => {
     try {
@@ -134,17 +143,35 @@ export default function AdminPropertiesPage() {
         <div className="flex items-center gap-3">
           {/* Status Filter */}
           <div className="relative">
-            <Filter className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="pl-9 pr-8 py-2 bg-[#111827]/80 backdrop-blur-xl border border-white/10 rounded-xl text-sm text-white appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-xl cursor-pointer"
+            <button
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="flex items-center justify-between w-48 pl-9 pr-4 py-2 bg-[#111827]/80 backdrop-blur-xl border border-white/10 rounded-xl text-sm text-white focus:outline-none hover:bg-white/5 transition-all shadow-xl"
             >
-              <option value="all">All Statuses</option>
-              <option value="active">Active (Approved)</option>
-              <option value="pending-review">Pending Review</option>
-              <option value="inactive">Inactive (Suspended)</option>
-            </select>
+              <Filter className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <span className="truncate pr-2">{statusOptions.find(o => o.value === statusFilter)?.label}</span>
+              <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {dropdownOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)}></div>
+                <div className="absolute right-0 top-full mt-2 w-56 bg-[#0b1120]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] py-2 z-50 transform origin-top-right transition-all">
+                  {statusOptions.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => {
+                        setStatusFilter(opt.value);
+                        setDropdownOpen(false);
+                      }}
+                      className={`flex items-center gap-3 w-full text-left px-4 py-2.5 text-sm font-medium hover:bg-white/10 transition-colors ${statusFilter === opt.value ? 'bg-white/5' : ''}`}
+                    >
+                      <span className={`w-2 h-2 rounded-full ${opt.value === 'all' ? 'bg-slate-400' : opt.badgeColor.split(' ')[0]}`} />
+                      <span className={opt.color}>{opt.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
           {/* Search */}
@@ -199,10 +226,10 @@ export default function AdminPropertiesPage() {
                         <div className="flex items-center gap-4">
                           <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-slate-800 border border-white/10">
                             {property.photos?.[0]?.url ? (
-                              <Image 
-                                src={property.photos[0].url} 
-                                alt={property.title} 
-                                width={56} 
+                              <Image
+                                src={property.photos[0].url}
+                                alt={property.title}
+                                width={56}
                                 height={56}
                                 className="w-full h-full object-cover"
                               />
@@ -229,71 +256,70 @@ export default function AdminPropertiesPage() {
                       {/* Owner Details */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                           <div className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs font-bold shrink-0">
-                               {property.owner?.name?.[0]?.toUpperCase() || "?"}
-                           </div>
-                           <div>
-                              <div className="text-sm font-medium text-white">{property.owner?.name || "Unknown"}</div>
-                              <div className="text-xs text-slate-400">{property.owner?.email || "No email"}</div>
-                           </div>
+                          <div className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs font-bold shrink-0">
+                            {property.owner?.name?.[0]?.toUpperCase() || "?"}
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium text-white">{property.owner?.name || "Unknown"}</div>
+                            <div className="text-xs text-slate-400">{property.owner?.email || "No email"}</div>
+                          </div>
                         </div>
                       </td>
 
                       {/* Pricing and Features */}
                       <td className="px-6 py-4">
                         <div className="text-sm font-bold text-indigo-300">
-                           ₹{property.price?.toLocaleString('en-IN')}
+                          ₹{property.price?.toLocaleString('en-IN')}
                         </div>
                         <div className="flex gap-1 mt-2">
-                           <button 
+                          <button
                             onClick={() => handleFeatureToggle(property._id, property.isFeatured)}
-                            className={`p-1.5 rounded-md border text-xs transition duration-300 flex items-center gap-1 ${
-                                property.isFeatured 
-                                ? "bg-amber-500/20 border-amber-500/30 text-amber-400 font-bold shadow-[0_0_10px_rgba(245,158,11,0.2)]" 
-                                : "bg-white/5 border-white/10 text-slate-500 hover:text-white"
-                            }`}
+                            className={`p-1.5 rounded-md border text-xs transition duration-300 flex items-center gap-1 ${property.isFeatured
+                              ? "bg-amber-500/20 border-amber-500/30 text-amber-400 font-bold shadow-[0_0_10px_rgba(245,158,11,0.2)]"
+                              : "bg-white/5 border-white/10 text-slate-500 hover:text-white"
+                              }`}
                             title={property.isFeatured ? "Remove featuring" : "Feature this property"}
-                           >
+                          >
                             <Star className={`w-3 h-3 ${property.isFeatured ? "fill-amber-400" : ""}`} /> VIP
-                           </button>
+                          </button>
                         </div>
                       </td>
 
                       {/* Status Check */}
                       <td className="px-6 py-4">
-                         {getStatusBadge(property.status || "active")}
+                        {getStatusBadge(property.status || "active")}
                       </td>
 
                       {/* Moderation Actions */}
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
-                            {/* Actions Dropdown / Quick buttons */}
-                            {property.status === "pending-review" && (
-                                <>
-                                  <button onClick={() => handleStatusChange(property._id, "active")} className="p-2 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 rounded-lg transition-colors group" title="Approve">
-                                      <CheckCircle className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                  </button>
-                                  <button onClick={() => handleStatusChange(property._id, "inactive")} className="p-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors group" title="Reject">
-                                      <XCircle className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                  </button>
-                                </>
-                            )}
-                            
-                            {property.status === 'active' && (
-                                <button onClick={() => handleStatusChange(property._id, "inactive")} className="p-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors" title="Suspend/Take down">
-                                  <XCircle className="w-4 h-4" />
-                                </button>
-                            )}
+                          {/* Actions Dropdown / Quick buttons */}
+                          {property.status === "pending-review" && (
+                            <>
+                              <button onClick={() => handleStatusChange(property._id, "active")} className="p-2 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 rounded-lg transition-colors group" title="Approve">
+                                <CheckCircle className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                              </button>
+                              <button onClick={() => handleStatusChange(property._id, "inactive")} className="p-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors group" title="Reject">
+                                <XCircle className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                              </button>
+                            </>
+                          )}
 
-                            {property.status === 'inactive' && (
-                                <button onClick={() => handleStatusChange(property._id, "active")} className="p-2 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 rounded-lg transition-colors" title="Re-Approve">
-                                    <CheckCircle className="w-4 h-4" />
-                                </button>
-                            )}
+                          {property.status === 'active' && (
+                            <button onClick={() => handleStatusChange(property._id, "inactive")} className="p-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors" title="Suspend/Take down">
+                              <XCircle className="w-4 h-4" />
+                            </button>
+                          )}
 
-                            <Link href={`/properties/${property._id}`} target="_blank" className="p-2 ml-2 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-colors" title="View Public Page">
-                              <Eye className="w-5 h-5" />
-                            </Link>
+                          {property.status === 'inactive' && (
+                            <button onClick={() => handleStatusChange(property._id, "active")} className="p-2 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 rounded-lg transition-colors" title="Re-Approve">
+                              <CheckCircle className="w-4 h-4" />
+                            </button>
+                          )}
+
+                          <Link href={`/properties/${property._id}`} target="_blank" className="p-2 ml-2 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-colors" title="View Public Page">
+                            <Eye className="w-5 h-5" />
+                          </Link>
                         </div>
                       </td>
                     </tr>

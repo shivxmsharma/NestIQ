@@ -15,7 +15,7 @@ export async function PUT(req, { params }) {
 
     const { id } = await params;
     const body = await req.json();
-    
+
     // Validate payload
     if (!body || !body.role) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -24,7 +24,7 @@ export async function PUT(req, { params }) {
     // Role enum validation
     const validRoles = ['admin', 'broker', 'seller', 'buyer'];
     if (!validRoles.includes(body.role)) {
-       return NextResponse.json({ error: "Invalid role specified" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid role specified" }, { status: 400 });
     }
 
     await connectDB();
@@ -32,15 +32,15 @@ export async function PUT(req, { params }) {
     // Prevent the only admin from removing their own admin privileges by accident
     const targetUser = await User.findById(id);
     if (!targetUser) {
-        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     if (id === session.user.id && body.role !== 'admin') {
-         // Count remaining admins
-         const adminCount = await User.countDocuments({ role: 'admin' });
-         if (adminCount <= 1) {
-            return NextResponse.json({ error: "Cannot demote the ultimate platform administrator." }, { status: 400 });
-         }
+      // Count remaining admins
+      const adminCount = await User.countDocuments({ role: 'admin' });
+      if (adminCount <= 1) {
+        return NextResponse.json({ error: "Cannot demote the ultimate platform administrator." }, { status: 400 });
+      }
     }
 
     // Process update
