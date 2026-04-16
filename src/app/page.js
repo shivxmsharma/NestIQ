@@ -110,7 +110,7 @@ export default function HomePage() {
     fetch("/api/stats")
       .then((r) => r.json())
       .then(setStats)
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const handleSearch = (e) => {
@@ -137,32 +137,32 @@ export default function HomePage() {
   return (
     <div className="relative">
       <div className="relative z-10 w-full mx-auto px-4 sm:px-6 lg:px-12">
-        
+
         {/* —— Hero Section —— */}
-        <section className="relative min-h-[85vh] flex flex-col justify-center text-white overflow-hidden pb-20 pt-32">
+        <section className="relative min-h-[35vh] flex flex-col justify-center text-white overflow-hidden pb-6 pt-4">
           <div className="max-w-4xl mx-auto text-center">
 
             {/* Micro Badge */}
-            <div className="inline-flex items-center justify-center gap-2 bg-white/5 backdrop-blur-xl border border-white/10 text-white text-xs sm:text-sm font-bold px-4 py-2 rounded-full mb-8 shadow-2xl">
+            <div className="inline-flex items-center justify-center gap-2 bg-white/5 backdrop-blur-xl border border-white/10 text-white text-xs sm:text-sm font-bold px-4 py-2 rounded-full mb-4 shadow-2xl">
               <div className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
               Now live in Chandigarh, Mohali &amp; Panchkula
             </div>
 
             {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-6 tracking-tight drop-shadow-2xl">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-4 tracking-tight drop-shadow-2xl">
               Find your perfect
-              <span className="block text-transparent bg-clip-text bg-linear-to-r from-yellow-100 via-amber-200 to-yellow-500 mt-2 pb-2">
+              <span className="block text-transparent bg-clip-text bg-linear-to-r from-yellow-100 via-amber-200 to-yellow-500 mt-1 pb-1">
                 home in the tricity.
               </span>
             </h1>
 
-            <p className="text-lg sm:text-xl text-slate-300 mb-12 max-w-2xl mx-auto font-light drop-shadow-md">
+            <p className="text-lg sm:text-xl text-slate-300 mb-8 max-w-2xl mx-auto font-light drop-shadow-md">
               AI-powered search. Fraud-proof listings. Verified brokers. The smarter way to find your future home.
             </p>
 
             {/* Glassmorphic Omnisearch */}
             <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-4xl p-3 shadow-[0_0_50px_rgba(0,0,0,0.5)] max-w-3xl mx-auto">
-              
+
               {/* Type Tabs */}
               <div className="flex justify-start gap-2 mb-3 px-3 pt-2">
                 {TABS.map((tab) => (
@@ -180,25 +180,25 @@ export default function HomePage() {
               </div>
 
               {/* Input Form */}
-              <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
-                <div className="flex-1 flex items-center gap-3 bg-white/95 rounded-3xl px-6 py-4 focus-within:bg-white focus-within:ring-4 focus-within:ring-indigo-500/30 transition-all shadow-inner">
-                  <Search className="w-5 h-5 text-indigo-500 shrink-0" />
+              <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-1 p-1 bg-black/20 rounded-full border border-white/10 focus-within:bg-black/40 focus-within:border-indigo-500/50 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all shadow-inner">
+                <div className="flex-1 flex items-center gap-2.5 px-4 py-2">
+                  <Search className="w-4 h-4 text-slate-400 shrink-0" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search '2BHK in Mohali under 50L'..."
-                    className="flex-1 bg-transparent text-slate-900 placeholder-slate-500 outline-none text-base sm:text-lg font-semibold"
+                    placeholder="Try '2BHK in Mohali under 50L'..."
+                    className="flex-1 bg-transparent text-white placeholder-slate-400 outline-none text-sm sm:text-base font-medium"
                   />
-                  <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
-                    <Sparkles className="w-3 h-3" /> AI
+                  <div title="Powered by Nia AI">
+                    <Sparkles className="w-4 h-4 text-indigo-400/80 hidden sm:block shrink-0" />
                   </div>
                 </div>
                 <button
                   type="submit"
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white text-lg font-bold px-8 py-4 rounded-3xl transition-all shadow-[0_0_25px_rgba(99,102,241,0.4)] shrink-0"
+                  className="bg-linear-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white text-sm font-bold px-7 py-2.5 rounded-full transition-all shadow-[0_0_15px_rgba(99,102,241,0.2)] shrink-0 flex items-center justify-center"
                 >
-                  Find Property
+                  Search
                 </button>
               </form>
             </div>
@@ -230,9 +230,8 @@ export default function HomePage() {
               {STAT_ITEMS.map(({ label, value, icon: Icon, color }, i) => (
                 <div
                   key={label}
-                  className={`relative flex flex-col items-center py-10 px-4 group ${
-                    i < STAT_ITEMS.length - 1 ? "lg:border-r border-white/5" : ""
-                  } ${i < 2 ? "border-b lg:border-b-0 border-white/5" : ""}`}
+                  className={`relative flex flex-col items-center py-10 px-4 group ${i < STAT_ITEMS.length - 1 ? "lg:border-r border-white/5" : ""
+                    } ${i < 2 ? "border-b lg:border-b-0 border-white/5" : ""}`}
                 >
                   <div className={`mb-3 ${color} opacity-60 group-hover:opacity-100 transition-opacity duration-500`}>
                     <Icon size={22} />
@@ -245,9 +244,8 @@ export default function HomePage() {
                   <p className="text-xs sm:text-sm text-slate-400 font-medium tracking-wide uppercase">{label}</p>
 
                   {/* Hover glow */}
-                  <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none bg-radial-[ellipse_at_center] ${
-                    color.replace("text-", "from-").replace("400", "500/10")
-                  } from-10% to-transparent to-70%`} />
+                  <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none bg-radial-[ellipse_at_center] ${color.replace("text-", "from-").replace("400", "500/10")
+                    } from-10% to-transparent to-70%`} />
                 </div>
               ))}
             </div>
@@ -280,7 +278,7 @@ export default function HomePage() {
             {STEPS.map(({ num, icon: Icon, title, desc, iconBg, iconColor, numColor }) => (
               <div
                 key={num}
-                className="relative bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-8 lg:p-10 hover:bg-white/[0.06] hover:border-white/[0.12] transition-all duration-500 group"
+                className="relative bg-white/3 backdrop-blur-sm border border-white/6 rounded-3xl p-8 lg:p-10 hover:bg-white/6 hover:border-white/12 transition-all duration-500 group"
               >
                 {/* Step number watermark */}
                 <div className={`absolute top-6 right-8 text-7xl font-black ${numColor} select-none pointer-events-none group-hover:scale-110 transition-transform duration-500`}>
@@ -320,7 +318,7 @@ export default function HomePage() {
             {WHY_NESTIQ.map(({ icon: Icon, title, desc, gradient, iconBg, iconColor, hoverBorder }) => (
               <div
                 key={title}
-                className={`relative overflow-hidden bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-8 lg:p-10 ${hoverBorder} hover:bg-white/[0.05] transition-all duration-500 group`}
+                className={`relative overflow-hidden bg-white/3 backdrop-blur-sm border border-white/6 rounded-3xl p-8 lg:p-10 ${hoverBorder} hover:bg-white/5 transition-all duration-500 group`}
               >
                 {/* Background gradient accent */}
                 <div className={`absolute top-0 left-0 w-full h-full bg-linear-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none`} />
@@ -367,7 +365,7 @@ export default function HomePage() {
               <Link
                 key={loc.name}
                 href={`/properties?q=${loc.name}`}
-                className="relative overflow-hidden bg-white/[0.03] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-6 lg:p-8 hover:bg-white/[0.06] hover:border-white/[0.12] transition-all duration-500 group"
+                className="relative overflow-hidden bg-white/3 backdrop-blur-sm border border-white/6 rounded-3xl p-6 lg:p-8 hover:bg-white/6 hover:border-white/12 transition-all duration-500 group"
               >
                 {/* Background gradient */}
                 <div className={`absolute inset-0 bg-linear-to-br ${loc.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none`} />

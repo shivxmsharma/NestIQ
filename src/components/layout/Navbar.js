@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { Menu, X, ChevronDown, LogOut, LayoutDashboard, PlusCircle, Sparkles } from "lucide-react";
+import { Menu, X, ChevronDown, LogOut, LayoutDashboard, PlusCircle, Sparkles, Heart, MessageSquare, Settings } from "lucide-react";
 import Image from "next/image";
 
 export default function Navbar() {
@@ -47,14 +47,16 @@ export default function Navbar() {
       <div className="mx-auto px-4 sm:px-6 lg:px-12 w-full">
         <div className={`flex items-center justify-between w-full relative transition-[height] duration-500 ease-out ${scrolled ? "h-16" : "h-20"}`}>
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 shrink-0 group">
-            <span className="text-2xl font-black tracking-tight text-white">
-              Nest<span className="text-indigo-500">IQ</span>
-            </span>
-          </Link>
+          <div className="flex-1 flex justify-start">
+            <Link href="/" className="flex items-center justify-start gap-2 shrink-0 group">
+              <span className="text-2xl font-black tracking-tight text-white">
+                Nest<span className="text-indigo-500">IQ</span>
+              </span>
+            </Link>
+          </div>
 
           {/* Desktop Nav - Centered, Uniform floating island */}
-          <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-1 p-1.5 rounded-2xl bg-white/3 border border-white/5 backdrop-blur-sm">
+          <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-1 p-1.5 rounded-2xl bg-white/3 border border-white/5 backdrop-blur-sm shadow-xl">
             <Link
               href="/properties"
               className="px-4 py-2 text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all"
@@ -94,6 +96,17 @@ export default function Navbar() {
               </div>
             </div>
 
+            {/* List Property (For Sellers) */}
+            {session && isSeller && (
+              <Link
+                href="/dashboard/list-property"
+                className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold rounded-xl text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all"
+              >
+                <PlusCircle className="w-4 h-4" />
+                List Property
+              </Link>
+            )}
+
             {/* Highlighted AI Assistant Link */}
             <Link
               href="/ai-assistant"
@@ -105,24 +118,14 @@ export default function Navbar() {
           </nav>
 
           {/* Right side - Actions & Auth */}
-          <div className="hidden md:flex items-center gap-4 shrink-0">
-            {session && isSeller && (
-              <Link
-                href="/dashboard/list-property"
-                className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-2xl transition-all duration-300 hover:scale-105 bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)] border border-indigo-500/50"
-              >
-                <PlusCircle className="w-4 h-4 text-white" />
-                List Property
-              </Link>
-            )}
-
+          <div className="hidden md:flex flex-1 justify-end items-center gap-4 shrink-0">
             {status === "loading" ? (
               <div className="w-10 h-10 rounded-full bg-white/10 animate-pulse" />
             ) : session ? (
               <div className="relative">
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-2 p-1.5 rounded-2xl transition-colors border hover:bg-white/10 border-transparent hover:border-white/10"
+                  className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full transition-all border group hover:bg-white/10 border-white/5 hover:border-white/15 bg-white/5 backdrop-blur-md"
                 >
                   {session.user.avatar ? (
                     <Image
@@ -130,36 +133,77 @@ export default function Navbar() {
                       alt={session.user.name}
                       width={32}
                       height={32}
-                      className="w-8 h-8 rounded-full object-cover ring-2 ring-white/20"
+                      className="w-8 h-8 rounded-full object-cover ring-2 ring-white/10 shrink-0"
                     />
                   ) : (
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center bg-indigo-500/20 text-indigo-300">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center bg-indigo-500/20 text-indigo-300 ring-2 ring-white/10 shrink-0">
                       <span className="text-xs font-bold">
                         {session.user.name?.[0]?.toUpperCase()}
                       </span>
                     </div>
                   )}
-                  <ChevronDown className="w-4 h-4 text-slate-400" />
+                  <span className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors truncate max-w-25">
+                    {session.user.name?.split(' ')[0] || "User"}
+                  </span>
+                  <ChevronDown className={`w-4 h-4 text-slate-400 group-hover:text-white transition-transform shrink-0 ${dropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {dropdownOpen && (
-                  <div className="absolute right-0 top-full mt-3 w-56 bg-[#0b1120]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] py-2 z-50 transform origin-top-right transition-all">
+                  <div className="absolute right-0 top-full mt-3 w-64 bg-[#0b1120]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.6)] p-2 z-50 transform origin-top-right transition-all">
+                    {/* User Info Header */}
+                    <div className="px-3 py-3 mb-2 flex flex-col gap-0.5 border-b border-white/5">
+                      <p className="text-sm font-bold text-white truncate">{session.user.name}</p>
+                      <p className="text-xs text-slate-400 truncate">{session.user.email}</p>
+                    </div>
+
                     <Link
                       href="/dashboard"
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-200 hover:text-white hover:bg-white/10 transition-colors"
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all group/item mb-1"
                       onClick={() => setDropdownOpen(false)}
                     >
-                      <div className="p-1.5 bg-indigo-500/20 text-indigo-400 rounded-lg">
+                      <div className="p-1.5 bg-indigo-500/10 group-hover/item:bg-indigo-500/20 text-indigo-400 rounded-lg transition-colors">
                         <LayoutDashboard className="w-4 h-4" />
                       </div>
                       Dashboard
                     </Link>
-                    <div className="h-px bg-white/10 my-2 mx-4" />
+
+                    {/* Quick Profile Links */}
+                    <div className="flex flex-col gap-1 mb-2 border-b border-white/5 pb-2">
+                      <Link
+                        href="/dashboard/saved"
+                        className="flex items-center justify-between px-3 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all group/item"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Heart className="w-4 h-4 text-slate-400 group-hover/item:text-rose-400 transition-colors" />
+                          Saved Properties
+                        </div>
+                      </Link>
+
+                      <Link
+                        href="/dashboard/my-enquiries"
+                        className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all group/item"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        <MessageSquare className="w-4 h-4 text-slate-400 group-hover/item:text-blue-400 transition-colors" />
+                        My Enquiries
+                      </Link>
+
+                      <Link
+                        href="/dashboard/settings"
+                        className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all group/item"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        <Settings className="w-4 h-4 text-slate-400 group-hover/item:text-slate-300 transition-colors" />
+                        Settings
+                      </Link>
+                    </div>
+
                     <button
                       onClick={() => { signOut({ callbackUrl: "/" }); setDropdownOpen(false); }}
-                      className="flex items-center gap-3 w-full px-4 py-2.5 text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors"
+                      className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-semibold text-red-400 hover:bg-red-500/10 transition-all group/item"
                     >
-                      <div className="p-1.5 bg-red-500/20 text-red-400 rounded-lg">
+                      <div className="p-1.5 bg-red-500/10 group-hover/item:bg-red-500/20 text-red-400 rounded-lg transition-colors">
                         <LogOut className="w-4 h-4" />
                       </div>
                       Sign out
@@ -168,16 +212,16 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <Link
                   href="/auth/login"
-                  className="text-sm font-bold px-4 py-2.5 rounded-2xl transition-colors text-slate-300 hover:text-white hover:bg-white/10"
+                  className="text-sm font-bold px-4 py-2 rounded-full transition-colors text-slate-300 hover:text-white hover:bg-white/10"
                 >
                   Log in
                 </Link>
                 <Link
                   href="/auth/register"
-                  className="text-sm font-bold px-5 py-2.5 rounded-2xl transition-all duration-300 shadow-sm hover:shadow-md hover:scale-105 bg-white text-indigo-900"
+                  className="text-sm font-bold px-5 py-2 rounded-full transition-all bg-white hover:bg-slate-100 text-indigo-950 shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_rgba(255,255,255,0.25)]"
                 >
                   Sign up
                 </Link>
