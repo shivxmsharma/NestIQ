@@ -3,13 +3,14 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { Menu, X, ChevronDown, LogOut, User, LayoutDashboard } from "lucide-react";
+import { Menu, X, ChevronDown, LogOut, LayoutDashboard, PlusCircle, Sparkles } from "lucide-react";
 import Image from "next/image";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -24,20 +25,18 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const isSeller = ['seller', 'broker'].includes(session?.user?.role);
+  const isSeller = ['seller', 'broker', 'admin'].includes(session?.user?.role);
 
   const navLinks = [
-    { label: "Explore", href: "/properties" },
     { label: "Buy", href: "/properties?listing=buy" },
     { label: "Rent", href: "/properties?listing=rent" },
-    { label: "PG", href: "/properties?listing=pg" },
+    { label: "Co-Living", href: "/properties?listing=pg" },
   ];
 
   const toolLinks = [
     { label: "EMI Calculator", href: "/tools/emi-calculator" },
     { label: "Stamp Duty", href: "/tools/stamp-duty" },
     { label: "AI Valuation", href: "/tools/valuation" },
-    { label: "AI Assistant", href: "/ai-assistant" },
   ];
 
   return (
@@ -49,58 +48,76 @@ export default function Navbar() {
         <div className={`flex items-center justify-between w-full relative transition-[height] duration-500 ease-out ${scrolled ? "h-16" : "h-20"}`}>
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0 group">
-            <span className="text-2xl font-bold tracking-tight text-white">
-              Nest<span className="text-indigo-400">IQ</span>
+            <span className="text-2xl font-black tracking-tight text-white">
+              Nest<span className="text-indigo-500">IQ</span>
             </span>
           </Link>
 
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-8">
+          {/* Desktop Nav - Centered, Uniform floating island */}
+          <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-1 p-1.5 rounded-2xl bg-white/3 border border-white/5 backdrop-blur-sm">
+            <Link
+              href="/properties"
+              className="px-4 py-2 text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all"
+            >
+              Explore
+            </Link>
+
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 text-slate-300 hover:text-white"
+                className="px-4 py-2 text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all"
               >
                 {link.label}
               </Link>
             ))}
 
             {/* Tools Dropdown */}
-            <div className="relative group">
-              <button className="flex items-center gap-1 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 text-slate-300 hover:text-white">
-                Tools <ChevronDown className="w-4 h-4 transition-transform group-hover:rotate-180" />
+            <div className="relative group" onMouseEnter={() => setToolsOpen(true)} onMouseLeave={() => setToolsOpen(false)}>
+              <button className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all">
+                Tools <ChevronDown className={`w-4 h-4 transition-transform ${toolsOpen ? 'rotate-180' : ''}`} />
               </button>
-              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none group-hover:pointer-events-auto z-50">
-                <div className="pt-2">
-                  <div className="bg-[#0b1120]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] overflow-hidden">
-                    {toolLinks.map((link) => (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        className="block px-4 py-3 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
-                      >
-                        {link.label}
-                      </Link>
-                    ))}
-                  </div>
+
+              {/* Swapped mt-3 to pt-3 so the container creates an invisible "bridge" to keep the mouse in hover-state */}
+              <div className={`absolute top-full left-1/2 -translate-x-1/2 pt-3 w-48 transition-all duration-200 origin-top shadow-2xl ${toolsOpen ? 'opacity-100 visible scale-100' : 'opacity-0 invisible scale-95 pointer-events-none'}`}>
+                <div className="bg-[#0b1120]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.6)] overflow-hidden p-1.5">
+                  {toolLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className="block px-3 py-2 text-sm font-medium rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
                 </div>
               </div>
             </div>
+
+            {/* Highlighted AI Assistant Link */}
+            <Link
+              href="/ai-assistant"
+              className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold rounded-xl text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 transition-all"
+            >
+              <Sparkles className="w-4 h-4" />
+              AI Assistant
+            </Link>
           </nav>
 
-          {/* Right side */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* Right side - Actions & Auth */}
+          <div className="hidden md:flex items-center gap-4 shrink-0">
             {session && isSeller && (
               <Link
                 href="/dashboard/list-property"
-                className="px-5 py-2.5 text-sm font-bold rounded-2xl transition-all duration-300 hover:scale-105 bg-white/10 text-white border border-white/20 hover:bg-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+                className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-2xl transition-all duration-300 hover:scale-105 bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_25px_rgba(79,70,229,0.5)] border border-indigo-500/50"
               >
+                <PlusCircle className="w-4 h-4 text-white" />
                 List Property
               </Link>
             )}
+
             {status === "loading" ? (
-              <div className="w-9 h-9 rounded-full bg-slate-200/50 animate-pulse" />
+              <div className="w-10 h-10 rounded-full bg-white/10 animate-pulse" />
             ) : session ? (
               <div className="relative">
                 <button
