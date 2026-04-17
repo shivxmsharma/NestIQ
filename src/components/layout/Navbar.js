@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { Menu, X, ChevronDown, LogOut, LayoutDashboard, PlusCircle, Sparkles, Heart, MessageSquare, Settings } from "lucide-react";
+import { Menu, X, ChevronDown, LogOut, LayoutDashboard, PlusCircle, Sparkles, Heart, MessageSquare, Settings, Home } from "lucide-react";
 import Image from "next/image";
 
 export default function Navbar() {
@@ -122,94 +122,119 @@ export default function Navbar() {
             {status === "loading" ? (
               <div className="w-10 h-10 rounded-full bg-white/10 animate-pulse" />
             ) : session ? (
-              <div className="relative">
-                <button
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full transition-all border group hover:bg-white/10 border-white/5 hover:border-white/15 bg-white/5 backdrop-blur-md"
+              <div className="flex items-center gap-3">
+                {/* NestIQ Manage - Moved next to Profile for better aesthetics */}
+                <Link
+                  href="/manage"
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 rounded-full transition-all"
                 >
-                  {session.user.avatar ? (
-                    <Image
-                      src={session.user.avatar}
-                      alt={session.user.name}
-                      width={32}
-                      height={32}
-                      className="w-8 h-8 rounded-full object-cover ring-2 ring-white/10 shrink-0"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center bg-indigo-500/20 text-indigo-300 ring-2 ring-white/10 shrink-0">
-                      <span className="text-xs font-bold">
-                        {session.user.name?.[0]?.toUpperCase()}
-                      </span>
-                    </div>
-                  )}
-                  <span className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors truncate max-w-25">
-                    {session.user.name?.split(' ')[0] || "User"}
-                  </span>
-                  <ChevronDown className={`w-4 h-4 text-slate-400 group-hover:text-white transition-transform shrink-0 ${dropdownOpen ? 'rotate-180' : ''}`} />
-                </button>
+                  <Home className="w-4 h-4" />
+                  Tenancy Hub
+                </Link>
 
-                {dropdownOpen && (
-                  <div className="absolute right-0 top-full mt-3 w-64 bg-[#0b1120]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.6)] p-2 z-50 transform origin-top-right transition-all">
-                    {/* User Info Header */}
-                    <div className="px-3 py-3 mb-2 flex flex-col gap-0.5 border-b border-white/5">
-                      <p className="text-sm font-bold text-white truncate">{session.user.name}</p>
-                      <p className="text-xs text-slate-400 truncate">{session.user.email}</p>
-                    </div>
-
-                    <Link
-                      href="/dashboard"
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all group/item mb-1"
-                      onClick={() => setDropdownOpen(false)}
-                    >
-                      <div className="p-1.5 bg-indigo-500/10 group-hover/item:bg-indigo-500/20 text-indigo-400 rounded-lg transition-colors">
-                        <LayoutDashboard className="w-4 h-4" />
+                <div className="relative">
+                  <button
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full transition-all border group hover:bg-white/10 border-white/5 hover:border-white/15 bg-white/5 backdrop-blur-md"
+                  >
+                    {session.user.avatar ? (
+                      <Image
+                        src={session.user.avatar}
+                        alt={session.user.name}
+                        width={32}
+                        height={32}
+                        className="w-8 h-8 rounded-full object-cover ring-2 ring-white/10 shrink-0"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center bg-indigo-500/20 text-indigo-300 ring-2 ring-white/10 shrink-0">
+                        <span className="text-xs font-bold">
+                          {session.user.name?.[0]?.toUpperCase()}
+                        </span>
                       </div>
-                      Dashboard
-                    </Link>
+                    )}
+                    <span className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors truncate max-w-25">
+                      {session.user.name?.split(' ')[0] || "User"}
+                    </span>
+                    <ChevronDown className={`w-4 h-4 text-slate-400 group-hover:text-white transition-transform shrink-0 ${dropdownOpen ? 'rotate-180' : ''}`} />
+                  </button>
 
-                    {/* Quick Profile Links */}
-                    <div className="flex flex-col gap-1 mb-2 border-b border-white/5 pb-2">
+                  {dropdownOpen && (
+                    <div className="absolute right-0 top-full mt-3 w-64 bg-[#0b1120]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.6)] p-2 z-50 transform origin-top-right transition-all">
+                      {/* User Info Header */}
+                      <div className="px-3 py-3 mb-2 flex flex-col gap-0.5 border-b border-white/5">
+                        <p className="text-sm font-bold text-white truncate">{session.user.name}</p>
+                        <p className="text-xs text-slate-400 truncate">{session.user.email}</p>
+                      </div>
+
                       <Link
-                        href="/dashboard/saved"
-                        className="flex items-center justify-between px-3 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all group/item"
+                        href="/manage"
+                        className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-bold text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 border border-emerald-500/10 hover:border-emerald-500/30 transition-all group/item mb-1"
                         onClick={() => setDropdownOpen(false)}
                       >
                         <div className="flex items-center gap-3">
-                          <Heart className="w-4 h-4 text-slate-400 group-hover/item:text-rose-400 transition-colors" />
-                          Saved Properties
+                          <div className="p-1.5 bg-emerald-500/10 group-hover/item:bg-emerald-500/20 text-emerald-400 rounded-lg transition-colors">
+                            <Home className="w-4 h-4" />
+                          </div>
+                          Tenancy Hub
                         </div>
+                        <span className="text-[9px] uppercase tracking-widest bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-500/30">Portal</span>
                       </Link>
 
                       <Link
-                        href="/dashboard/my-enquiries"
-                        className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all group/item"
+                        href="/dashboard"
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all group/item mb-2"
                         onClick={() => setDropdownOpen(false)}
                       >
-                        <MessageSquare className="w-4 h-4 text-slate-400 group-hover/item:text-blue-400 transition-colors" />
-                        My Enquiries
+                        <div className="p-1.5 bg-indigo-500/10 group-hover/item:bg-indigo-500/20 text-indigo-400 rounded-lg transition-colors">
+                          <LayoutDashboard className="w-4 h-4" />
+                        </div>
+                        Dashboard
                       </Link>
 
-                      <Link
-                        href="/dashboard/profile"
-                        className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all group/item"
-                        onClick={() => setDropdownOpen(false)}
-                      >
-                        <Settings className="w-4 h-4 text-slate-400 group-hover/item:text-slate-300 transition-colors" />
-                        Settings
-                      </Link>
-                    </div>
+                      {/* Quick Profile Links */}
+                      <div className="flex flex-col gap-1 mb-2 border-b border-white/5 pb-2">
+                        <Link
+                          href="/dashboard/saved"
+                          className="flex items-center justify-between px-3 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all group/item"
+                          onClick={() => setDropdownOpen(false)}
+                        >
+                          <div className="flex items-center gap-3">
+                            <Heart className="w-4 h-4 text-slate-400 group-hover/item:text-rose-400 transition-colors" />
+                            Saved Properties
+                          </div>
+                        </Link>
 
-                    <button
-                      onClick={() => { signOut({ callbackUrl: "/" }); setDropdownOpen(false); }}
-                      className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-semibold text-red-400 hover:bg-red-500/10 transition-all group/item"
-                    >
-                      <div className="p-1.5 bg-red-500/10 group-hover/item:bg-red-500/20 text-red-400 rounded-lg transition-colors">
-                        <LogOut className="w-4 h-4" />
+                        <Link
+                          href="/dashboard/my-enquiries"
+                          className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all group/item"
+                          onClick={() => setDropdownOpen(false)}
+                        >
+                          <MessageSquare className="w-4 h-4 text-slate-400 group-hover/item:text-blue-400 transition-colors" />
+                          My Enquiries
+                        </Link>
+
+                        <Link
+                          href="/dashboard/profile"
+                          className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition-all group/item"
+                          onClick={() => setDropdownOpen(false)}
+                        >
+                          <Settings className="w-4 h-4 text-slate-400 group-hover/item:text-slate-300 transition-colors" />
+                          Settings
+                        </Link>
                       </div>
-                      Sign out
-                    </button>
-                  </div>
-                )}
+
+                      <button
+                        onClick={() => { signOut({ callbackUrl: "/" }); setDropdownOpen(false); }}
+                        className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-semibold text-red-400 hover:bg-red-500/10 transition-all group/item"
+                      >
+                        <div className="p-1.5 bg-red-500/10 group-hover/item:bg-red-500/20 text-red-400 rounded-lg transition-colors">
+                          <LogOut className="w-4 h-4" />
+                        </div>
+                        Sign out
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
               <div className="flex items-center gap-1">

@@ -9,6 +9,8 @@ const leaseSchema = new mongoose.Schema(
     endDate: { type: Date, required: true },
     rentAmount: { type: Number, required: true },
     securityDeposit: { type: Number, required: true },
+    landlordSignedAt: { type: Date },
+    tenantSignedAt: { type: Date },
     status: {
       type: String,
       enum: ["pending", "active", "expired", "terminated"],

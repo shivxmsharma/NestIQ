@@ -15,7 +15,6 @@ import ChatWindow from "../../../components/chat/ChatWindow";
 import TrustBadge from "../../../components/property/TrustBadge";
 import PropertyAIInsights from "../../../components/ai/PropertyAiInsights";
 import AIAssistant from "../../../components/ai/AiAssistant";
-import RentPaymentModal from "../../../components/payment/RentPaymentModal";
 
 const SinglePropertyMap = dynamic(() => import("../../../components/map/SinglePropertyMap"), { ssr: false });
 
@@ -42,7 +41,6 @@ export default function PropertyDetailPage() {
   const [enquirySent, setEnquirySent] = useState(false);
   const [enquiryLoading, setEnquiryLoading] = useState(false);
   const [showChat, setShowChat] = useState(false);
-  const [showRentModal, setShowRentModal] = useState(false);
   const [activeTab, setActiveTab] = useState("message"); // "message" | "visit"
   const [visitForm, setVisitForm] = useState({ name: "", email: "", phone: "", date: "", time: "", note: "", error: "" });
   const [visitSent, setVisitSent] = useState(false);
@@ -658,18 +656,6 @@ export default function PropertyDetailPage() {
                   Chat with Owner
                 </button>
               )}
-
-              {/* Pay Rent Button */}
-              {session && property.listingType === "rent" && session.user.id !== owner._id?.toString() && (
-                <button
-                  onClick={() => setShowRentModal(true)}
-                  className="w-full mt-3 flex items-center justify-center gap-2 py-3 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-500/50 rounded-xl text-sm font-semibold text-emerald-300 hover:text-emerald-200 transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)]"
-                >
-                  <BadgeCheck border className="w-4 h-4" />
-                  Pay Rent
-                </button>
-              )}
-
             </div>
           </div>
         </div>
@@ -678,14 +664,6 @@ export default function PropertyDetailPage() {
           <ChatWindow
             propertyId={id}
             onClose={() => setShowChat(false)}
-          />
-        )}
-
-        {/* Rent Payment Modal */}
-        {showRentModal && (
-          <RentPaymentModal
-            property={property}
-            onClose={() => setShowRentModal(false)}
           />
         )}
 

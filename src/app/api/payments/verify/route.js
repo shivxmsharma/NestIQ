@@ -6,6 +6,7 @@ import connectDB from "../../../../lib/db";
 import Payment from "../../../../lib/models/Payment";
 import Property from "../../../../lib/models/Property";
 import User from "../../../../lib/models/User";
+import Lease from "../../../../lib/models/Lease";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY || "re_dummy_123");
@@ -40,6 +41,15 @@ export async function POST(req) {
     ).populate("property tenant landlord");
 
     if (!payment) return NextResponse.json({ error: "Payment record not found" }, { status: 404 });
+
+    if (payment.paymentType === "security_deposit") {
+      const lease = await Lease.findById(payment.lease);
+      if (lease) {
+        lease.status = "active";
+        lease.tenantSignedAt = new Date();
+        await lease.save();
+      }
+    }
 
     try {
       if (process.env.RESEND_API_KEY) {
