@@ -8,7 +8,7 @@ import { useUnreadCount } from '../../hooks/useUnreadCount';
 import {
   LayoutDashboard, Building2, MessageSquare,
   Heart, Calendar, PlusCircle, LogOut, ChevronRight,
-  MessageCircle, Settings,
+  MessageCircle, Settings, IndianRupee,
 } from 'lucide-react';
 
 const BUYER_NAV = [
@@ -16,6 +16,7 @@ const BUYER_NAV = [
   { href: '/dashboard/profile', icon: Settings, label: 'Profile Settings' },
   { href: '/dashboard/saved', icon: Heart, label: 'Saved Properties' },
   { href: '/dashboard/my-enquiries', icon: MessageSquare, label: 'My Enquiries' },
+  { href: '/dashboard/payments', icon: IndianRupee, label: 'Rent Payments' },
   { href: '/dashboard/visits', icon: Calendar, label: 'Visits' },
   { href: '/dashboard/chat', icon: MessageCircle, label: 'Messages', badge: true },
 ];
