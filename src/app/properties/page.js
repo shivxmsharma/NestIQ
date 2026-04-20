@@ -49,30 +49,17 @@ const formatPrice = (price, listingType) => {
 
 const LISTING_TYPES = ['buy', 'rent', 'pg'];
 
-// ── Search input ──────────────────────────────────────────────────────────────
-function SearchInput({ initialQuery }) {
-  const { query, refine } = useSearchBox();
-  const [value, setValue] = useState(initialQuery || query);
+// ── Virtual Search Box (Syncs URL with Algolia) ─────────────────────────────
+function VirtualSearchBox() {
+  const { refine } = useSearchBox();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (initialQuery && !query) {
-      refine(initialQuery);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialQuery, refine]);
+    const q = searchParams.get('q');
+    refine(q || '');
+  }, [searchParams, refine]);
 
-  return (
-    <div className="flex-1 relative group">
-      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-400 transition-colors" />
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => { setValue(e.target.value); refine(e.target.value); }}
-        placeholder="Search by locality, project or city…"
-        className="w-full pl-11 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-inner"
-      />
-    </div>
-  );
+  return null;
 }
 
 // ── Results count ─────────────────────────────────────────────────────────────
@@ -117,7 +104,7 @@ function HitCard({ hit }) {
               <MapPin size={40} />
             </div>
           )}
-          
+
           {/* Subtle overlay gradient */}
           <div className="absolute inset-0 bg-linear-to-t from-[#0b1120] via-transparent to-transparent opacity-60" />
 
@@ -328,147 +315,92 @@ function PaginationBar() {
 }
 
 // ── Filter panel ──────────────────────────────────────────────────────────────
-function FilterPanel({ open, onClose, activeCount, onClear }) {
+function FilterBar({ activeCount, onClear }) {
   const propType = useRefinementList({ attribute: 'propertyType' });
   const bedrooms = useRefinementList({ attribute: 'bedrooms' });
-  const furnishing = useRefinementList({ attribute: 'furnishing' });
   const rera = useRefinementList({ attribute: 'isReraVerified' });
   const reraItem = rera.items.find((i) => i.label === 'true' || i.label === true);
 
   return (
-    <>
-      {open && (
-        <div className="fixed inset-0 bg-[#0b1120]/80 backdrop-blur-sm z-40 lg:hidden" onClick={onClose} />
-      )}
+    <div className="flex items-center gap-3 overflow-x-auto hide-scrollbar w-full">
 
-      <div className={`
-        fixed top-0 left-0 h-full w-80 bg-[#0b1120] lg:bg-transparent z-50 overflow-y-auto p-5
-        transform transition-transform duration-500 ease-out
-        lg:relative lg:w-auto lg:h-auto lg:p-0 lg:z-auto lg:translate-x-0
-        ${open ? 'translate-x-0' : '-translate-x-full'}
-      `}>
+      {/* Left: Filters — centered */}
+      <div className="flex flex-1 justify-start lg:justify-center items-center gap-3 overflow-x-auto hide-scrollbar">
 
-        {/* Mobile header */}
-        <div className="flex items-center justify-between mb-6 lg:hidden">
-          <h2 className="font-bold text-xl text-white">Filters</h2>
-          <button onClick={onClose} className="p-2 bg-white/5 rounded-full border border-white/10 text-slate-300">
-            <X size={18} />
+        {/* Property Type */}
+        <div className="flex shrink-0 items-center gap-2">
+          {propType.items.map((item) => (
+            <button
+              key={item.label}
+              onClick={() => propType.refine(item.value)}
+              className={`text-[12px] px-3.5 py-1.5 rounded-full border font-medium transition-all whitespace-nowrap ${item.isRefined
+                ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/50'
+                : 'bg-white/5 border-white/10 text-slate-300 hover:border-white/20 hover:bg-white/10'
+                }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="w-px h-6 bg-white/10 shrink-0" />
+
+        {/* Bedrooms */}
+        <div className="flex shrink-0 items-center gap-2">
+          <span className="text-[12px] font-semibold text-slate-500 hidden sm:block">Beds</span>
+          {bedrooms.items.map((item) => (
+            <button
+              key={item.label}
+              onClick={() => bedrooms.refine(item.value)}
+              className={`w-8 h-8 rounded-full text-[13px] font-semibold border transition-all flex items-center justify-center shrink-0 ${item.isRefined
+                ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/50'
+                : 'bg-white/5 border-white/10 text-slate-300 hover:border-white/20 hover:bg-white/10'
+                }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="w-px h-6 bg-white/10 shrink-0" />
+
+        {/* RERA */}
+        {reraItem && (
+          <button
+            onClick={() => rera.refine(reraItem.value)}
+            className={`flex items-center gap-1.5 text-[12px] px-3.5 py-1.5 rounded-full border font-medium transition-all shrink-0 ${reraItem.isRefined
+              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
+              : 'bg-white/5 border-white/10 text-slate-300 hover:border-white/20 hover:bg-white/10'
+              }`}
+          >
+            <BadgeCheck size={14} className={reraItem.isRefined ? 'text-emerald-400' : 'text-slate-400'} />
+            RERA
           </button>
-        </div>
+        )}
 
-        <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl p-5 space-y-6 min-w-60 shadow-lg">
-          <div className="flex items-center gap-2 pb-4 border-b border-white/10">
-            <SlidersHorizontal size={16} className="text-indigo-400" />
-            <p className="text-sm font-bold text-white uppercase tracking-wider">Filters</p>
-          </div>
-
-          {/* Property Type */}
-          <div>
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">Property Type</p>
-            <div className="flex flex-wrap gap-2">
-              {propType.items.map((item) => (
-                <button
-                  key={item.label}
-                  onClick={() => propType.refine(item.value)}
-                  className={`text-[13px] px-3.5 py-1.5 rounded-xl border font-medium transition-all duration-300 ${item.isRefined
-                    ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/50 shadow-[0_0_10px_rgba(79,70,229,0.2)]'
-                    : 'bg-white/5 border-white/10 text-slate-300 hover:border-indigo-400/50 hover:bg-white/10'
-                    }`}
-                >
-                  {item.label}
-                  <span className="ml-1.5 text-[10px] opacity-60">({item.count})</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Bedrooms */}
-          <div>
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">Bedrooms</p>
-            <div className="flex gap-2 flex-wrap">
-              {bedrooms.items.map((item) => (
-                <button
-                  key={item.label}
-                  onClick={() => bedrooms.refine(item.value)}
-                  className={`w-11 h-11 rounded-xl text-[15px] font-semibold border transition-all duration-300 flex items-center justify-center ${item.isRefined
-                    ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/50 shadow-[0_0_10px_rgba(79,70,229,0.2)]'
-                    : 'bg-white/5 border-white/10 text-slate-300 hover:border-indigo-400/50 hover:bg-white/10'
-                    }`}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Furnishing */}
-          <div>
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">Furnishing</p>
-            <div className="space-y-2.5">
-              {furnishing.items.map((item) => (
-                <label key={item.label} className="flex items-center gap-3 cursor-pointer group">
-                  <div className="relative flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={item.isRefined}
-                      onChange={() => furnishing.refine(item.value)}
-                      className="peer appearance-none w-5 h-5 border border-white/20 rounded bg-white/5 checked:bg-indigo-500 checked:border-indigo-500 transition-colors cursor-pointer"
-                    />
-                    <svg className="absolute w-3.5 h-3.5 left-0.75 pointer-events-none opacity-0 peer-checked:opacity-100 text-white transition-opacity" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10l4 4 8-8"/></svg>
-                  </div>
-                  <span className="text-[14px] text-slate-300 group-hover:text-white transition-colors">{item.label}</span>
-                  <span className="text-[11px] text-slate-500 ml-auto bg-white/5 px-2 py-0.5 rounded-md">({item.count})</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* RERA */}
-          {reraItem && (
-            <div>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">Verification</p>
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <div className="relative flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={reraItem.isRefined}
-                    onChange={() => rera.refine(reraItem.value)}
-                    className="peer appearance-none w-5 h-5 border border-white/20 rounded bg-white/5 checked:bg-emerald-500 checked:border-emerald-500 transition-colors cursor-pointer"
-                  />
-                  <svg className="absolute w-3.5 h-3.5 left-0.75 pointer-events-none opacity-0 peer-checked:opacity-100 text-white transition-opacity" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M4 10l4 4 8-8"/></svg>
-                </div>
-                <span className="text-[14px] text-slate-300 group-hover:text-white transition-colors flex items-center gap-1.5">
-                  <BadgeCheck size={16} className="text-emerald-400" /> RERA Verified
-                </span>
-              </label>
-            </div>
-          )}
-
-          {/* Clear */}
-          {activeCount > 0 && (
-            <div className="pt-4 border-t border-white/10">
-              <button
-                onClick={onClear}
-                className="w-full flex items-center justify-center gap-2 py-2.5 text-[13px] text-rose-400 font-semibold border border-rose-500/30 rounded-xl hover:bg-rose-500/10 hover:border-rose-500/50 transition-all"
-              >
-                <X size={15} /> Clear all filters
-              </button>
-            </div>
-          )}
-        </div>
+        {/* Clear */}
+        {activeCount > 0 && (
+          <button
+            onClick={onClear}
+            className="flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-full border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 transition-all shrink-0"
+          >
+            <X size={12} /> Clear
+          </button>
+        )}
       </div>
-    </>
+
+      {/* Right: Results count */}
+      <ResultsStats />
+    </div>
   );
 }
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function PropertiesPage() {
   const searchParams = useSearchParams();
-  const initialQuery = searchParams.get('q') || '';
   const urlListingType = searchParams.get('listing') || null;
 
   const [viewMode, setViewMode] = useState('grid');
-  const [filterOpen, setFilterOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState(0);
 
   // Use URL param as the absolute source of truth if it exists, otherwise manual interaction rules
@@ -495,130 +427,57 @@ export default function PropertiesPage() {
       indexName="nestiq_properties"
       future={{ preserveSharedStateOnUnmount: true }}
     >
-      <Configure filters={filters} hitsPerPage={viewMode === 'map' ? 50 : 12} />
+      <Configure filters={filters} hitsPerPage={viewMode === 'map' ? 50 : 16} />
+      <VirtualSearchBox />
 
-      <div className="min-h-screen relative w-full pb-20">
-        
-        {/* Ambient Glows */}
-        <div className="absolute top-0 left-0 w-125 h-125 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-125 h-125 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="min-h-screen relative w-full bg-[#0b1120] pb-32 overflow-x-hidden text-slate-300">
 
-        {/* ── Seamless Secondary Toolbar ── */}
-        <div className="sticky top-16 z-30 w-full bg-[#0b1120]/90 backdrop-blur-3xl border-b border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] transition-all duration-300">
-          <div className="w-full mx-auto px-4 sm:px-6 lg:px-12 py-3 flex items-center justify-between gap-4">
-
-            {/* Mobile filter toggle */}
-            <button
-              onClick={() => setFilterOpen(true)}
-              className={`lg:hidden flex items-center gap-2 px-4 py-2.5 rounded-xl border shrink-0 text-sm font-semibold transition-all duration-300 ${activeFilters > 0
-                  ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300 shadow-[0_0_15px_rgba(79,70,229,0.2)]'
-                  : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:border-white/20'
-                }`}
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-              Filters
-              {activeFilters > 0 && (
-                <span className="bg-indigo-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
-                  {activeFilters}
-                </span>
-              )}
-            </button>
-
-            {/* Search */}
-            <div className="grow max-w-2xl">
-              <SearchInput initialQuery={initialQuery} />
-            </div>
-
-            {/* Right Side Options */}
-            <div className="hidden lg:flex items-center gap-4">
-              {/* Listing type tabs */}
-              <div className="flex bg-white/5 border border-white/10 rounded-xl p-1 gap-1 shrink-0 backdrop-blur-sm">
-                {[null, ...LISTING_TYPES].map((type) => (
-                  <button
-                    key={type ?? 'all'}
-                    onClick={() => setActiveType(type)}
-                    className={`px-5 py-2 rounded-lg text-[13px] font-bold tracking-wide transition-all duration-300 ${activeType === type
-                      ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 shadow-[0_0_15px_rgba(79,70,229,0.2)]'
-                      : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
-                      }`}
-                  >
-                    {type ? type.charAt(0).toUpperCase() + type.slice(1) : 'All'}
-                  </button>
-                ))}
-              </div>
-
-              {/* Grid / Map toggle */}
-              <div className="flex items-center bg-white/5 border border-white/10 rounded-xl p-1 shrink-0 backdrop-blur-sm">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  title="Grid view"
-                  className={`p-2 rounded-lg transition-all duration-300 border ${viewMode === 'grid'
-                    ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30 shadow-[0_0_15px_rgba(79,70,229,0.2)]'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5 border-transparent'
-                    }`}
-                >
-                  <Grid3X3 size={18} />
-                </button>
-                <div className="w-px h-4 bg-white/10 mx-0.5"></div>
-                <button
-                  onClick={() => setViewMode('map')}
-                  title="Map view"
-                  className={`p-2 rounded-lg transition-all duration-300 border ${viewMode === 'map'
-                    ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30 shadow-[0_0_15px_rgba(79,70,229,0.2)]'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5 border-transparent'
-                    }`}
-                >
-                  <MapIcon size={18} />
-                </button>
-              </div>
-            </div>
+        {/* ── Filter Toolbar ── */}
+        <div className="sticky top-0 z-30 w-full bg-[#0b1120]/95 backdrop-blur-3xl border-b border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)]">
+          <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-2">
+            <FilterBar
+              activeCount={activeFilters}
+              onClear={() => setActiveFilters(0)}
+            />
           </div>
         </div>
 
         {/* ── Body ── */}
-        <div className="w-full mx-auto px-4 sm:px-6 lg:px-12 py-8 relative">
-          
-          <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 px-4 lg:px-0 relative z-10">
+        <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 relative z-10">
 
-            {/* Desktop Filter Sidebar */}
-            <div className="hidden lg:block w-72 shrink-0">
-              <div className="sticky top-30">
-                <FilterPanel
-                  open={false}
-                  onClose={() => { }}
-                  activeCount={activeFilters}
-                  onClear={() => setActiveFilters(0)}
-                />
-              </div>
-            </div>
+          {/* Ambient Glows */}
+          <div className="fixed top-0 left-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none -z-10" />
+          <div className="fixed bottom-0 right-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px] pointer-events-none -z-10" />
 
-            {/* Mobile filter panel — slide-in */}
-            <div className="lg:hidden">
-              <FilterPanel
-                open={filterOpen}
-                onClose={() => setFilterOpen(false)}
-                activeCount={activeFilters}
-                onClear={() => setActiveFilters(0)}
-              />
-            </div>
+          {viewMode === 'grid' ? (
+            <>
+              <HitsGrid />
+              <PaginationBar />
+            </>
+          ) : (
+            <MapLayout />
+          )}
 
-            {/* Main content */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between mb-6">
-                <ResultsStats />
-              </div>
-
-              {viewMode === 'grid' ? (
-                <>
-                  <HitsGrid />
-                  <PaginationBar />
-                </>
-              ) : (
-                <MapLayout />
-              )}
-            </div>
-          </div>
         </div>
+
+        {/* ── Floating Map/List Toggle (FAB) ── */}
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+          <button
+            onClick={() => setViewMode(viewMode === 'grid' ? 'map' : 'grid')}
+            className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white rounded-full shadow-[0_10px_30px_rgba(79,70,229,0.4)] hover:shadow-[0_15px_40px_rgba(79,70,229,0.5)] hover:-translate-y-1 transition-all duration-300 border border-white/10"
+          >
+            {viewMode === 'grid' ? (
+              <>
+                Show Map <MapIcon size={16} />
+              </>
+            ) : (
+              <>
+                Show List <Grid3X3 size={16} />
+              </>
+            )}
+          </button>
+        </div>
+
       </div>
     </InstantSearch>
   );

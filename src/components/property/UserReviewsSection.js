@@ -18,7 +18,7 @@ export default function UserReviewsSection({ targetUser, propertyContextId }) {
       try {
         const res = await fetch(`/api/users/${targetUser._id}/reviews`);
         const data = await res.json();
-        setReviews(data || []);
+        setReviews(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Failed to load reviews", err);
       } finally {

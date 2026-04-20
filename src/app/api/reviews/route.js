@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
 import { authOptions } from "../../../lib/auth";
 import dbConnect from "../../../lib/db";
-import { Review } from "../../../lib/models/Review";
+import Review from "../../../lib/models/Review";
 
 export async function POST(req) {
   try {

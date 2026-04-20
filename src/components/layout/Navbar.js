@@ -3,15 +3,33 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { Menu, X, ChevronDown, LogOut, LayoutDashboard, PlusCircle, Sparkles, Heart, MessageSquare, Settings, Home } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Menu, X, ChevronDown, LogOut, LayoutDashboard, PlusCircle, Sparkles, Heart, MessageSquare, Settings, Home, Search } from "lucide-react";
 import Image from "next/image";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q) setSearchQuery(q);
+  }, [searchParams]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/properties?q=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      router.push(`/properties`);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,21 +63,34 @@ export default function Navbar() {
       : "bg-transparent border-transparent shadow-none py-2"
       }`}>
       <div className="mx-auto px-4 sm:px-6 lg:px-12 w-full">
-        <div className={`flex items-center justify-between w-full relative transition-[height] duration-500 ease-out ${scrolled ? "h-16" : "h-20"}`}>
-          {/* Logo */}
-          <div className="flex-1 flex justify-start">
+        <div className="flex items-center justify-between w-full relative h-16">
+          {/* Logo & Search */}
+          {/* Logo & Search */}
+          <div className="flex-1 flex items-center justify-start gap-6">
             <Link href="/" className="flex items-center justify-start gap-2 shrink-0 group">
               <span className="text-2xl font-black tracking-tight text-white">
                 Nest<span className="text-indigo-500">IQ</span>
               </span>
             </Link>
+
+            {/* Global Search */}
+            <form onSubmit={handleSearch} className="relative hidden md:block w-32 lg:w-40 xl:w-48 group">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-400 transition-colors" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search..."
+                className="w-full h-10 pl-10 pr-4 bg-white/5 border border-white/10 rounded-full text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:bg-white/10 transition-all shadow-inner"
+              />
+            </form>
           </div>
 
           {/* Desktop Nav - Centered, Uniform floating island */}
-          <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-1 p-1.5 rounded-2xl bg-white/3 border border-white/5 backdrop-blur-sm shadow-xl">
+          <nav className="hidden lg:flex items-center justify-center gap-1.5 p-1.5 rounded-2xl bg-white/3 border border-white/5 backdrop-blur-sm shadow-xl shrink-0">
             <Link
               href="/properties"
-              className="px-4 py-2 text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all"
+              className="h-10 px-4 flex items-center justify-center text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all"
             >
               Explore
             </Link>
@@ -68,26 +99,25 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="px-4 py-2 text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all"
+                className="h-10 px-4 flex items-center justify-center text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all"
               >
                 {link.label}
               </Link>
             ))}
 
             {/* Tools Dropdown */}
-            <div className="relative group" onMouseEnter={() => setToolsOpen(true)} onMouseLeave={() => setToolsOpen(false)}>
-              <button className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all">
+            <div className="relative group flex items-center" onMouseEnter={() => setToolsOpen(true)} onMouseLeave={() => setToolsOpen(false)}>
+              <button className="h-10 flex items-center justify-center gap-1.5 px-4 text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all">
                 Tools <ChevronDown className={`w-4 h-4 transition-transform ${toolsOpen ? 'rotate-180' : ''}`} />
               </button>
 
-              {/* Swapped mt-3 to pt-3 so the container creates an invisible "bridge" to keep the mouse in hover-state */}
-              <div className={`absolute top-full left-1/2 -translate-x-1/2 pt-3 w-48 transition-all duration-200 origin-top shadow-2xl ${toolsOpen ? 'opacity-100 visible scale-100' : 'opacity-0 invisible scale-95 pointer-events-none'}`}>
+              <div className={`absolute top-full left-1/2 -translate-x-1/2 pt-2 w-48 transition-all duration-200 origin-top shadow-2xl ${toolsOpen ? 'opacity-100 visible scale-100' : 'opacity-0 invisible scale-95 pointer-events-none'}`}>
                 <div className="bg-[#0b1120]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.6)] overflow-hidden p-1.5">
                   {toolLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
-                      className="block px-3 py-2 text-sm font-medium rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
+                      className="block px-3 py-2.5 text-sm font-medium rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
                     >
                       {link.label}
                     </Link>
@@ -100,7 +130,7 @@ export default function Navbar() {
             {session && isSeller && (
               <Link
                 href="/dashboard/list-property"
-                className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold rounded-xl text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all"
+                className="h-10 flex items-center justify-center gap-1.5 px-4 text-sm font-bold rounded-xl text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all"
               >
                 <PlusCircle className="w-4 h-4" />
                 List Property
@@ -110,7 +140,7 @@ export default function Navbar() {
             {/* Highlighted AI Assistant Link */}
             <Link
               href="/ai-assistant"
-              className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold rounded-xl text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 transition-all"
+              className="h-10 flex items-center justify-center gap-1.5 px-4 text-sm font-bold rounded-xl text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 transition-all"
             >
               <Sparkles className="w-4 h-4" />
               Ask Nia (AI)
@@ -122,11 +152,11 @@ export default function Navbar() {
             {status === "loading" ? (
               <div className="w-10 h-10 rounded-full bg-white/10 animate-pulse" />
             ) : session ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 {/* NestIQ Manage - Moved next to Profile for better aesthetics */}
                 <Link
                   href="/manage"
-                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 rounded-full transition-all"
+                  className="h-10 flex items-center justify-center gap-2 px-4 text-sm font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 rounded-full transition-all"
                 >
                   <Home className="w-4 h-4" />
                   Tenancy Hub
@@ -135,7 +165,7 @@ export default function Navbar() {
                 <div className="relative">
                   <button
                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                    className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full transition-all border group hover:bg-white/10 border-white/5 hover:border-white/15 bg-white/5 backdrop-blur-md"
+                    className="h-10 flex items-center justify-center gap-2 pl-1.5 pr-4 rounded-full transition-all border group hover:bg-white/10 border-white/5 hover:border-white/15 bg-white/5 backdrop-blur-md"
                   >
                     {session.user.avatar ? (
                       <Image
@@ -253,16 +283,16 @@ export default function Navbar() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                 <Link
                   href="/auth/login"
-                  className="text-sm font-bold px-4 py-2 rounded-full transition-colors text-slate-300 hover:text-white hover:bg-white/10"
+                  className="h-10 flex items-center justify-center text-sm font-bold px-4 rounded-full transition-colors text-slate-300 hover:text-white hover:bg-white/10"
                 >
                   Log in
                 </Link>
                 <Link
                   href="/auth/register"
-                  className="text-sm font-bold px-5 py-2 rounded-full transition-all bg-white hover:bg-slate-100 text-indigo-950 shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_rgba(255,255,255,0.25)]"
+                  className="h-10 flex items-center justify-center text-sm font-bold px-6 rounded-full transition-all bg-white hover:bg-slate-100 text-indigo-950 shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_rgba(255,255,255,0.25)]"
                 >
                   Sign up
                 </Link>
