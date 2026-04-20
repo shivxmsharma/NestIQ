@@ -497,11 +497,15 @@ export default function PropertiesPage() {
     >
       <Configure filters={filters} hitsPerPage={viewMode === 'map' ? 50 : 12} />
 
-      <div className="min-h-screen relative z-10 w-full pb-20">
+      <div className="min-h-screen relative w-full pb-20">
+        
+        {/* Ambient Glows */}
+        <div className="absolute top-0 left-0 w-125 h-125 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-125 h-125 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
 
-        {/* ── Sticky top bar ── */}
-        <div className="bg-[#0b1120]/80 backdrop-blur-2xl border-b border-white/10 sticky top-16 z-30 shadow-lg top-bar">
-          <div className="w-full mx-auto px-4 sm:px-6 lg:px-12 py-3.5 flex items-center justify-between gap-4">
+        {/* ── Seamless Secondary Toolbar ── */}
+        <div className="sticky top-16 z-30 w-full bg-[#0b1120]/90 backdrop-blur-3xl border-b border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] transition-all duration-300">
+          <div className="w-full mx-auto px-4 sm:px-6 lg:px-12 py-3 flex items-center justify-between gap-4">
 
             {/* Mobile filter toggle */}
             <button
@@ -521,21 +525,21 @@ export default function PropertiesPage() {
             </button>
 
             {/* Search */}
-            <div className="grow max-w-xl">
+            <div className="grow max-w-2xl">
               <SearchInput initialQuery={initialQuery} />
             </div>
 
             {/* Right Side Options */}
-            <div className="hidden lg:flex items-center gap-5">
+            <div className="hidden lg:flex items-center gap-4">
               {/* Listing type tabs */}
-              <div className="flex bg-white/5 border border-white/10 rounded-[14px] p-1 gap-1 shrink-0 backdrop-blur-sm">
+              <div className="flex bg-white/5 border border-white/10 rounded-xl p-1 gap-1 shrink-0 backdrop-blur-sm">
                 {[null, ...LISTING_TYPES].map((type) => (
                   <button
                     key={type ?? 'all'}
                     onClick={() => setActiveType(type)}
-                    className={`px-5 py-2 rounded-xl text-[13px] font-semibold transition-all duration-300 ${activeType === type
-                      ? 'bg-indigo-500 text-white shadow-[0_0_15px_rgba(79,70,229,0.4)]'
-                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    className={`px-5 py-2 rounded-lg text-[13px] font-bold tracking-wide transition-all duration-300 ${activeType === type
+                      ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 shadow-[0_0_15px_rgba(79,70,229,0.2)]'
+                      : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
                       }`}
                   >
                     {type ? type.charAt(0).toUpperCase() + type.slice(1) : 'All'}
@@ -544,26 +548,27 @@ export default function PropertiesPage() {
               </div>
 
               {/* Grid / Map toggle */}
-              <div className="flex items-center bg-white/5 border border-white/10 rounded-[14px] p-1 shrink-0 backdrop-blur-sm">
+              <div className="flex items-center bg-white/5 border border-white/10 rounded-xl p-1 shrink-0 backdrop-blur-sm">
                 <button
                   onClick={() => setViewMode('grid')}
                   title="Grid view"
-                  className={`p-2.5 rounded-xl transition-all duration-300 ${viewMode === 'grid'
-                    ? 'bg-indigo-500 text-white shadow-[0_0_15px_rgba(79,70,229,0.4)]'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  className={`p-2 rounded-lg transition-all duration-300 border ${viewMode === 'grid'
+                    ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30 shadow-[0_0_15px_rgba(79,70,229,0.2)]'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5 border-transparent'
                     }`}
                 >
-                  <Grid3X3 size={16} />
+                  <Grid3X3 size={18} />
                 </button>
+                <div className="w-px h-4 bg-white/10 mx-0.5"></div>
                 <button
                   onClick={() => setViewMode('map')}
                   title="Map view"
-                  className={`p-2.5 rounded-xl transition-all duration-300 ${viewMode === 'map'
-                    ? 'bg-indigo-500 text-white shadow-[0_0_15px_rgba(79,70,229,0.4)]'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  className={`p-2 rounded-lg transition-all duration-300 border ${viewMode === 'map'
+                    ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30 shadow-[0_0_15px_rgba(79,70,229,0.2)]'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5 border-transparent'
                     }`}
                 >
-                  <MapIcon size={16} />
+                  <MapIcon size={18} />
                 </button>
               </div>
             </div>
@@ -572,9 +577,6 @@ export default function PropertiesPage() {
 
         {/* ── Body ── */}
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-12 py-8 relative">
-          {/* Background Ambient Glow beneath content */}
-          <div className="absolute top-0 left-0 w-125 h-125 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
-          <div className="absolute bottom-0 right-0 w-125 h-125 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
           
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 px-4 lg:px-0 relative z-10">
 

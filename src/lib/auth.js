@@ -4,6 +4,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import bcrypt from 'bcryptjs';
 import connectDB from './db';
 import User from './models/User';
+import { sendWelcomeEmail } from './emailTemplates';
 
 
 export const authOptions = {
@@ -45,6 +46,10 @@ export const authOptions = {
           throw new Error("Your account has been deactivated. Please contact support");
         }
 
+        if (!user.isVerified) {
+          throw new Error("Please verify your email address before logging in.");
+        }
+
         //update last login
         await User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
 
@@ -77,15 +82,19 @@ export const authOptions = {
           const existingUser = await User.findOne({ email: user.email });
 
           if (!existingUser) {
-            //First Time User
+            // First Time User
             await User.create({
               name: user.name,
               email: user.email,
               avatar: user.image,
               googleId: user.id,
-              isVerified: true,
+              isVerified: true, // Google accounts auto-verified
               role: "buyer",
             });
+            // Send the welcome email since they are automatically verified
+            await sendWelcomeEmail(user.email, user.name).catch((err) => 
+               console.error("Failed to send welcome email for Google signup:", err)
+            );
           } else if (!existingUser.googleId) {
             //Existing User
             await User.findByIdAndUpdate(existingUser._id, { googleId: user.id });

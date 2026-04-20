@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import connectDB from "../../../../lib/db";
 import User from "../../../../lib/models/User";
+import { sendVerificationEmail } from "../../../../lib/emailTemplates";
+import crypto from "crypto";
 
 export async function POST(request) {
   try {
@@ -44,18 +46,28 @@ export async function POST(request) {
 
     const passwordHash = await bcrypt.hash(password, 12);
 
+    // Generate verification token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
     const user = await User.create({
       name: name.trim(),
       email: email.toLowerCase().trim(),
       passwordHash,
       phone: phone || undefined,
       role: role || "buyer",
+      isVerified: false,
+      verificationToken,
+      verificationTokenExpires,
     });
+
+    // Send verification email
+    await sendVerificationEmail(user.email, user.name, verificationToken);
 
     return NextResponse.json(
       {
         success: true,
-        message: "Account created successfully",
+        message: "Account created successfully. Please check your email to verify your account.",
         user: {
           id: user._id.toString(),
           name: user.name,
