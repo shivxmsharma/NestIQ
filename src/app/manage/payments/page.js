@@ -11,6 +11,12 @@ export default function TenantPaymentsPage() {
   const { data: session } = useSession();
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState({ type: '', text: '' });
+
+  const showMessage = (type, text) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage({ type: '', text: '' }), 5000);
+  };
 
   useEffect(() => {
     async function load() {
@@ -96,6 +102,80 @@ export default function TenantPaymentsPage() {
     setTimeout(() => { printWindow.print(); }, 250);
   };
 
+  const generateHraReceipt = () => {
+    const paidRents = payments.filter(p => p.status === 'paid' && p.paymentType === 'rent');
+    if (paidRents.length === 0) {
+      return showMessage('error', 'No paid rent found to generate HRA receipt.');
+    }
+
+    const printWindow = window.open('', '', 'height=800,width=800');
+    if (!printWindow) return showMessage('error', 'Popup blocked. Please allow popups.');
+
+    // Calculate total rent
+    const totalAmount = paidRents.reduce((acc, p) => acc + (p.amount || 0), 0) / 100;
+
+    // Fallback names
+    const landlordName = paidRents[0].landlord?.name || '______________________';
+    const tenantName = paidRents[0].tenant?.name || session?.user?.name || '______________________';
+    const propertyTitle = paidRents[0].property?.title || 'the mentioned property';
+
+    // Sort logically to find the duration
+    const sorted = [...paidRents].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    const firstMonth = `${MONTHS[sorted[0].rentMonth]} ${sorted[0].rentYear}`;
+    const lastMonth = `${MONTHS[sorted[sorted.length - 1].rentMonth]} ${sorted[sorted.length - 1].rentYear}`;
+    const duration = firstMonth === lastMonth ? firstMonth : `${firstMonth} to ${lastMonth}`;
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>HRA Rent Receipt</title>
+          <style>
+            body { font-family: 'Times New Roman', serif; padding: 40px 60px; color: #222; line-height: 1.8; font-size: 12pt; }
+            h1 { text-align: center; text-decoration: underline; margin-bottom: 40px; font-size: 20pt; }
+            .receipt-box { border: 2px solid #333; padding: 40px; margin-bottom: 30px; position: relative; }
+            .line-text { margin-bottom: 25px; text-align: justify; }
+            .strong { font-weight: bold; border-bottom: 1px dotted #000; padding: 0 5px; }
+            .details-block { margin-top: 40px; line-height: 2; }
+            .signature { margin-top: 80px; text-align: right; }
+            .footer-note { text-align: center; margin-top: 50px; font-size: 10pt; color: #666; border-top: 1px solid #ccc; padding-top: 10px; }
+            .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 80px; color: rgba(0,0,0,0.03); z-index: -1; }
+          </style>
+        </head>
+        <body>
+          <div class="watermark">NESTIQ HRA</div>
+          <div class="receipt-box">
+            <h1>RENT RECEIPT (For HRA Exemption)</h1>
+            <div class="line-text">
+              Received sum of <span class="strong">Rs. ${totalAmount.toLocaleString('en-IN')}/-</span> 
+              (${Number(totalAmount).toFixed(2)}) from <span class="strong">${tenantName}</span> 
+              towards the rent of residential property located at <span class="strong">${propertyTitle}</span> 
+              for the period spanning from <span class="strong">${duration}</span>.
+            </div>
+            
+            <div class="details-block">
+              <strong>Name of Landlord:</strong> ${landlordName}<br/>
+              <strong>PAN No. of Landlord:</strong> ______________________ <i style="color:#666; font-size: 10pt;">(Mandatory if annual rent exceeds ₹1,00,000)</i><br/>
+              <strong>Date of Printing:</strong> ${format(new Date(), 'dd/MM/yyyy')}
+            </div>
+
+            <div class="signature">
+              ___________________________<br/>
+              <strong>Signature of Landlord</strong>
+            </div>
+          </div>
+          
+          <div class="footer-note">
+            This consolidate statement was generated electronically by the NestIQ Tenancy Hub. 
+            All payments logged herein have been verified through our digital gateway.
+          </div>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); }, 400);
+  };
+
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 relative overflow-hidden">
@@ -114,17 +194,37 @@ export default function TenantPaymentsPage() {
             </p>
           </div>
 
-          <div className="flex gap-4">
-            <div className="bg-white/5 border border-white/10 rounded-xl px-5 py-3">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="bg-white/5 border border-white/10 rounded-xl px-5 py-3 text-center sm:text-left">
               <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Total Paid</div>
-              <div className="text-2xl font-bold text-white flex items-center gap-1">
+              <div className="text-2xl font-bold text-white flex items-center justify-center sm:justify-start gap-1">
                 <IndianRupee className="w-5 h-5 text-emerald-400" />
                 {((payments.reduce((acc, p) => p.status === 'paid' ? acc + (p.amount || 0) : acc, 0)) / 100).toLocaleString('en-IN')}
               </div>
             </div>
+
+            <button
+              onClick={generateHraReceipt}
+              className="flex items-center justify-center gap-2 px-5 py-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl font-medium transition-colors"
+            >
+              <Printer className="w-4 h-4" />
+              HRA Receipt
+            </button>
           </div>
         </div>
       </div>
+
+      {message.text && (
+        <div className={`p-4 rounded-2xl flex items-center justify-between text-sm font-bold border transition-all ${message.type === 'error'
+          ? 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+          : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+          }`}>
+          <div className="flex items-center gap-3">
+            {message.type === 'error' ? <AlertCircle className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
+            {message.text}
+          </div>
+        </div>
+      )}
 
       <div className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden">
         <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between">

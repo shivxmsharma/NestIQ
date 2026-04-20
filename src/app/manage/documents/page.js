@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { FileText, FileCheck, FileX, Download, Calendar, IndianRupee, Home, Clock, AlertCircle } from 'lucide-react';
+import { FileText, FileCheck, FileX, Download, Calendar, IndianRupee, Home, Clock, AlertCircle, X, ShieldCheck } from 'lucide-react';
 import { format } from 'date-fns';
 import Script from 'next/script';
 
@@ -14,6 +14,9 @@ export default function DocumentsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [message, setMessage] = useState({ type: '', text: '' });
+  const [renewModal, setRenewModal] = useState({ show: false, lease: null });
+  const [renewForm, setRenewForm] = useState({ newStartDate: '', newEndDate: '', newRentAmount: '' });
+  const [terminateModal, setTerminateModal] = useState({ show: false, lease: null });
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
@@ -39,19 +42,48 @@ export default function DocumentsPage() {
     }
   };
 
-  const handleTerminateLease = async (leaseId) => {
-    if (!confirm('Are you sure you want to terminate this lease? This action cannot be undone.')) return;
+  const handleTerminateSubmit = async (refundMethod) => {
+    if (!terminateModal.lease) return;
+
     try {
-      const res = await fetch(`/api/manage/leases/${leaseId}/terminate`, { method: 'POST' });
+      const res = await fetch(`/api/manage/leases/${terminateModal.lease._id}/terminate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refundMethod })
+      });
       const data = await res.json();
       if (data.success) {
-        showMessage('success', "Lease terminated successfully");
+        showMessage('success', `Lease terminated. ${refundMethod !== 'none' ? 'Deposit refunded!' : ''}`);
+        setTerminateModal({ show: false, lease: null });
         fetchLeases();
       } else {
         showMessage('error', data.error || "Failed to terminate lease");
       }
     } catch (e) {
       showMessage('error', "An error occurred while terminating");
+    }
+  };
+
+  const handleRenewSubmit = async (e) => {
+    e.preventDefault();
+    if (!renewModal.lease) return;
+
+    try {
+      const res = await fetch(`/api/manage/leases/${renewModal.lease._id}/renew`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(renewForm)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showMessage('success', "Lease renewed! A new pending agreement was created.");
+        setRenewModal({ show: false, lease: null });
+        fetchLeases();
+      } else {
+        showMessage('error', data.error || "Failed to renew lease");
+      }
+    } catch (err) {
+      showMessage('error', "A network error occurred while renewing");
     }
   };
 
@@ -156,6 +188,57 @@ export default function DocumentsPage() {
       }
     } catch (e) {
       showMessage('error', "An error occurred");
+    }
+  };
+
+  const handleAutopaySetup = async (lease) => {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/manage/leases/${lease._id}/autopay`, { method: 'POST' });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      const options = {
+        key: data.keyId,
+        subscription_id: data.subscriptionId,
+        name: "NestIQ Rent AutoPay",
+        description: `Monthly Auto-Debit for ${lease.property?.title || 'Property'}`,
+        handler: async function (response) {
+          // Razorpay returns razorpay_payment_id, razorpay_subscription_id, razorpay_signature here
+          const verifyRes = await fetch("/api/manage/leases/verify-autopay", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              leaseId: lease._id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySubscriptionId: response.razorpay_subscription_id,
+              razorpaySignature: response.razorpay_signature,
+            }),
+          });
+          const verifyData = await verifyRes.json();
+          if (verifyData.error) {
+            showMessage('error', verifyData.error);
+          } else {
+            showMessage('success', "AutoPay successfully activated!");
+            fetchLeases();
+          }
+        },
+        prefill: {
+          name: session.user.name,
+          email: session.user.email,
+        },
+        theme: { color: "#10b981" },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", function (response) {
+        showMessage('error', "AutoPay setup failed: " + response.error.description);
+      });
+      rzp.open();
+    } catch (e) {
+      showMessage('error', e.message || "Failed to initialize AutoPay");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -267,8 +350,8 @@ export default function DocumentsPage() {
 
       {message.text && (
         <div className={`p-4 rounded-2xl flex items-center justify-between text-sm font-bold border transition-all ${message.type === 'error'
-            ? 'bg-rose-500/10 text-rose-400 border-rose-500/20'
-            : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+          ? 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+          : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
           }`}>
           <div className="flex items-center gap-3">
             {message.type === 'error' ? <AlertCircle className="w-5 h-5" /> : <FileCheck className="w-5 h-5" />}
@@ -409,9 +492,45 @@ export default function DocumentsPage() {
                         {lease.landlordSignedAt ? `Sign & Pay ₹${(lease.securityDeposit || 0).toLocaleString('en-IN')}` : 'Waiting on Landlord'}
                       </button>
                     )}
+                    {!isLandlord && lease.status === 'active' && !lease.autoPayEnabled && (
+                      <button
+                        onClick={() => handleAutopaySetup(lease)}
+                        className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-medium transition-colors"
+                      >
+                        <ShieldCheck className="w-4 h-4" />
+                        Setup AutoPay
+                      </button>
+                    )}
+                    {!isLandlord && lease.status === 'active' && lease.autoPayEnabled && (
+                      <div className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl text-sm font-medium">
+                        <ShieldCheck className="w-4 h-4" />
+                        AutoPay Active
+                      </div>
+                    )}
+                    {isLandlord && lease.status === 'active' && (
+                      <button
+                        onClick={() => {
+                          const sd = new Date(lease.endDate);
+                          sd.setDate(sd.getDate() + 1); // Default to day after old lease ends
+                          const ed = new Date(sd);
+                          ed.setMonth(ed.getMonth() + 11);
+
+                          setRenewForm({
+                            newStartDate: sd.toISOString().split('T')[0],
+                            newEndDate: ed.toISOString().split('T')[0],
+                            newRentAmount: lease.rentAmount
+                          });
+                          setRenewModal({ show: true, lease });
+                        }}
+                        className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 rounded-xl text-sm font-medium transition-colors"
+                      >
+                        <Calendar className="w-4 h-4" />
+                        Renew
+                      </button>
+                    )}
                     {isLandlord && (lease.status === 'active' || lease.status === 'pending') && (
                       <button
-                        onClick={() => handleTerminateLease(lease._id)}
+                        onClick={() => setTerminateModal({ show: true, lease })}
                         className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-xl text-sm font-medium transition-colors"
                       >
                         <FileX className="w-4 h-4" />
@@ -436,6 +555,160 @@ export default function DocumentsPage() {
           })
         )}
       </div>
+
+      {/* Renew Modal */}
+      {renewModal.show && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-[#111] border border-white/10 rounded-3xl w-full max-w-md overflow-hidden relative">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h3 className="text-xl font-bold text-white">Renew Lease</h3>
+                  <p className="text-sm text-slate-400 mt-1">Draft a new 11-month agreement</p>
+                </div>
+                <button
+                  onClick={() => setRenewModal({ show: false, lease: null })}
+                  className="p-2 hover:bg-white/10 rounded-full transition-colors text-slate-400"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleRenewSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">New Rent Amount (₹)</label>
+                  <div className="relative">
+                    <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input
+                      type="number"
+                      required
+                      className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                      value={renewForm.newRentAmount}
+                      onChange={(e) => setRenewForm({ ...renewForm, newRentAmount: e.target.value })}
+                    />
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1 text-right">Escalation is typically 5-10%</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">Start Date</label>
+                    <input
+                      type="date"
+                      required
+                      className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                      value={renewForm.newStartDate}
+                      onChange={(e) => setRenewForm({ ...renewForm, newStartDate: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">End Date (Max 11 Mo)</label>
+                    <input
+                      type="date"
+                      required
+                      className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                      value={renewForm.newEndDate}
+                      onChange={(e) => setRenewForm({ ...renewForm, newEndDate: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-4 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setRenewModal({ show: false, lease: null })}
+                    className="flex-1 px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm font-medium transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-medium transition-colors shadow-lg shadow-blue-500/25"
+                  >
+                    Draft Renewal
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Terminate Modal */}
+      {terminateModal.show && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-[#111] border border-white/10 rounded-3xl w-full max-w-md overflow-hidden relative">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-rose-500 to-red-600"></div>
+
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h3 className="text-xl font-bold text-white">Terminate Lease</h3>
+                  <p className="text-sm text-slate-400 mt-1">
+                    Security Deposit: <span className="font-bold text-white">₹{terminateModal.lease?.securityDeposit?.toLocaleString('en-IN') || 0}</span>
+                  </p>
+                </div>
+                <button
+                  onClick={() => setTerminateModal({ show: false, lease: null })}
+                  className="p-2 hover:bg-white/10 rounded-full transition-colors text-slate-400"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <p className="text-sm text-slate-300 mb-6">
+                How would you like to handle the security deposit refund for this termination?
+              </p>
+
+              <div className="space-y-3">
+                <button
+                  onClick={() => handleTerminateSubmit("razorpay")}
+                  className="w-full flex items-center justify-between p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors group"
+                >
+                  <div className="text-left">
+                    <p className="text-sm font-bold text-white mb-0.5">Refund via Razorpay</p>
+                    <p className="text-xs text-slate-400">Automatically refund to the tenant&apos;s original payment method.</p>
+                  </div>
+                  <IndianRupee className="w-5 h-5 text-indigo-400 group-hover:scale-110 transition-transform" />
+                </button>
+
+                <button
+                  onClick={() => handleTerminateSubmit("manual")}
+                  className="w-full flex items-center justify-between p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors group"
+                >
+                  <div className="text-left">
+                    <p className="text-sm font-bold text-white mb-0.5">Manual Refund (Off-Platform)</p>
+                    <p className="text-xs text-slate-400">I have paid / will pay the tenant via Cash/UPI manually.</p>
+                  </div>
+                  <FileCheck className="w-5 h-5 text-emerald-400 group-hover:scale-110 transition-transform" />
+                </button>
+
+                <button
+                  onClick={() => handleTerminateSubmit("none")}
+                  className="w-full flex items-center justify-between p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-rose-500/10 transition-colors group"
+                >
+                  <div className="text-left">
+                    <p className="text-sm font-bold text-white mb-0.5">No Refund / Forfeit</p>
+                    <p className="text-xs text-slate-400">Deposit is forfeited or wasn&apos;t collected.</p>
+                  </div>
+                  <FileX className="w-5 h-5 text-rose-400 group-hover:scale-110 transition-transform" />
+                </button>
+              </div>
+
+              <div className="pt-6">
+                <button
+                  onClick={() => setTerminateModal({ show: false, lease: null })}
+                  className="w-full px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
