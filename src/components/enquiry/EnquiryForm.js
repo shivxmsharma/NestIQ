@@ -20,11 +20,17 @@ export default function EnquiryForm({ propertyId }) {
 
   useEffect(() => {
     if (session?.user) {
-      setForm(prev => ({
-        ...prev,
-        name: prev.name || session.user.name || '',
-        email: prev.email || session.user.email || '',
-      }));
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setForm(prev => {
+        if (!prev.name && !prev.email) {
+          return {
+            ...prev,
+            name: session.user.name || '',
+            email: session.user.email || '',
+          };
+        }
+        return prev;
+      });
     }
   }, [session]);
 

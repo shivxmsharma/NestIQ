@@ -49,6 +49,16 @@ const userSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
+
+    // Trust Score System
+    trustScore: {
+      type: Number,
+      default: 0,
+    },
+    reviewCount: {
+      type: Number,
+      default: 0,
+    },
     agencyName: {
       type: String,
       trim: true,

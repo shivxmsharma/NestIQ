@@ -15,6 +15,7 @@ import ChatWindow from "../../../components/chat/ChatWindow";
 import TrustBadge from "../../../components/property/TrustBadge";
 import PropertyAIInsights from "../../../components/ai/PropertyAiInsights";
 import AIAssistant from "../../../components/ai/AiAssistant";
+import UserReviewsSection from "../../../components/property/UserReviewsSection";
 
 const SinglePropertyMap = dynamic(() => import("../../../components/map/SinglePropertyMap"), { ssr: false });
 
@@ -425,10 +426,15 @@ export default function PropertyDetailPage() {
             {property.location?.coordinates && property.location.coordinates.length > 0 && (
               <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 lg:p-8 shadow-lg">
                 <h2 className="font-bold text-white text-lg mb-6">Location on Map</h2>
-                <div className="h-87.5 w-full rounded-2xl overflow-hidden border border-white/10">
+                <div className="h-88 w-full rounded-2xl overflow-hidden border border-white/10 relative">
                   <SinglePropertyMap location={property.location} />
                 </div>
               </div>
+            )}
+
+            {/* Landlord/Owner Reviews Section */}
+            {property.owner && (
+              <UserReviewsSection targetUser={property.owner} propertyContextId={property._id} />
             )}
           </div>
 

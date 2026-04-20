@@ -4,7 +4,12 @@ import SessionProvider from "../components/providers/SessionProvider";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import AIAssistant from "../components/ai/AiAssistant";
+import MaintenanceOverlay from "../components/layout/MaintenanceOverlay";
 import Image from "next/image";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../lib/auth";
+import dbConnect from "../lib/db";
+import PlatformSettings from "../lib/models/PlatformSettings";
 
 const geist = Geist({
   variable: "--font-geist",
@@ -17,11 +22,33 @@ export const metadata = {
     "Chandigarh's most trusted real estate portal. Buy, rent, or sell properties with AI-powered search and verified listings.",
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  let isMaintenance = false;
+  let isAdmin = false;
+
+  try {
+    await dbConnect();
+    const settings = await PlatformSettings.findOne({}).lean();
+    isMaintenance = !!settings?.maintenanceMode;
+
+    if (isMaintenance) {
+      const session = await getServerSession(authOptions);
+      if (session?.user?.role === "admin") {
+        isAdmin = true;
+      }
+    }
+  } catch (error) {
+    console.error("Layout Database Error:", error);
+  }
+
+  const showMaintenanceBlock = isMaintenance && !isAdmin;
+
   return (
     <html lang="en">
       <body className={`${geist.variable} font-sans antialiased bg-[#070b14] text-white selection:bg-indigo-500/30`}>
         <SessionProvider>
+          {showMaintenanceBlock && <MaintenanceOverlay />}
+
           {/* Global Ambient Background */}
           <div className="fixed inset-0 z-0 pointer-events-none">
             <Image
@@ -36,12 +63,19 @@ export default function RootLayout({ children }) {
             <div className="absolute inset-0 bg-linear-to-b from-[#070b14]/70 via-[#070b14]/90 to-[#070b14] backdrop-blur-xs" />
           </div>
 
-          {/* App Layout */}
           <div className="relative z-10 flex flex-col min-h-screen">
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <AIAssistant />
+            {!showMaintenanceBlock && <Navbar />}
+            <main className="flex-1">
+              {showMaintenanceBlock ? (
+                <div className="flex flex-col items-center justify-center min-h-screen">
+                  {/* The fixed overlay handles the UI */}
+                </div>
+              ) : (
+                children
+              )}
+            </main>
+            {!showMaintenanceBlock && <Footer />}
+            {!showMaintenanceBlock && <AIAssistant />}
           </div>
         </SessionProvider>
       </body>

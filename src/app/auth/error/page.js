@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Home, AlertTriangle } from "lucide-react";
+import { Suspense } from "react";
 
 const ERROR_MESSAGES = {
   Configuration: "There's a server configuration error. Please contact support.",
@@ -15,11 +16,38 @@ const ERROR_MESSAGES = {
   Default: "An unexpected error occurred. Please try again.",
 };
 
-export default function AuthErrorPage() {
+function AuthErrorContent() {
   const searchParams = useSearchParams();
   const errorCode = searchParams.get("error");
   const message = ERROR_MESSAGES[errorCode] || ERROR_MESSAGES.Default;
 
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+      <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+        <AlertTriangle className="w-7 h-7 text-red-500" />
+      </div>
+      <h1 className="text-xl font-bold text-gray-900 mb-2">Sign-in failed</h1>
+      <p className="text-sm text-gray-500 mb-8">{message}</p>
+
+      <div className="flex flex-col gap-3">
+        <Link
+          href="/auth/login"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-colors text-sm flex items-center justify-center"
+        >
+          Try again
+        </Link>
+        <Link
+          href="/"
+          className="w-full border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold py-3 rounded-xl transition-colors text-sm flex items-center justify-center"
+        >
+          Back to home
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+export default function AuthErrorPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md text-center">
@@ -32,28 +60,9 @@ export default function AuthErrorPage() {
           </span>
         </Link>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-          <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
-            <AlertTriangle className="w-7 h-7 text-red-500" />
-          </div>
-          <h1 className="text-xl font-bold text-gray-900 mb-2">Sign-in failed</h1>
-          <p className="text-sm text-gray-500 mb-8">{message}</p>
-
-          <div className="flex flex-col gap-3">
-            <Link
-              href="/auth/login"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-colors text-sm"
-            >
-              Try again
-            </Link>
-            <Link
-              href="/"
-              className="w-full border border-gray-200 text-gray-700 font-medium py-3 rounded-xl transition-colors text-sm hover:bg-gray-50"
-            >
-              Back to home
-            </Link>
-          </div>
-        </div>
+        <Suspense fallback={<div className="p-8 text-center text-gray-500">Loading...</div>}>
+          <AuthErrorContent />
+        </Suspense>
       </div>
     </div>
   );

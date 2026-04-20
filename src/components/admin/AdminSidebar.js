@@ -10,7 +10,10 @@ import {
   MessageSquare,
   Settings,
   LogOut,
-  ArrowRight
+  ArrowRight,
+  FileText,
+  IndianRupee,
+  Star
 } from "lucide-react";
 import Image from "next/image";
 
@@ -21,7 +24,10 @@ export default function AdminSidebar({ user }) {
     { label: "Overview", href: "/admin", icon: LayoutDashboard },
     { label: "Users & Roles", href: "/admin/users", icon: Users },
     { label: "Properties", href: "/admin/properties", icon: Building2 },
+    { label: "Leases & Contracts", href: "/admin/leases", icon: FileText },
+    { label: "Payments Ledger", href: "/admin/payments", icon: IndianRupee },
     { label: "Enquiries", href: "/admin/enquiries", icon: MessageSquare },
+    { label: "Reviews & Trust", href: "/admin/reviews", icon: Star },
     { label: "Platform Settings", href: "/admin/settings", icon: Settings },
   ];
 
@@ -79,8 +85,8 @@ export default function AdminSidebar({ user }) {
               key={link.href}
               href={link.href}
               className={`flex items-center justify-between gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 ${isActive
-                  ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/25"
-                  : "text-slate-300 hover:bg-white/5 hover:text-white"
+                ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/25"
+                : "text-slate-300 hover:bg-white/5 hover:text-white"
                 }`}
             >
               <div className="flex items-center gap-3">

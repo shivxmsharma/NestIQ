@@ -25,6 +25,17 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ── Hide Number Input Spinners WebKit/Moz ── */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 /* Custom Sleek Indigo Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

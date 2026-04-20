@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import connectDB from "@/lib/db";
-import Lease from "@/lib/models/Lease";
-import Payment from "@/lib/models/Payment";
+import connectDB from "../../../../../lib/db";
+import Lease from "../../../../../lib/models/Lease";
+import Payment from "../../../../../lib/models/Payment";
 import crypto from "crypto";
 
 export async function POST(request) {

@@ -1,8 +1,10 @@
-import { ShieldAlert, Users, Home, AlertCircle, MessageSquare } from "lucide-react";
+import { ShieldAlert, Users, Home, AlertCircle, MessageSquare, FileText, IndianRupee } from "lucide-react";
 import connectDB from "../../lib/db";
 import User from "../../lib/models/User";
 import Property from "../../lib/models/Property";
 import Enquiry from "../../lib/models/Enquiry";
+import Lease from "../../lib/models/Lease";
+import Payment from "../../lib/models/Payment";
 
 export const metadata = {
   title: "Admin Overview | NestIQ",
@@ -31,16 +33,24 @@ export default async function AdminOverview() {
     pendingProperties,
     activeProperties,
     totalEnquiries,
+    activeLeases,
     recentUsers,
     recentProperties,
+    recentLeases,
+    paymentVolumeAgg,
   ] = await Promise.all([
     User.countDocuments(),
     Property.countDocuments({ status: "pending-review" }),
     Property.countDocuments({ status: "active" }),
     Enquiry.countDocuments(),
+    Lease.countDocuments({ status: "active" }),
     User.find().sort({ createdAt: -1 }).limit(5).lean(),
     Property.find({ status: "pending-review" }).sort({ createdAt: -1 }).limit(5).lean(),
+    Lease.find({ status: "active" }).populate("property", "title").sort({ createdAt: -1 }).limit(5).lean(),
+    Payment.aggregate([{ $match: { status: 'paid' } }, { $group: { _id: null, total: { $sum: '$amount' } } }])
   ]);
+
+  const paymentVolume = paymentVolumeAgg[0]?.total ? paymentVolumeAgg[0].total / 100 : 0;
 
   const activities = [
     ...recentUsers.map((u) => ({
@@ -65,6 +75,17 @@ export default async function AdminOverview() {
       time: p.createdAt,
       color: "bg-amber-500",
     })),
+    ...recentLeases.map((l) => ({
+      _id: l._id.toString() + "-lease",
+      type: "lease",
+      title: (
+        <>
+          New lease activated for <span className="font-semibold text-white">{l.property?.title || 'a property'}</span>
+        </>
+      ),
+      time: l.createdAt,
+      color: "bg-emerald-500",
+    })),
   ]
     .sort((a, b) => new Date(b.time) - new Date(a.time))
     .slice(0, 5);
@@ -82,7 +103,7 @@ export default async function AdminOverview() {
       </div>
 
       {/* Grid for Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {/* Total Users */}
         <div className="bg-[#111827]/80 backdrop-blur-xl border border-indigo-500/20 rounded-3xl p-6 shadow-xl relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -128,6 +149,30 @@ export default async function AdminOverview() {
           <h2 className="text-4xl font-black text-white">{totalEnquiries.toLocaleString()}</h2>
           <div className="mt-4 text-sm font-medium text-purple-500/80">
             Platform communications
+          </div>
+        </div>
+
+        {/* Active Leases */}
+        <div className="bg-[#111827]/80 backdrop-blur-xl border border-blue-500/20 rounded-3xl p-6 shadow-xl relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+            <FileText className="w-24 h-24 text-blue-500" />
+          </div>
+          <p className="text-sm font-bold text-blue-400 uppercase tracking-wider mb-2">Active Leases</p>
+          <h2 className="text-4xl font-black text-white">{activeLeases.toLocaleString()}</h2>
+          <div className="mt-4 text-sm font-medium text-blue-500/80">
+            Digitally signed agreements
+          </div>
+        </div>
+
+        {/* Payment Volume */}
+        <div className="bg-[#111827]/80 backdrop-blur-xl border border-emerald-500/20 rounded-3xl p-6 shadow-xl relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+            <IndianRupee className="w-24 h-24 text-emerald-500" />
+          </div>
+          <p className="text-sm font-bold text-emerald-400 uppercase tracking-wider mb-2">Total Processed Vol</p>
+          <h2 className="text-4xl font-black text-white flex items-center"><IndianRupee className="w-8 h-8" />{paymentVolume.toLocaleString('en-IN')}</h2>
+          <div className="mt-4 text-sm font-medium text-emerald-500/80">
+            Securely through Razorpay
           </div>
         </div>
       </div>

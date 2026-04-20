@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import connectDB from "@/lib/db";
-import Lease from "@/lib/models/Lease";
-import Payment from "@/lib/models/Payment";
+import { authOptions } from "../../../../../../lib/auth";
+import connectDB from "../../../../../../lib/db";
+import Lease from "../../../../../../lib/models/Lease";
+import Payment from "../../../../../../lib/models/Payment";
 import Razorpay from "razorpay";
 
 export async function POST(request, { params }) {

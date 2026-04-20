@@ -560,7 +560,7 @@ export default function DocumentsPage() {
       {renewModal.show && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-[#111] border border-white/10 rounded-3xl w-full max-w-md overflow-hidden relative">
-            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+            <div className="absolute top-0 inset-x-0 h-1 bg-linear-to-r from-blue-500 to-indigo-500"></div>
 
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
@@ -640,7 +640,7 @@ export default function DocumentsPage() {
       {terminateModal.show && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-[#111] border border-white/10 rounded-3xl w-full max-w-md overflow-hidden relative">
-            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-rose-500 to-red-600"></div>
+            <div className="absolute top-0 inset-x-0 h-1 bg-linear-to-r from-rose-500 to-red-600"></div>
 
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">

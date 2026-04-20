@@ -166,6 +166,22 @@ export default function Navbar() {
                         <p className="text-xs text-slate-400 truncate">{session.user.email}</p>
                       </div>
 
+                      {session.user.role === 'admin' && (
+                        <Link
+                          href="/admin"
+                          className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-bold text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 border border-indigo-500/10 hover:border-indigo-500/30 transition-all group/item mb-1"
+                          onClick={() => setDropdownOpen(false)}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="p-1.5 bg-indigo-500/10 group-hover/item:bg-indigo-500/20 text-indigo-400 rounded-lg transition-colors">
+                              <LayoutDashboard className="w-4 h-4" />
+                            </div>
+                            Control Panel
+                          </div>
+                          <span className="text-[9px] uppercase tracking-widest bg-indigo-500/20 px-2 py-0.5 rounded-full border border-indigo-500/30">Admin</span>
+                        </Link>
+                      )}
+
                       <Link
                         href="/manage"
                         className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-bold text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 border border-emerald-500/10 hover:border-emerald-500/30 transition-all group/item mb-1"

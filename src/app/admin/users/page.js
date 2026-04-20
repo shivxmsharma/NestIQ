@@ -15,6 +15,8 @@ import {
   RefreshCw
 } from "lucide-react";
 
+import Link from "next/link";
+
 export default function AdminUsersPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -210,9 +212,12 @@ export default function AdminUsersPage() {
 
                       {/* Actions */}
                       <td className="px-6 py-4 text-right">
-                        <button className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
-                          <MoreVertical className="w-5 h-5" />
-                        </button>
+                        <Link
+                          href={`/admin/users/${user._id.toString()}`}
+                          className="p-2 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-colors inline-block"
+                        >
+                          <MoreVertical className="w-5 h-5 mx-auto" />
+                        </Link>
                       </td>
                     </tr>
                   ))
