@@ -139,7 +139,7 @@ export default async function AdminLeasesPage() {
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
                         <span className="font-semibold text-emerald-400">
-                          ₹{lease.monthlyRent?.toLocaleString('en-IN')}
+                          ₹{lease.rentAmount?.toLocaleString('en-IN')}
                         </span>
                         {lease.autoPayEnabled && (
                           <span className="text-xs text-indigo-400 font-medium px-2 py-0.5 bg-indigo-500/10 rounded-md mt-1 w-fit">

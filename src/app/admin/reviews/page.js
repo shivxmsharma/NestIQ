@@ -14,11 +14,11 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminReviewsPage() {
   const session = await getServerSession(authOptions);
-  if (!session?.user) redirect("/auth/login");
+  if (!session || session.user.role !== "admin") {
+    redirect("/dashboard");
+  }
 
   await dbConnect();
-  const dbUser = await User.findById(session.user.id).select("role").lean();
-  if (dbUser?.role !== "admin") redirect("/");
 
   // Fetch all reviews
   const allReviews = await Review.find()

@@ -353,7 +353,7 @@ export default function HomePage() {
                       {property.photos?.[0]?.url || property.coverPhoto ? (
                         <Image
                           src={property.photos?.[0]?.url || property.coverPhoto}
-                          alt={property.title}
+                          alt={property.title || `${property.propertyType} in ${property.address?.locality || 'Unknown'}`}
                           fill
                           unoptimized
                           className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"

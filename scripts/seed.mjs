@@ -15,13 +15,12 @@ dotenv.config({ path: join(__dirname, "../.env.local") });
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
-// ─── Inline Schemas (avoids @/ alias issues in plain Node) ────────────────────
 
 const UserSchema = new mongoose.Schema(
   {
     name: String,
     email: { type: String, unique: true },
-    password: String,
+    passwordHash: { type: String, select: false },
     role: { type: String, enum: ["buyer", "seller", "broker", "admin"], default: "buyer" },
     phone: String,
     avatar: String,
@@ -35,6 +34,7 @@ const UserSchema = new mongoose.Schema(
 
 const PropertySchema = new mongoose.Schema(
   {
+    title: { type: String },
     listingType: { type: String, enum: ["buy", "rent", "pg"] },
     propertyType: String,
     price: Number,
@@ -85,6 +85,65 @@ const EnquirySchema = new mongoose.Schema(
     enquiryType: { type: String, enum: ["general", "visit", "offer"], default: "general" },
     status: { type: String, enum: ["pending", "responded", "closed", "spam"], default: "pending" },
     isRead: { type: Boolean, default: false },
+  },
+  { timestamps: true }
+);
+
+const LeaseSchema = new mongoose.Schema(
+  {
+    property: { type: mongoose.Schema.Types.ObjectId, ref: "Property" },
+    tenant: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    landlord: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    startDate: { type: Date },
+    endDate: { type: Date },
+    rentAmount: { type: Number },
+    securityDeposit: { type: Number },
+    status: { type: String, default: "active" },
+  },
+  { timestamps: true }
+);
+
+const PaymentSchema = new mongoose.Schema(
+  {
+    property: { type: mongoose.Schema.Types.ObjectId, ref: "Property" },
+    tenant: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    landlord: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    amount: { type: Number },
+    currency: { type: String, default: "INR" },
+    paymentType: { type: String, default: "rent" },
+    lease: { type: mongoose.Schema.Types.ObjectId, ref: "Lease" },
+    razorpayOrderId: { type: String },
+    razorpayPaymentId: { type: String },
+    status: { type: String, default: "paid" },
+    rentMonth: { type: Number },
+    rentYear: { type: Number },
+  },
+  { timestamps: true }
+);
+
+const MaintenanceSchema = new mongoose.Schema(
+  {
+    property: { type: mongoose.Schema.Types.ObjectId, ref: "Property" },
+    lease: { type: mongoose.Schema.Types.ObjectId, ref: "Lease" },
+    tenant: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    landlord: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    title: String,
+    description: String,
+    issueType: { type: String, default: "plumbing" },
+    priority: { type: String, default: "medium" },
+    status: { type: String, default: "open" },
+  },
+  { timestamps: true }
+);
+
+const ReviewSchema = new mongoose.Schema(
+  {
+    reviewer: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    reviewee: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    property: { type: mongoose.Schema.Types.ObjectId, ref: "Property" },
+    rating: { type: Number },
+    comment: { type: String },
+    status: { type: String, default: "published" },
   },
   { timestamps: true }
 );
@@ -210,6 +269,7 @@ function makeProperties(sellers) {
     const owner = sellers[i % sellers.length];
 
     props.push({
+      title: `${t.bedrooms ? t.bedrooms + ' BHK ' : ''}${t.propertyType.charAt(0).toUpperCase() + t.propertyType.slice(1)} in ${loc.locality}`,
       listingType: t.listingType,
       propertyType: t.propertyType,
       price: t.price,
@@ -282,6 +342,112 @@ function makeEnquiries(properties, buyers, sellers) {
   return enquiries;
 }
 
+function makeLeasesAndPayments(properties, buyers) {
+  const leases = [];
+  const payments = [];
+  
+  const rentProperties = properties.filter(p => p.listingType === "rent" || p.listingType === "pg");
+  
+  for (let i = 0; i < Math.min(8, rentProperties.length); i++) {
+    const prop = rentProperties[i];
+    const tenant = buyers[i % buyers.length];
+    
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - Math.floor(Math.random() * 5));
+    const endDate = new Date(startDate);
+    endDate.setMonth(endDate.getMonth() + 11);
+    
+    const leaseId = new mongoose.Types.ObjectId();
+    
+    leases.push({
+      _id: leaseId,
+      property: prop._id,
+      tenant: tenant._id,
+      landlord: prop.owner,
+      startDate,
+      endDate,
+      rentAmount: prop.price,
+      securityDeposit: prop.price * 2,
+      status: "active"
+    });
+    
+    payments.push({
+      property: prop._id,
+      tenant: tenant._id,
+      landlord: prop.owner,
+      amount: prop.price * 2 * 100,
+      paymentType: "security_deposit",
+      lease: leaseId,
+      razorpayOrderId: "order_sec_" + Math.random().toString(36).substring(2, 9),
+      razorpayPaymentId: "pay_" + Math.random().toString(36).substring(2, 9),
+      status: "paid",
+    });
+    
+    const isPaid = Math.random() > 0.2;
+    payments.push({
+      property: prop._id,
+      tenant: tenant._id,
+      landlord: prop.owner,
+      amount: prop.price * 100,
+      paymentType: "rent",
+      lease: leaseId,
+      razorpayOrderId: "order_rnt_" + Math.random().toString(36).substring(2, 9),
+      razorpayPaymentId: isPaid ? "pay_" + Math.random().toString(36).substring(2, 9) : null,
+      status: isPaid ? "paid" : pick(["failed", "pending"]),
+      rentMonth: new Date().getMonth() + 1,
+      rentYear: new Date().getFullYear(),
+    });
+  }
+  
+  return { leases, payments };
+}
+
+function makeTenancyHubData(leases) {
+  const maintenanceRecords = [];
+  const reviews = [];
+  
+  leases.forEach((lease, index) => {
+    // 1 in 2 chance to have a maintenance issue
+    if (Math.random() > 0.5) {
+      maintenanceRecords.push({
+        property: lease.property,
+        lease: lease._id,
+        tenant: lease.tenant,
+        landlord: lease.landlord,
+        title: pick(["Leaking Faucet in Master Bath", "AC Not Cooling", "Broken Main Door Lock", "Geyser Malfunction", "Wall Paint Peeling"]),
+        description: "Noticed this issue a few days ago, needs urgent fixing according to standard tenancy agreement.",
+        issueType: pick(["plumbing", "electrical", "appliance", "structural", "other"]),
+        priority: pick(["low", "medium", "high", "emergency"]),
+        status: pick(["open", "in-progress", "resolved", "closed"])
+      });
+    }
+
+    // Always generate a review between tenant and landlord
+    reviews.push({
+      reviewer: lease.tenant,
+      reviewee: lease.landlord,
+      property: lease.property,
+      rating: Math.floor(Math.random() * 2) + 4, // 4 or 5 stars largely
+      comment: pick(["Excellent property and very responsive landlord.", "Smooth renting experience.", "Highly recommend this broker, very transparent throughout the process.", "Property was maintained well upon move-in."]),
+      status: "published"
+    });
+    
+    // Sometimes landlord reviews tenant
+    if (Math.random() > 0.4) {
+       reviews.push({
+          reviewer: lease.landlord,
+          reviewee: lease.tenant,
+          property: null, 
+          rating: 5,
+          comment: "Great tenant. Pays rent on time and maintains the property perfectly.",
+          status: "published"
+       });
+    }
+  });
+
+  return { maintenanceRecords, reviews };
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -298,6 +464,10 @@ async function main() {
   const User = mongoose.models.User || mongoose.model("User", UserSchema);
   const Property = mongoose.models.Property || mongoose.model("Property", PropertySchema);
   const Enquiry = mongoose.models.Enquiry || mongoose.model("Enquiry", EnquirySchema);
+  const Lease = mongoose.models.Lease || mongoose.model("Lease", LeaseSchema);
+  const Payment = mongoose.models.Payment || mongoose.model("Payment", PaymentSchema);
+  const Maintenance = mongoose.models.Maintenance || mongoose.model("Maintenance", MaintenanceSchema);
+  const Review = mongoose.models.Review || mongoose.model("Review", ReviewSchema);
 
   // Wipe existing demo data
   console.log("🗑  Clearing existing data…");
@@ -305,13 +475,17 @@ async function main() {
     User.deleteMany({}),
     Property.deleteMany({}),
     Enquiry.deleteMany({}),
+    Lease.deleteMany({}),
+    Payment.deleteMany({}),
+    Maintenance.deleteMany({}),
+    Review.deleteMany({}),
   ]);
   console.log("   Done.\n");
 
   // Create users
   console.log("👥 Creating users…");
   const createdUsers = await User.insertMany(
-    USERS.map((u) => ({ ...u, password: DEMO_PASSWORD }))
+    USERS.map((u) => ({ ...u, passwordHash: DEMO_PASSWORD, isVerified: true }))
   );
 
   const adminUser = createdUsers.find((u) => u.role === "admin");
@@ -331,6 +505,20 @@ async function main() {
   const createdEnquiries = await Enquiry.insertMany(enquiryData);
   console.log(`   ${createdEnquiries.length} enquiries created.\n`);
 
+  // Create leases and payments
+  console.log("📝 Creating leases and payments…");
+  const { leases, payments } = makeLeasesAndPayments(createdProperties, buyers);
+  const createdLeases = await Lease.insertMany(leases);
+  const createdPayments = await Payment.insertMany(payments);
+  console.log(`   ${createdLeases.length} leases & ${createdPayments.length} payments created.\n`);
+
+  // Create Tenancy Hub Data (Maintenance & Reviews)
+  console.log("🛠  Creating Tenancy Hub Data…");
+  const { maintenanceRecords, reviews } = makeTenancyHubData(createdLeases);
+  const createdMaintenance = await Maintenance.insertMany(maintenanceRecords);
+  const createdReviews = await Review.insertMany(reviews);
+  console.log(`   ${createdMaintenance.length} maintenance tickets & ${createdReviews.length} reviews created.\n`);
+
   // Summary
   console.log("═══════════════════════════════════════");
   console.log("  🎉  NestIQ Demo Seed Complete!\n");
@@ -338,13 +526,17 @@ async function main() {
   console.log("  Password: Demo@1234\n");
   console.log("  Role          | Email");
   console.log("  ─────────────────────────────────────");
-  createdUsers.slice(0, 6).forEach((u) => {
+  createdUsers.forEach((u) => {
     console.log(`  ${u.role.padEnd(13)} | ${u.email}`);
   });
   console.log("\n  📊 Database Summary:");
-  console.log(`     Users      : ${createdUsers.length}`);
-  console.log(`     Properties : ${createdProperties.length}`);
-  console.log(`     Enquiries  : ${createdEnquiries.length}`);
+  console.log(`     Users         : ${createdUsers.length}`);
+  console.log(`     Properties    : ${createdProperties.length}`);
+  console.log(`     Enquiries     : ${createdEnquiries.length}`);
+  console.log(`     Leases        : ${createdLeases.length}`);
+  console.log(`     Payments      : ${createdPayments.length}`);
+  console.log(`     Maintenance   : ${createdMaintenance.length}`);
+  console.log(`     Reviews       : ${createdReviews.length}`);
   console.log("═══════════════════════════════════════\n");
 
   await mongoose.disconnect();
