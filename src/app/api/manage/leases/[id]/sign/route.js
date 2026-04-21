@@ -18,8 +18,8 @@ export async function POST(request, { params }) {
 
     const isLandlord = ["seller", "admin", "broker"].includes(user.role);
 
-    if (isLandlord && lease.landlord._id.toString() === user.id) {
-      // Landlord signs
+    if (isLandlord && (lease.landlord._id.toString() === user.id || user.role === "admin")) {
+      // Landlord or Admin signs
       lease.landlordSignedAt = new Date();
       await lease.save();
       return NextResponse.json({ success: true, lease });

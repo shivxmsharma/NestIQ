@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { Home, Users, Search, IndianRupee, FileText, CheckCircle, Plus } from "lucide-react";
@@ -23,10 +23,31 @@ export default function Properties() {
     startDate: "",
     endDate: "",
   });
+  const [tenantPreview, setTenantPreview] = useState(null); // { name, email, avatar } | 'not_found' | null
+  const lookupRef = useRef(null);
 
   useEffect(() => {
     fetchProperties();
   }, []);
+
+  // Live tenant email lookup
+  useEffect(() => {
+    const email = leaseForm.tenantEmail;
+    if (!email || !email.includes("@")) {
+      setTenantPreview(null);
+      return;
+    }
+    clearTimeout(lookupRef.current);
+    lookupRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/users/lookup?email=${encodeURIComponent(email)}`);
+        const data = await res.json();
+        setTenantPreview(data.user ? data.user : "not_found");
+      } catch {
+        setTenantPreview("not_found");
+      }
+    }, 500);
+  }, [leaseForm.tenantEmail]);
 
   const fetchProperties = async () => {
     try {
@@ -44,6 +65,7 @@ export default function Properties() {
 
   const handleOpenLeaseModal = (prop) => {
     setSelectedProperty(prop);
+    setTenantPreview(null);
     setLeaseForm({
       tenantEmail: "",
       rentAmount: prop.price || "",
@@ -253,6 +275,24 @@ export default function Properties() {
                   autoFocus
                 />
                 <p className="text-[10px] text-slate-500 mt-1">The tenant must have registered an account with this email.</p>
+
+                {/* Tenant Preview */}
+                {tenantPreview === "not_found" && (
+                  <div className="mt-2 flex items-center gap-2 px-3 py-2 rounded-xl bg-rose-500/10 border border-rose-500/20">
+                    <span className="text-xs text-rose-400 font-medium">⚠ No NestIQ account found with this email.</span>
+                  </div>
+                )}
+                {tenantPreview && tenantPreview !== "not_found" && (
+                  <div className="mt-2 flex items-center gap-3 px-3 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                    <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-sm font-bold text-emerald-400 shrink-0">
+                      {tenantPreview.name?.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-white">{tenantPreview.name}</p>
+                      <p className="text-xs text-emerald-400">✓ Verified NestIQ Account</p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -313,7 +353,7 @@ export default function Properties() {
                 </button>
                 <button
                   type="submit"
-                  disabled={submittingLease}
+                  disabled={submittingLease || !tenantPreview || tenantPreview === "not_found"}
                   className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-500/30"
                 >
                   {submittingLease ? "Issuing..." : "Issue Lease"}

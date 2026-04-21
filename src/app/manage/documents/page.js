@@ -17,6 +17,7 @@ export default function DocumentsPage() {
   const [renewModal, setRenewModal] = useState({ show: false, lease: null });
   const [renewForm, setRenewForm] = useState({ newStartDate: '', newEndDate: '', newRentAmount: '' });
   const [terminateModal, setTerminateModal] = useState({ show: false, lease: null });
+  const [paymentSuccessModal, setPaymentSuccessModal] = useState({ show: false });
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
@@ -270,7 +271,7 @@ export default function DocumentsPage() {
           if (verifyData.error) {
             showMessage('error', verifyData.error);
           } else {
-            showMessage('success', "Deposit paid and Lease Activated!");
+            setPaymentSuccessModal({ show: true });
             fetchLeases();
           }
         },
@@ -706,6 +707,33 @@ export default function DocumentsPage() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Success Modal */}
+      {paymentSuccessModal.show && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="bg-[#111] border border-white/10 rounded-3xl w-full max-w-sm overflow-hidden relative flex flex-col items-center p-8 text-center animate-in zoom-in-95 duration-300">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-400 to-emerald-600"></div>
+
+            <div className="w-24 h-24 bg-emerald-500/20 rounded-full flex items-center justify-center mb-6">
+              <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.5)]">
+                <FileCheck className="w-8 h-8 text-white" />
+              </div>
+            </div>
+
+            <h3 className="text-2xl font-bold text-white mb-2">Payment Received!</h3>
+            <p className="text-slate-400 text-sm mb-8 leading-relaxed">
+              Your security deposit has been beautifully processed. The residential lease agreement is now permanently linked and officially active.
+            </p>
+
+            <button
+              onClick={() => setPaymentSuccessModal({ show: false })}
+              className="w-full px-4 py-3.5 bg-emerald-500 hover:bg-emerald-600 shadow-[0_4px_15px_rgba(16,185,129,0.3)] text-white rounded-xl text-sm font-bold transition-all hover:scale-[1.02]"
+            >
+              Acknowledge
+            </button>
           </div>
         </div>
       )}

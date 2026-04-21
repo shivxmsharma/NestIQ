@@ -19,7 +19,8 @@ export async function GET(req) {
 
     const leases = await Lease.find(query)
       .populate("property", "title address photos propertyType")
-      .populate(isLandlord ? "tenant" : "landlord", "name email phone avatar")
+      .populate("tenant", "name email phone avatar")
+      .populate("landlord", "name email phone avatar")
       .sort({ createdAt: -1 });
 
     return NextResponse.json({ success: true, leases });

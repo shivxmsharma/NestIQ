@@ -26,41 +26,48 @@ export async function GET() {
 
 // POST — find or create conversation for a property
 export async function POST(req) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  await connectDB();
-  const { propertyId } = await req.json();
+    await connectDB();
+    const { propertyId } = await req.json();
 
-  const property = await Property.findById(propertyId);
-  if (!property) return NextResponse.json({ error: "Property not found" }, { status: 404 });
+    const property = await Property.findById(propertyId);
+    if (!property) return NextResponse.json({ error: "Property not found" }, { status: 404 });
 
-  const buyerId = session.user.id;
-  const sellerId = property.owner.toString();
+    const buyerId = session.user.id;
+    const sellerId = property.owner?.toString();
 
-  if (buyerId === sellerId) {
-    return NextResponse.json({ error: "Cannot chat with yourself" }, { status: 400 });
-  }
+    if (!sellerId) return NextResponse.json({ error: "Property has no owner" }, { status: 400 });
 
-  let conversation = await Conversation.findOne({
-    property: propertyId,
-    buyer: buyerId,
-    seller: sellerId,
-  });
+    if (buyerId === sellerId) {
+      return NextResponse.json({ error: "Cannot chat with yourself" }, { status: 400 });
+    }
 
-  if (!conversation) {
-    conversation = await Conversation.create({
+    let conversation = await Conversation.findOne({
       property: propertyId,
       buyer: buyerId,
       seller: sellerId,
     });
+
+    if (!conversation) {
+      conversation = await Conversation.create({
+        property: propertyId,
+        buyer: buyerId,
+        seller: sellerId,
+      });
+    }
+
+    await conversation.populate([
+      { path: "property", select: "title photos address price" },
+      { path: "buyer", select: "name avatar" },
+      { path: "seller", select: "name avatar" },
+    ]);
+
+    return NextResponse.json(conversation);
+  } catch (error) {
+    console.error("DEBUG Chat POST Error:", error);
+    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
   }
-
-  await conversation.populate([
-    { path: "property", select: "title photos address price" },
-    { path: "buyer", select: "name avatar" },
-    { path: "seller", select: "name avatar" },
-  ]);
-
-  return NextResponse.json(conversation);
 }
