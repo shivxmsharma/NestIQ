@@ -17,9 +17,26 @@ const geist = Geist({
 });
 
 export const metadata = {
-  title: "NestIQ — Find smarter, live better",
-  description:
-    "Chandigarh's most trusted real estate portal. Buy, rent, or sell properties with AI-powered search and verified listings.",
+  metadataBase: new URL("https://nestiq.in"),
+  title: {
+    default: "NestIQ | Find smarter, live better. Real Estate Platform",
+    template: "%s | NestIQ",
+  },
+  description: "Advanced AI-powered real estate portal for Chandigarh Tricity. Buy, rent, or sell verified residential and commercial properties securely.",
+  keywords: ["Real Estate", "Chandigarh Properties", "Buy Flat Chandigarh", "NestIQ", "AI Property Search"],
+  authors: [{ name: "NestIQ" }],
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://nestiq.in",
+    title: "NestIQ | Revolutionizing Real Estate",
+    description: "Discover verified properties seamlessly using AI.",
+    siteName: "NestIQ",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "NestIQ Real Estate",
+  },
 };
 
 export default async function RootLayout({ children }) {

@@ -138,6 +138,10 @@ const PropertySchema = new mongoose.Schema(
       enum: ["active", "inactive", "sold", "rented", "pending-review"],
       default: "active",
     },
+    isFeatured: {
+      type: Boolean,
+      default: false,
+    },
     views: {
       type: Number,
       default: 0,
