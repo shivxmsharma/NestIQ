@@ -231,8 +231,31 @@ export default function PropertyDetailPage() {
     "Garden": "🌳", "CCTV": "📹", "Intercom": "📞",
   };
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateListing",
+    "name": property.title,
+    "description": property.description || `A verified ${property.propertyType} available for ${property.listingType}.`,
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": property.address?.locality,
+      "addressRegion": property.address?.city,
+      "addressCountry": "IN"
+    },
+    "numberOfRooms": property.details?.bedrooms || 1,
+    "offers": {
+      "@type": "Offer",
+      "price": property.price,
+      "priceCurrency": "INR"
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#0b1120] relative w-full">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Background Ambient Glow beneath content */}
       <div className="absolute top-0 left-0 w-125 h-125 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-125 h-125 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
