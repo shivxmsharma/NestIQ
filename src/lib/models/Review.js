@@ -38,9 +38,9 @@ const reviewSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Prevent a user from reviewing the same person multiple times (or per property)
-// For simplicity, 1 review per unique pair of users.
-reviewSchema.index({ reviewer: 1, reviewee: 1 }, { unique: true });
+// Prevent a user from reviewing the same person multiple times for the same property context
+// A user can review a landlord once generally (property=null), or once per distinct property
+reviewSchema.index({ reviewer: 1, reviewee: 1, property: 1 }, { unique: true });
 
 // Pre-save hook or statics can be used to update `reviewee` Trust Score
 reviewSchema.statics.calculateAverageTrustScore = async function (revieweeId) {

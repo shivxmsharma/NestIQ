@@ -12,13 +12,22 @@ export async function GET(req, { params }) {
       return NextResponse.json({ error: "Missing user ID" }, { status: 400 });
     }
 
+    const { searchParams } = new URL(req.url);
+    const propertyId = searchParams.get("propertyId");
+
     await dbConnect();
 
     // Fetch published reviews only
-    const reviews = await Review.find({
+    const query = {
       reviewee: id,
       status: "published",
-    })
+    };
+
+    if (propertyId) {
+      query.property = propertyId;
+    }
+
+    const reviews = await Review.find(query)
       .populate("reviewer", "name avatar role")
       .populate("property", "title location.city location.state")
       .sort({ createdAt: -1 })

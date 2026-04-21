@@ -16,7 +16,10 @@ export default function UserReviewsSection({ targetUser, propertyContextId }) {
   useEffect(() => {
     async function fetchReviews() {
       try {
-        const res = await fetch(`/api/users/${targetUser._id}/reviews`);
+        const url = propertyContextId 
+          ? `/api/users/${targetUser._id}/reviews?propertyId=${propertyContextId}`
+          : `/api/users/${targetUser._id}/reviews`;
+        const res = await fetch(url);
         const data = await res.json();
         setReviews(Array.isArray(data) ? data : []);
       } catch (err) {
