@@ -1,6 +1,15 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Create a transporter using environment variables
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT || "587"),
+  secure: process.env.SMTP_SECURE === "true", // true for 465, false for others
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
 export async function sendVisitStatusEmail({
   buyerEmail,
@@ -10,7 +19,10 @@ export async function sendVisitStatusEmail({
   visitTime,
   status,
 }) {
-  if (!process.env.RESEND_API_KEY) return; // skip if not set up yet
+  if (!process.env.SMTP_USER) {
+    console.warn("SMTP_USER is missing. Skipping visit status email to:", buyerEmail);
+    return;
+  }
 
   const isConfirmed = status === "confirmed";
   const isCancelled = status === "cancelled";
@@ -67,20 +79,20 @@ export async function sendVisitStatusEmail({
   `;
 
   try {
-    await resend.emails.send({
-      from: "NestIQ <onboarding@resend.dev>",   // replace with noreply@nestiq.in once domain verified
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM || '"NestIQ" <noreply@nestiq.in>',
       to: buyerEmail,
       subject,
       html,
     });
   } catch (err) {
-    console.error("[Resend] Failed to send visit email:", err.message);
+    console.error("[Nodemailer] Failed to send visit email:", err.message);
   }
 }
 
 export async function sendVerificationEmail(email, name, token) {
-  if (!process.env.RESEND_API_KEY) {
-    console.warn("RESEND_API_KEY is missing. Skipping verification email to:", email);
+  if (!process.env.SMTP_USER) {
+    console.warn("SMTP_USER is missing. Skipping verification email to:", email);
     return;
   }
 
@@ -88,8 +100,8 @@ export async function sendVerificationEmail(email, name, token) {
   const verificationUrl = `${baseUrl}/auth/verify-email?token=${token}`;
 
   try {
-    await resend.emails.send({
-      from: "NestIQ <onboarding@resend.dev>", 
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM || '"NestIQ" <noreply@nestiq.in>',
       to: email,
       subject: "Action Required: Verify your NestIQ account",
       html: `
@@ -122,19 +134,19 @@ export async function sendVerificationEmail(email, name, token) {
       `,
     });
   } catch (error) {
-    console.error("Failed to send verification email:", error);
+    console.error("[Nodemailer] Failed to send verification email:", error);
   }
 }
 
 export async function sendWelcomeEmail(email, name) {
-  if (!process.env.RESEND_API_KEY) {
-    console.warn("RESEND_API_KEY is missing. Skipping welcome email to:", email);
+  if (!process.env.SMTP_USER) {
+    console.warn("SMTP_USER is missing. Skipping welcome email to:", email);
     return;
   }
 
   try {
-    await resend.emails.send({
-      from: "NestIQ <onboarding@resend.dev>",
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM || '"NestIQ" <noreply@nestiq.in>',
       to: email,
       subject: "Welcome to NestIQ! 🎉",
       html: `
@@ -169,6 +181,58 @@ export async function sendWelcomeEmail(email, name) {
       `,
     });
   } catch (error) {
-    console.error("Failed to send welcome email:", error);
+    console.error("[Nodemailer] Failed to send welcome email:", error);
+  }
+}
+
+export async function sendPaymentReceipts({
+  payment,
+  razorpayPaymentId,
+  monthName,
+  amountInRupees
+}) {
+  if (!process.env.SMTP_USER) return;
+
+  try {
+    // Send receipt email to tenant
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM || '"NestIQ" <noreply@nestiq.in>',
+      to: payment.tenant.email,
+      subject: `✅ Rent Payment Confirmed — ${monthName} ${payment.rentYear}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:560px;margin:auto;padding:24px">
+          <h2 style="color:#10b981">Rent Payment Successful 🏠</h2>
+          <p>Hi ${payment.tenant.name},</p>
+          <p>Your rent payment for <strong>${monthName} ${payment.rentYear}</strong> has been received.</p>
+          <table style="width:100%;border-collapse:collapse;margin:16px 0">
+            <tr><td style="padding:8px;background:#f3f4f6;font-weight:600">Amount Paid</td>
+                <td style="padding:8px">₹${amountInRupees}</td></tr>
+            <tr><td style="padding:8px;background:#f3f4f6;font-weight:600">Payment ID</td>
+                <td style="padding:8px">${razorpayPaymentId}</td></tr>
+            <tr><td style="padding:8px;background:#f3f4f6;font-weight:600">Landlord</td>
+                <td style="padding:8px">${payment.landlord.name}</td></tr>
+          </table>
+          <p style="color:#6b7280;font-size:13px">Please keep this email as your payment receipt.</p>
+          <p style="color:#6b7280;font-size:13px">— Team NestIQ</p>
+        </div>
+      `,
+    });
+
+    // Notify landlord
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM || '"NestIQ" <noreply@nestiq.in>',
+      to: payment.landlord.email,
+      subject: `💰 Rent Received — ${monthName} ${payment.rentYear}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:560px;margin:auto;padding:24px">
+          <h2 style="color:#3b82f6">Rent Payment Received</h2>
+          <p>Hi ${payment.landlord.name},</p>
+          <p>${payment.tenant.name} has paid rent of <strong>₹${amountInRupees}</strong> for ${monthName} ${payment.rentYear}.</p>
+          <p style="color:#6b7280;font-size:13px">— Team NestIQ</p>
+        </div>
+      `,
+    });
+  } catch (error) {
+    console.error("[Nodemailer] Failed to send receipt emails:", error);
   }
 }
