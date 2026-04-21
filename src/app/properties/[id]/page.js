@@ -16,6 +16,7 @@ import TrustBadge from "../../../components/property/TrustBadge";
 import PropertyAIInsights from "../../../components/ai/PropertyAiInsights";
 import AIAssistant from "../../../components/ai/AiAssistant";
 import UserReviewsSection from "../../../components/property/UserReviewsSection";
+import PropertyCard from "../../../components/property/PropertyCard";
 
 const SinglePropertyMap = dynamic(() => import("../../../components/map/SinglePropertyMap"), { ssr: false });
 
@@ -27,6 +28,71 @@ function formatPrice(price, listingType) {
   if (price >= 10000000) return `₹${(price / 10000000).toFixed(2)} Cr`;
   if (price >= 100000) return `₹${(price / 100000).toFixed(1)} L`;
   return `₹${price.toLocaleString("en-IN")}`;
+}
+
+// ── Related Properties Component ──
+function RelatedProperties({ currentId, locality, city, listingType }) {
+  const [related, setRelated] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [scope, setScope] = useState(locality || city);
+
+  useEffect(() => {
+    async function fetchRelated() {
+      try {
+        let res = await fetch(`/api/properties?locality=${encodeURIComponent(locality || "")}&listingType=${listingType}&limit=5`);
+        let data = await res.json();
+        let filtered = data.properties?.filter((p) => p._id !== currentId).slice(0, 4) || [];
+        
+        if (filtered.length === 0 && city) {
+          // Fallback to city search if locality gives no results
+          res = await fetch(`/api/properties?city=${encodeURIComponent(city)}&listingType=${listingType}&limit=5`);
+          data = await res.json();
+          filtered = data.properties?.filter((p) => p._id !== currentId).slice(0, 4) || [];
+          setScope(city);
+        } else {
+          setScope(locality);
+        }
+        
+        setRelated(filtered);
+      } catch (err) {
+        console.error("Failed to fetch related properties:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchRelated();
+  }, [currentId, locality, city, listingType]);
+
+  if (loading) {
+    return (
+      <div className="mt-16 animate-pulse">
+        <h2 className="text-xl font-bold text-white mb-6 pt-8 border-t border-white/10">More properties nearby</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map(i => <div key={i} className="h-80 bg-white/5 rounded-2xl"></div>)}
+        </div>
+      </div>
+    );
+  }
+
+  // Always render the section to maintain layout consistency
+  return (
+    <div className="mt-16 pt-8 border-t border-white/10">
+      <h2 className="text-2xl font-bold text-white mb-2">Explore Nearby Properties</h2>
+      <p className="text-slate-400 text-sm mb-6">Similar {listingType} properties in {scope}</p>
+      
+      {related.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {related.map((prop) => (
+            <PropertyCard key={prop._id} property={prop} variant="dark" />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12 bg-white/5 border border-white/10 rounded-2xl">
+          <p className="text-slate-400">No other properties found in this area.</p>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function PropertyDetailPage() {
@@ -181,13 +247,13 @@ export default function PropertyDetailPage() {
           <span className="text-slate-200 truncate font-medium">{property.title}</span>
         </nav>
 
-        {/* Top Section: Bento-Box Photo Gallery & AI Insights */}
-        <div className="flex flex-col xl:flex-row gap-4 w-full mb-8">
-          {/* Bento-Box Photo Gallery (Left) */}
-          <div className="relative w-full xl:w-[70%] h-80 md:h-115 rounded-3xl overflow-hidden flex gap-2 group shadow-[0_8px_30px_rgba(0,0,0,0.4)] bg-white/5 border border-white/10 backdrop-blur-sm shrink-0">
+        {/* Top Section: Full-Width Photo Gallery */}
+        <div className="flex flex-col gap-4 w-full mb-8">
+          {/* Photo Gallery */}
+          <div className="relative w-full h-80 md:h-125 rounded-3xl overflow-hidden flex gap-2 group shadow-[0_8px_30px_rgba(0,0,0,0.4)] bg-[#0b1120] border border-white/10 shrink-0">
 
             {/* Main Hero Photo (Left) */}
-            <div className="relative w-full md:w-[65%] h-full cursor-pointer">
+            <div className="relative w-full md:w-[60%] h-full cursor-pointer">
               {photos.length > 0 ? (
                 <>
                   <Image
@@ -258,7 +324,7 @@ export default function PropertyDetailPage() {
             </div>
 
             {/* Right side: 2x2 Small Grid (Desktop Only) */}
-            <div className="hidden md:grid grid-cols-2 grid-rows-2 w-[35%] h-full gap-2 bg-transparent">
+            <div className="hidden md:grid grid-cols-2 grid-rows-2 w-[40%] h-full gap-2 bg-transparent">
               {[1, 2, 3, 4].map((gridIndex) => {
                 const photo = photos[gridIndex];
                 const isLast = gridIndex === 4;
@@ -300,11 +366,6 @@ export default function PropertyDetailPage() {
                 );
               })}
             </div>
-          </div>
-
-          {/* AI Insights Section (Right) */}
-          <div className="w-full xl:w-[30%] h-125 md:h-115 shrink-0">
-            <PropertyAIInsights propertyId={property._id.toString()} />
           </div>
         </div>
 
@@ -374,6 +435,11 @@ export default function PropertyDetailPage() {
                     <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">sq.ft</p>
                   </div>
                 )}
+              </div>
+
+              {/* AI Insights Summary Below Specs */}
+              <div className="mt-8">
+                 <PropertyAIInsights propertyId={property._id.toString()} />
               </div>
 
               {/* Description */}
@@ -675,6 +741,14 @@ export default function PropertyDetailPage() {
 
         <AIAssistant
           propertyContext={`${property.propertyType} for ${property.listingType} in ${property.address?.locality}, ${property.address?.city} at ₹${Number(property.price).toLocaleString("en-IN")}, ${property.details?.bedrooms} BHK, ${property.details?.area} sq ft`}
+        />
+
+        {/* ── Related Properties ── */}
+        <RelatedProperties 
+          currentId={property._id} 
+          locality={property.address?.locality} 
+          city={property.address?.city}
+          listingType={property.listingType} 
         />
       </div>
     </div >
