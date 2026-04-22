@@ -104,13 +104,13 @@ export default async function BuilderDirectoryPage() {
                   </div>
                   <div className="text-center border-x border-white/5">
                     <p className="text-white font-black text-xl leading-none tracking-tighter">
-                      {builder.rating?.average > 0 ? builder.rating.average.toFixed(1) : "—"}
+                      {builder.rating?.average > 0 ? builder.rating.average.toFixed(1) : "Pioneer"}
                     </p>
-                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-black mt-2">Rating</p>
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-black mt-2">Status</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-white font-black text-xl leading-none tracking-tighter">{builder.establishedYear || "—"}</p>
-                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-black mt-2">Since</p>
+                    <p className="text-white font-black text-xl leading-none tracking-tighter">{builder.establishedYear || "2024"}</p>
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-black mt-2">{builder.establishedYear ? "Since" : "Era"}</p>
                   </div>
                 </div>
               </div>

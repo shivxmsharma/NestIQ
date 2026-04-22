@@ -265,7 +265,7 @@ export default async function ProjectDetailPage({ params }) {
                 <div className="h-[1px] bg-white/5 w-full" />
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Audit Status</span>
-                  <span className={`text-xs font-black uppercase tracking-widest ${project.isReraVerified ? "text-emerald-400" : "text-amber-500"}`}>
+                  <span className={`text-xs font-black uppercase tracking-widest ${project.isReraVerified ? "text-emerald-400" : "text-indigo-400"}`}>
                     {project.isReraVerified ? "Certified ✓" : "Verification in progress"}
                   </span>
                 </div>

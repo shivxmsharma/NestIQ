@@ -16,7 +16,7 @@ import {
 } from 'react-instantsearch';
 import {
   Search, SlidersHorizontal, X,
-  ChevronLeft, ChevronRight,
+  ChevronLeft, ChevronRight, ChevronDown,
   MapPin, BadgeCheck, ArrowRight,
   Building2, Filter, LayoutGrid, Sparkles
 } from 'lucide-react';
@@ -112,7 +112,7 @@ function CustomRefinementList({ attribute, title, placeholder }) {
       >
         <span>{title}</span>
         {refinedCount > 0 && <span className="bg-indigo-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{refinedCount}</span>}
-        <ChevronLeft className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-90' : '-rotate-90'}`} />
+        <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (

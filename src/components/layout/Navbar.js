@@ -192,7 +192,7 @@ export default function Navbar() {
                   </button>
 
                   {dropdownOpen && (
-                    <div className="absolute right-0 top-full mt-3 w-64 bg-[#0b1120]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.6)] p-2 z-50 transform origin-top-right transition-all">
+                    <div className="absolute right-0 top-full mt-3 w-64 bg-[#070b14]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.6)] p-2 z-50 transform origin-top-right transition-all">
                       {/* User Info Header */}
                       <div className="px-3 py-3 mb-2 flex flex-col gap-0.5 border-b border-white/5">
                         <p className="text-sm font-bold text-white truncate">{session.user.name}</p>
@@ -217,7 +217,7 @@ export default function Navbar() {
 
                       <Link
                         href="/manage"
-                        className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-bold text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 border border-emerald-500/10 hover:border-emerald-500/30 transition-all group/item mb-1"
+                        className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-bold text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 border border-emerald-500/10 hover:border-emerald-500/30 transition-all group/item mb-1 whitespace-nowrap"
                         onClick={() => setDropdownOpen(false)}
                       >
                         <div className="flex items-center gap-3">

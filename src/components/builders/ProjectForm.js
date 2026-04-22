@@ -134,8 +134,8 @@ export default function ProjectForm({ initialData = null, mode = "create" }) {
         </div>
         
         <div className="flex items-center gap-4 mb-10">
-          <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-            <Building2 className="text-amber-500" />
+          <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+            <Building2 className="text-indigo-500" />
           </div>
           <div>
             <h2 className="text-2xl font-black text-white">Basic Information</h2>
@@ -152,7 +152,7 @@ export default function ProjectForm({ initialData = null, mode = "create" }) {
               placeholder="e.g. Skyline Heights Phase II"
               value={form.title} 
               onChange={(e) => handleChange('title', e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-all font-bold text-lg" 
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all font-bold text-lg" 
             />
           </div>
 
@@ -161,7 +161,7 @@ export default function ProjectForm({ initialData = null, mode = "create" }) {
             <select 
               value={form.projectType} 
               onChange={(e) => handleChange('projectType', e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-all appearance-none"
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all appearance-none"
             >
               {PROJECT_TYPES.map(t => <option key={t} value={t} className="bg-[#0b1120]">{t}</option>)}
             </select>
@@ -185,7 +185,7 @@ export default function ProjectForm({ initialData = null, mode = "create" }) {
               placeholder="Tell buyers what makes this project special..."
               value={form.description} 
               onChange={(e) => handleChange('description', e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-all resize-none" 
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all resize-none" 
             />
           </div>
         </div>
@@ -329,7 +329,7 @@ export default function ProjectForm({ initialData = null, mode = "create" }) {
             <button 
               type="button" 
               onClick={() => addArrayItem('configurations', { type: "", area: 0, price: 0, availableUnits: 0 })}
-              className="w-full py-4 border-2 border-dashed border-white/10 rounded-3xl text-slate-500 font-bold hover:border-amber-500/40 hover:text-amber-500 transition-all flex items-center justify-center gap-2"
+              className="w-full py-4 border-2 border-dashed border-white/10 rounded-3xl text-slate-500 font-bold hover:border-indigo-500/40 hover:text-indigo-500 transition-all flex items-center justify-center gap-2"
             >
               <Plus size={18} /> Add Another Configuration
             </button>
@@ -360,11 +360,11 @@ export default function ProjectForm({ initialData = null, mode = "create" }) {
                   onClick={() => toggleAmenity(a)}
                   className={`flex items-center gap-3 px-5 py-4 rounded-2xl text-xs font-bold transition-all border ${
                     form.amenities.includes(a)
-                    ? 'bg-amber-500/10 border-amber-500/40 text-white'
+                    ? 'bg-emerald-500/10 border-emerald-500/40 text-white'
                     : 'bg-white/5 border-white/10 text-slate-500 hover:border-white/20'
                   }`}
                 >
-                  <div className={`w-2 h-2 rounded-full ${form.amenities.includes(a) ? 'bg-amber-500' : 'bg-slate-700'}`} />
+                  <div className={`w-2 h-2 rounded-full ${form.amenities.includes(a) ? 'bg-emerald-500' : 'bg-slate-700'}`} />
                   {a}
                 </button>
               ))}
@@ -387,7 +387,7 @@ export default function ProjectForm({ initialData = null, mode = "create" }) {
                 id="isReraVerified"
                 checked={form.isReraVerified} 
                 onChange={(e) => handleChange('isReraVerified', e.target.checked)}
-                className="w-6 h-6 rounded-lg bg-white/5 border-white/10 text-amber-500 focus:ring-0" 
+                className="w-6 h-6 rounded-lg bg-white/5 border-white/10 text-emerald-500 focus:ring-0" 
               />
               <label htmlFor="isReraVerified" className="text-sm font-bold text-slate-300 cursor-pointer">Verified by RERA Authority</label>
             </div>
@@ -439,7 +439,7 @@ export default function ProjectForm({ initialData = null, mode = "create" }) {
             <button 
               type="submit" 
               disabled={submitting}
-              className="flex-1 md:flex-none px-12 py-5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white rounded-2xl font-black transition-all shadow-xl shadow-amber-500/20 uppercase tracking-widest flex items-center justify-center gap-3 min-w-[240px]"
+              className="flex-1 md:flex-none px-12 py-5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white rounded-2xl font-black transition-all shadow-xl shadow-indigo-500/20 uppercase tracking-widest flex items-center justify-center gap-3 min-w-[240px]"
             >
               {submitting ? <><Loader2 className="animate-spin" /> Syncing...</> : <><Plus /> {mode === "create" ? "Confirm & Launch" : "Save Changes"}</>}
             </button>

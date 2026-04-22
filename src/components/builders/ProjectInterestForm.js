@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Heart, CheckCircle, Loader2, IndianRupee, MessageSquare, Send } from "lucide-react";
+import { Heart, CheckCircle, Loader2, IndianRupee, MessageSquare, Send, Sparkles } from "lucide-react";
 
 export default function ProjectInterestForm({ project }) {
   const { data: session } = useSession();
@@ -73,11 +73,11 @@ export default function ProjectInterestForm({ project }) {
   return (
     <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 backdrop-blur-3xl shadow-2xl relative overflow-hidden group">
       {/* Decorative gradient */}
-      <div className="absolute -top-24 -right-24 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl group-hover:bg-amber-500/20 transition-all duration-700" />
+      <div className="absolute -top-24 -right-24 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl group-hover:bg-indigo-500/20 transition-all duration-700" />
       
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-10 h-10 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
-          <Heart className="w-5 h-5 text-rose-500" />
+        <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+          <Heart className="w-5 h-5 text-indigo-400" />
         </div>
         <h3 className="text-xl font-bold text-white">Register Interest</h3>
       </div>
@@ -92,7 +92,7 @@ export default function ProjectInterestForm({ project }) {
               <select 
                 value={form.interestedConfig} 
                 onChange={(e) => setForm({ ...form, interestedConfig: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-all appearance-none cursor-pointer"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all appearance-none cursor-pointer"
               >
                 <option value="" className="bg-[#0b1120]">Any Configuration</option>
                 {project.configurations.map((c) => (
@@ -117,7 +117,7 @@ export default function ProjectInterestForm({ project }) {
             placeholder="e.g. 75,00,000" 
             value={form.budget}
             onChange={(e) => setForm({ ...form, budget: e.target.value })}
-            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-all"
+            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all"
           />
         </div>
 
@@ -130,7 +130,7 @@ export default function ProjectInterestForm({ project }) {
             onChange={(e) => setForm({ ...form, message: e.target.value })}
             placeholder="Tell us about your requirements..." 
             rows={4}
-            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-all resize-none" 
+            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all resize-none" 
           />
         </div>
 
@@ -143,12 +143,15 @@ export default function ProjectInterestForm({ project }) {
         <button 
           type="submit" 
           disabled={submitting}
-          className="w-full py-5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white rounded-2xl font-black text-sm transition-all disabled:opacity-50 shadow-2xl shadow-amber-500/20 flex items-center justify-center gap-3 uppercase tracking-widest"
+          className="w-full py-5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white rounded-2xl font-black text-sm transition-all disabled:opacity-50 shadow-2xl shadow-indigo-500/20 flex items-center justify-center gap-3 uppercase tracking-widest"
         >
           {submitting ? (
             <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</>
           ) : (
-            <>🏗️ Get Pricing Brochure</>
+            <>
+              <Sparkles className="w-5 h-5" />
+              Get Pricing Brochure
+            </>
           )}
         </button>
 

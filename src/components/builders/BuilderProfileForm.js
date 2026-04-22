@@ -72,7 +72,7 @@ export default function BuilderProfileForm({ initialData }) {
         </div>
         
         <div className="flex items-center gap-4 mb-10">
-          <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
             <Building2 />
           </div>
           <h2 className="text-2xl font-black text-white">Brand Identity</h2>
@@ -86,7 +86,7 @@ export default function BuilderProfileForm({ initialData }) {
               required
               value={form.companyName} 
               onChange={(e) => handleChange('companyName', e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white font-bold text-lg focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-all" 
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white font-bold text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all" 
             />
           </div>
 
@@ -200,7 +200,7 @@ export default function BuilderProfileForm({ initialData }) {
         <button 
           type="submit" 
           disabled={submitting}
-          className="px-12 py-5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white rounded-2xl font-black transition-all shadow-xl shadow-amber-500/20 uppercase tracking-widest flex items-center gap-3 min-w-[200px] justify-center"
+          className="px-12 py-5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white rounded-2xl font-black transition-all shadow-xl shadow-indigo-500/20 uppercase tracking-widest flex items-center gap-3 min-w-[200px] justify-center"
         >
           {submitting ? <Loader2 className="animate-spin" /> : <Save />}
           Save Profile
