@@ -433,6 +433,64 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── NEW LAUNCH PROJECTS ── */}
+      <section className="py-24 relative z-20 bg-linear-to-b from-transparent via-indigo-500/5 to-transparent">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-16 gap-6">
+            <div className="text-center sm:text-left">
+              <p className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3 flex items-center justify-center sm:justify-start gap-2">
+                <Sparkles size={14} /> New Vertical
+              </p>
+              <h2 className="text-4xl lg:text-5xl font-black text-white tracking-tight">
+                New Launch <span className="text-transparent bg-clip-text bg-linear-to-r from-amber-400 to-orange-500">Projects</span>
+              </h2>
+            </div>
+            <Link 
+              href="/builders/projects" 
+              className="px-8 py-4 bg-white/5 border border-white/10 rounded-2xl text-sm font-black text-white uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-2 group shadow-2xl"
+            >
+              Explore directory <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="group relative h-[400px] rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl transition-all duration-700 hover:border-amber-500/30">
+              <Image 
+                src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&q=80" 
+                alt="New Projects" 
+                fill 
+                className="object-cover group-hover:scale-110 transition-transform duration-1000 shadow-2xl"
+              />
+              <div className="absolute inset-0 bg-linear-to-t from-[#0b1120] via-[#0b1120]/40 to-transparent" />
+              <div className="absolute bottom-10 left-10 right-10">
+                <h3 className="text-3xl font-black text-white mb-2">Verified Builders</h3>
+                <p className="text-slate-300 font-medium mb-6">Discover premium developments from Punjab's most trusted construction partners.</p>
+                <Link href="/builders" className="inline-flex items-center gap-2 text-amber-400 font-bold hover:gap-3 transition-all uppercase tracking-tighter text-sm">
+                   Browse Builder Directory <ChevronRight size={16} />
+                </Link>
+              </div>
+            </div>
+
+            <div className="group relative h-[400px] rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl transition-all duration-700 hover:border-indigo-500/30">
+               <Image 
+                src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=80" 
+                alt="Upcoming Launches" 
+                fill 
+                className="object-cover group-hover:scale-110 transition-transform duration-1000 shadow-2xl"
+              />
+              <div className="absolute inset-0 bg-linear-to-t from-[#0b1120] via-[#0b1120]/40 to-transparent" />
+              <div className="absolute bottom-10 left-10 right-10">
+                <h3 className="text-3xl font-black text-white mb-2">Upcoming Launches</h3>
+                <p className="text-slate-300 font-medium mb-6">Get early access pricing for pre-launch projects in Chandigarh and Mohali.</p>
+                <Link href="/builders/projects" className="inline-flex items-center gap-2 text-indigo-400 font-bold hover:gap-3 transition-all uppercase tracking-tighter text-sm">
+                   View Project Listings <ChevronRight size={16} />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── WHY NESTIQ ── */}
       <section className="py-24 relative z-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12">

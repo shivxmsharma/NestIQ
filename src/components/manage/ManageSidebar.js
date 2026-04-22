@@ -33,7 +33,17 @@ export default function ManageSidebar() {
   if (!session?.user) return null;
 
   const isLandlord = ['seller', 'broker'].includes(session.user.role);
-  const NAV = isLandlord ? LANDLORD_NAV : TENANT_NAV;
+  const isBuilder = session.user.role === 'builder';
+  
+  let NAV = isLandlord ? LANDLORD_NAV : TENANT_NAV;
+  
+  if (isBuilder) {
+    NAV = [
+      { href: '/manage/builder', icon: LayoutDashboard, label: 'Builder Console' },
+      { href: '/manage/builder/projects', icon: Home, label: 'Manage Projects' },
+      { href: '/manage/builder/profile', icon: Settings, label: 'Brand Profile' },
+    ];
+  }
 
   return (
     <aside className="w-64 shrink-0 hidden md:block flex-col h-full sticky top-24">

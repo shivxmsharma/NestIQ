@@ -27,6 +27,7 @@ export default function AdminSidebar({ user }) {
     { label: "Leases & Contracts", href: "/admin/leases", icon: FileText },
     { label: "Payments Ledger", href: "/admin/payments", icon: IndianRupee },
     { label: "Enquiries", href: "/admin/enquiries", icon: MessageSquare },
+    { label: "Builders Hub", href: "/admin/builders", icon: ShieldCheck },
     { label: "Reviews & Trust", href: "/admin/reviews", icon: Star },
     { label: "Platform Settings", href: "/admin/settings", icon: Settings },
   ];

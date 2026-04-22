@@ -48,7 +48,8 @@ export default function Navbar() {
   const navLinks = [
     { label: "Buy", href: "/properties?listing=buy" },
     { label: "Rent", href: "/properties?listing=rent" },
-    { label: "Co-Living", href: "/properties?listing=pg" },
+    { label: "New Launches", href: "/builders/projects" },
+    { label: "Builders", href: "/builders" },
   ];
 
   const toolLinks = [
@@ -87,10 +88,10 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Nav - Centered, Uniform floating island */}
-          <nav className="hidden lg:flex items-center justify-center gap-1.5 p-1.5 rounded-2xl bg-white/3 border border-white/5 backdrop-blur-sm shadow-xl shrink-0">
+          <nav className="hidden lg:flex items-center justify-center gap-1 p-1.5 rounded-2xl bg-white/3 border border-white/5 backdrop-blur-sm shadow-xl shrink-0 mx-4">
             <Link
               href="/properties"
-              className="h-10 px-4 flex items-center justify-center text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all"
+              className="h-10 px-3 xl:px-4 flex items-center justify-center text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all"
             >
               Explore
             </Link>
@@ -99,7 +100,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="h-10 px-4 flex items-center justify-center text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all"
+                className="h-10 px-3 xl:px-4 flex items-center justify-center text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all"
               >
                 {link.label}
               </Link>
@@ -107,7 +108,7 @@ export default function Navbar() {
 
             {/* Tools Dropdown */}
             <div className="relative group flex items-center" onMouseEnter={() => setToolsOpen(true)} onMouseLeave={() => setToolsOpen(false)}>
-              <button className="h-10 flex items-center justify-center gap-1.5 px-4 text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all">
+              <button className="h-10 flex items-center justify-center gap-1.5 px-3 xl:px-4 text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition-all">
                 Tools <ChevronDown className={`w-4 h-4 transition-transform ${toolsOpen ? 'rotate-180' : ''}`} />
               </button>
 
@@ -130,20 +131,22 @@ export default function Navbar() {
             {session && isSeller && (
               <Link
                 href="/dashboard/list-property"
-                className="h-10 flex items-center justify-center gap-1.5 px-4 text-sm font-bold rounded-xl text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all"
+                className="h-10 flex items-center justify-center gap-1.5 px-3 xl:px-4 text-sm font-bold rounded-xl text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all"
               >
                 <PlusCircle className="w-4 h-4" />
-                List Property
+                <span className="hidden xl:inline">List Property</span>
+                <span className="xl:hidden">List</span>
               </Link>
             )}
 
             {/* Highlighted AI Assistant Link */}
             <Link
               href="/ai-assistant"
-              className="h-10 flex items-center justify-center gap-1.5 px-4 text-sm font-bold rounded-xl text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 transition-all"
+              className="h-10 flex items-center justify-center gap-1.5 px-3 xl:px-4 text-sm font-bold rounded-xl text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 transition-all"
             >
               <Sparkles className="w-4 h-4" />
-              Ask Nia (AI)
+              <span className="hidden xl:inline">Ask Nia (AI)</span>
+              <span className="xl:hidden">Nia</span>
             </Link>
           </nav>
 
@@ -156,7 +159,7 @@ export default function Navbar() {
                 {/* NestIQ Manage - Moved next to Profile for better aesthetics */}
                 <Link
                   href="/manage"
-                  className="h-10 flex items-center justify-center gap-2 px-4 text-sm font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 rounded-full transition-all"
+                  className="h-10 flex items-center justify-center gap-2 px-4 text-sm font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 rounded-full transition-all whitespace-nowrap"
                 >
                   <Home className="w-4 h-4" />
                   Tenancy Hub

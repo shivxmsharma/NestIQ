@@ -172,6 +172,12 @@ const PropertySchema = new mongoose.Schema(
         default: "",
       },
     },
+    // --- Builder Project Link ---
+    sourceProject: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Project",
+      default: null,
+    },
   },
   { timestamps: true }
 );

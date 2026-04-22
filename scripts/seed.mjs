@@ -21,7 +21,7 @@ const UserSchema = new mongoose.Schema(
     name: String,
     email: { type: String, unique: true },
     passwordHash: { type: String, select: false },
-    role: { type: String, enum: ["buyer", "seller", "broker", "admin"], default: "buyer" },
+    role: { type: String, enum: ["buyer", "seller", "broker", "builder", "admin"], default: "buyer" },
     phone: String,
     avatar: String,
     savedProperties: [{ type: mongoose.Schema.Types.ObjectId, ref: "Property" }],
@@ -148,6 +148,56 @@ const ReviewSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+const BuilderSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  companyName: String,
+  slug: { type: String, unique: true },
+  logo: String,
+  description: String,
+  establishmentYear: Number,
+  reraId: String,
+  isVerified: { type: Boolean, default: false },
+  isActive: { type: Boolean, default: true },
+}, { timestamps: true });
+
+const ProjectSchema = new mongoose.Schema({
+  builder: { type: mongoose.Schema.Types.ObjectId, ref: "Builder" },
+  title: String,
+  slug: { type: String, unique: true },
+  description: String,
+  projectType: { type: String, enum: ["Residential", "Commercial", "Mixed-Use"] },
+  status: { type: String, enum: ["Pre-Launch", "Under Construction", "Ready to Move", "Completed"] },
+  location: {
+    city: String,
+    locality: String,
+    address: String,
+    coordinates: [Number]
+  },
+  priceRange: { min: Number, max: Number },
+  totalUnits: Number,
+  availableUnits: Number,
+  amenities: [String],
+  coverImage: String,
+  gallery: [String],
+  constructionTimeline: [{
+    milestone: String,
+    date: Date,
+    status: { type: String, enum: ["Upcoming", "In Progress", "Completed"] },
+    description: String
+  }],
+}, { timestamps: true });
+
+const ProjectInterestSchema = new mongoose.Schema({
+  project: { type: mongoose.Schema.Types.ObjectId, ref: "Project" },
+  builder: { type: mongoose.Schema.Types.ObjectId, ref: "Builder" },
+  buyer: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  name: String,
+  email: String,
+  phone: String,
+  message: String,
+  status: { type: String, enum: ["New", "Contacted", "Converted", "Lost"], default: "New" },
+}, { timestamps: true });
+
 // ─── Seed Data ────────────────────────────────────────────────────────────────
 
 const DEMO_PASSWORD = await bcrypt.hash("Demo@1234", 10);
@@ -169,7 +219,87 @@ const USERS = [
   { name: "Neha Kapoor", email: "neha@nestiq.in", role: "buyer", phone: "9876500015" },
   { name: "Vikas Anand", email: "vikas@nestiq.in", role: "buyer", phone: "9876500016" },
   { name: "Pooja Mehta", email: "pooja@nestiq.in", role: "buyer", phone: "9876500017" },
+  // Builders
+  { name: "DLF Homes", email: "dlf@nestiq.in", role: "builder", phone: "9876500100", isVerified: true },
+  { name: "Godrej Properties", email: "godrej@nestiq.in", role: "builder", phone: "9876500101", isVerified: true },
 ];
+
+function makeBuilders(builderUsers) {
+  return [
+    {
+      user: builderUsers[0]._id,
+      companyName: "DLF Homes",
+      slug: "dlf-homes",
+      logo: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=200&q=80",
+      description: "India's leading real estate developer with over 75 years of experience.",
+      establishmentYear: 1946,
+      reraId: "RERA123DLF",
+      isVerified: true,
+      isActive: true
+    },
+    {
+      user: builderUsers[1]._id,
+      companyName: "Godrej Properties",
+      slug: "godrej-properties",
+      logo: "https://images.unsplash.com/photo-1599305090598-fe179d501227?w=200&q=80",
+      description: "The Godrej Properties philosophy of innovation, sustainability, and excellence.",
+      establishmentYear: 1990,
+      reraId: "RERA456GDJ",
+      isVerified: true,
+      isActive: true
+    }
+  ];
+}
+
+function makeProjects(builders) {
+  return [
+    {
+      builder: builders[0]._id,
+      title: "DLF The Valley",
+      slug: "dlf-the-valley-panchkula",
+      description: "A premium residential project nested in the foothills of Shivaliks.",
+      projectType: "Residential",
+      status: "Under Construction",
+      location: {
+        city: "Panchkula",
+        locality: "Sector 3",
+        address: "Kalka Highway, Panchkula",
+        coordinates: [76.86, 30.70]
+      },
+      priceRange: { min: 8500000, max: 25000000 },
+      totalUnits: 500,
+      availableUnits: 120,
+      amenities: ["Golf Course", "Club House", "Jogging Track", "24/7 Security"],
+      coverImage: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=80",
+      constructionTimeline: [
+        { milestone: "Foundation", date: new Date("2024-01-10"), status: "Completed", description: "All foundation work finished." },
+        { milestone: "Brickwork", date: new Date("2024-06-15"), status: "In Progress", description: "Currently on 4th floor." }
+      ]
+    },
+    {
+       builder: builders[1]._id,
+       title: "Godrej Eternity",
+       slug: "godrej-eternity-chandigarh",
+       description: "Smart homes with sustainable architecture in the heart of Chandigarh.",
+       projectType: "Residential",
+       status: "Pre-Launch",
+       location: {
+         city: "Chandigarh",
+         locality: "Industrial Area",
+         address: "Plot 12, Industrial Area Ph 1",
+         coordinates: [76.79, 30.71]
+       },
+       priceRange: { min: 12000000, max: 45000000 },
+       totalUnits: 300,
+       availableUnits: 300,
+       amenities: ["Smart Home API", "Solar Power", "EV Charging", "Roof Top Garden"],
+       coverImage: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&q=80",
+       constructionTimeline: [
+         { milestone: "Land Acquisition", date: new Date("2023-11-20"), status: "Completed", description: "Land cleared and fenced." }
+       ]
+    }
+  ];
+}
 
 // Helper to pick random element(s)
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -468,6 +598,9 @@ async function main() {
   const Payment = mongoose.models.Payment || mongoose.model("Payment", PaymentSchema);
   const Maintenance = mongoose.models.Maintenance || mongoose.model("Maintenance", MaintenanceSchema);
   const Review = mongoose.models.Review || mongoose.model("Review", ReviewSchema);
+  const Builder = mongoose.models.Builder || mongoose.model("Builder", BuilderSchema);
+  const Project = mongoose.models.Project || mongoose.model("Project", ProjectSchema);
+  const ProjectInterest = mongoose.models.ProjectInterest || mongoose.model("ProjectInterest", ProjectInterestSchema);
 
   // Wipe existing demo data
   console.log("🗑  Clearing existing data…");
@@ -479,6 +612,9 @@ async function main() {
     Payment.deleteMany({}),
     Maintenance.deleteMany({}),
     Review.deleteMany({}),
+    Builder.deleteMany({}),
+    Project.deleteMany({}),
+    ProjectInterest.deleteMany({}),
   ]);
   console.log("   Done.\n");
 
@@ -491,7 +627,20 @@ async function main() {
   const adminUser = createdUsers.find((u) => u.role === "admin");
   const sellers = createdUsers.filter((u) => u.role === "seller" || u.role === "broker");
   const buyers = createdUsers.filter((u) => u.role === "buyer");
+  const builderUsers = createdUsers.filter((u) => u.role === "builder");
   console.log(`   ${createdUsers.length} users created.\n`);
+
+  // Create builders
+  console.log("🏗  Creating builders…");
+  const builderData = makeBuilders(builderUsers);
+  const createdBuilders = await Builder.insertMany(builderData);
+  console.log(`   ${createdBuilders.length} builders created.\n`);
+
+  // Create projects
+  console.log("🏗  Creating projects…");
+  const projectData = makeProjects(createdBuilders);
+  const createdProjects = await Project.insertMany(projectData);
+  console.log(`   ${createdProjects.length} projects created.\n`);
 
   // Create properties
   console.log("🏠 Creating properties…");

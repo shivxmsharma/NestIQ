@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -25,6 +25,12 @@ const SELLER_EXTRA = [
   { href: '/dashboard/list-property', icon: PlusCircle, label: 'List Property' },
   { href: '/dashboard/my-properties', icon: Building2, label: 'My Listings' },
   { href: '/dashboard/enquiries', icon: MessageSquare, label: 'Received Enquiries' },
+];
+
+const BUILDER_EXTRA = [
+  { href: '/manage/builder', icon: LayoutDashboard, label: 'Builder Console' },
+  { href: '/manage/builder/projects', icon: Building2, label: 'Manage Projects' },
+  { href: '/manage/builder/profile', icon: Settings, label: 'Brand Profile' },
 ];
 
 export default function DashboardSidebar({ user }) {
@@ -123,6 +129,32 @@ export default function DashboardSidebar({ user }) {
             Sign Out
           </button>
         </div>
+        {/* Builder Tools */}
+        {user?.role === 'builder' && (
+          <>
+            <div className="px-5 pt-4 pb-2">
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Builder Console</p>
+            </div>
+            {BUILDER_EXTRA.map(({ href, icon: Icon, label }) => {
+              const exact = href === '/manage/builder';
+              const active = exact ? pathname === href : pathname.startsWith(href);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`flex items-center gap-3 px-5 py-3 text-sm transition-all duration-300 border-l-4 ${active
+                    ? 'bg-amber-500/10 text-amber-500 font-medium border-amber-500 shadow-[inset_0_0_20px_rgba(245,158,11,0.05)]'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5 border-transparent'
+                    }`}
+                >
+                  <Icon size={16} className={active ? 'text-amber-500' : 'text-slate-500'} />
+                  <span className="flex-1">{label}</span>
+                  {active && <ChevronRight size={14} className="opacity-60" />}
+                </Link>
+              );
+            })}
+          </>
+        )}
       </nav>
     </aside>
   );
