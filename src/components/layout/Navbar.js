@@ -5,22 +5,17 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Menu, X, ChevronDown, LogOut, LayoutDashboard, PlusCircle, Sparkles, Heart, MessageSquare, Settings, Home, Search } from "lucide-react";
-import Image from "next/image";
+import SafeImage from "../common/SafeImage";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") || "");
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const q = searchParams.get("q");
-    if (q) setSearchQuery(q);
-  }, [searchParams]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -168,11 +163,13 @@ export default function Navbar() {
                     className="h-10 flex items-center justify-center gap-2 pl-1.5 pr-4 rounded-full transition-all border group hover:bg-white/10 border-white/5 hover:border-white/15 bg-white/5 backdrop-blur-md"
                   >
                     {session.user.avatar ? (
-                      <Image
+                      <SafeImage
                         src={session.user.avatar}
                         alt={session.user.name}
                         width={32}
                         height={32}
+                        fallbackType="avatar"
+                        fallbackClassName="bg-indigo-500/20 text-indigo-300"
                         className="w-8 h-8 rounded-full object-cover ring-2 ring-white/10 shrink-0"
                       />
                     ) : (

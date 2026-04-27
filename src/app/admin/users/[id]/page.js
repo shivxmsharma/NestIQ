@@ -7,11 +7,11 @@ import Payment from "../../../../lib/models/Payment";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../lib/auth";
 import { redirect } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, User as UserIcon, ShieldAlert, Building2, MapPin, CheckCircle, XCircle, Calendar, Phone, Mail, FileText, IndianRupee, Activity } from "lucide-react";
 import AdminUserStatusActions from "../../../../components/admin/AdminUserStatusActions";
 import UserReviewsSection from "../../../../components/property/UserReviewsSection";
+import SafeImage from "../../../../components/common/SafeImage";
 
 export const dynamic = "force-dynamic";
 
@@ -59,7 +59,7 @@ export default async function AdminUserDetailsPage({ params }) {
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-full bg-indigo-500/20 flex items-center justify-center border-2 border-indigo-500/30 overflow-hidden relative shadow-lg">
             {user.avatar ? (
-              <Image src={user.avatar} alt={user.name} fill className="object-cover" />
+              <SafeImage src={user.avatar} alt={user.name} fill fallbackType="avatar" fallbackClassName="bg-indigo-500/20 text-indigo-400" className="object-cover" />
             ) : (
               <span className="text-indigo-400 font-bold text-2xl uppercase">
                 {user.name.charAt(0)}

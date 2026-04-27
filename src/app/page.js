@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   Search, MapPin, Shield, Zap, Star, ChevronRight,
@@ -11,6 +10,7 @@ import {
   CheckCircle, MessageCircle, BadgeCheck, Home, TrendingUp,
   BedDouble, Bath, Maximize2, Globe, Play
 } from "lucide-react";
+import SafeImage from "../components/common/SafeImage";
 
 const TABS = ["Buy", "Rent", "PG"];
 
@@ -175,13 +175,15 @@ export default function HomePage() {
         
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
-          <Image
+          <SafeImage
             src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=85"
             alt="Luxury property background"
             fill
             unoptimized
+            fallbackType="property"
+            fallbackClassName="bg-[#070b14] text-slate-700"
             className="object-cover object-center scale-105"
-            priority
+            preload
           />
           {/* Multi-layer dark overlay for text readability */}
           <div className="absolute inset-0 bg-[#070b14]/60" />
@@ -351,11 +353,13 @@ export default function HomePage() {
                     {/* Image */}
                     <div className="relative h-56 overflow-hidden shrink-0 bg-white/5">
                       {property.photos?.[0]?.url || property.coverPhoto ? (
-                        <Image
+                        <SafeImage
                           src={property.photos?.[0]?.url || property.coverPhoto}
                           alt={property.title || `${property.propertyType} in ${property.address?.locality || 'Unknown'}`}
                           fill
                           unoptimized
+                          fallbackType="property"
+                          fallbackClassName="bg-white/5 text-slate-600"
                           className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                         />
                       ) : (
@@ -511,11 +515,13 @@ export default function HomePage() {
                 className="relative h-56 rounded-3xl overflow-hidden group shadow-lg hover:shadow-[0_20px_60px_rgba(0,0,0,0.4)] transition-all duration-500"
               >
                 {/* Real background image */}
-                <Image
+                <SafeImage
                   src={loc.image}
                   alt={loc.name}
                   fill
                   unoptimized
+                  fallbackType="property"
+                  fallbackClassName="bg-white/5 text-slate-600"
                   className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
 

@@ -2,10 +2,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { Star, MessageSquareQuote } from "lucide-react";
 import ReviewModal from "./ReviewModal";
 import { useSession } from "next-auth/react";
+import SafeImage from "../common/SafeImage";
 
 export default function UserReviewsSection({ targetUser, propertyContextId }) {
   const { data: session } = useSession();
@@ -81,7 +81,7 @@ export default function UserReviewsSection({ targetUser, propertyContextId }) {
                   <div className="flex items-center gap-3">
                     {r.reviewer?.avatar ? (
                       <div className="w-10 h-10 rounded-full overflow-hidden relative">
-                         <Image src={r.reviewer.avatar} alt="Rev" fill className="object-cover" />
+                         <SafeImage src={r.reviewer.avatar} alt="Rev" fill fallbackType="avatar" fallbackClassName="bg-indigo-500/20 text-indigo-400" className="object-cover" />
                       </div>
                     ) : (
                       <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-bold">

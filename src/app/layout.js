@@ -5,7 +5,7 @@ import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import AIAssistant from "../components/ai/AiAssistant";
 import MaintenanceOverlay from "../components/layout/MaintenanceOverlay";
-import Image from "next/image";
+import SafeImage from "../components/common/SafeImage";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../lib/auth";
 import dbConnect from "../lib/db";
@@ -63,13 +63,15 @@ export default async function RootLayout({ children }) {
 
           {/* Global Ambient Background */}
           <div className="fixed inset-0 z-0 pointer-events-none">
-            <Image
+            <SafeImage
               src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=2075&auto=format&fit=crop"
               alt="Premium Real Estate Background"
               fill
               unoptimized
+              fallbackType="property"
+              fallbackClassName="bg-[#070b14] text-slate-700"
               className="object-cover object-center opacity-30 mix-blend-luminosity scale-105"
-              priority
+              preload
             />
             {/* Ambient Dark Gradient overlays the fixed image */}
             <div className="absolute inset-0 bg-linear-to-b from-[#070b14]/70 via-[#070b14]/90 to-[#070b14] backdrop-blur-xs" />

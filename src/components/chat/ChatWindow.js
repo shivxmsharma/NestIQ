@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { getPusherClient } from "../../lib/pusherClient";
 import { X, Send, MessageCircle, Loader2 } from "lucide-react";
-import Image from "next/image";
+import SafeImage from "../common/SafeImage";
 
 export default function ChatWindow({ propertyId, onClose }) {
   const { data: session } = useSession();
@@ -106,7 +106,7 @@ export default function ChatWindow({ propertyId, onClose }) {
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center overflow-hidden">
             {other?.avatar ? (
-              <Image src={other.avatar} alt={other.name || ""} width={32} height={32} className="rounded-full object-cover" />
+              <SafeImage src={other.avatar} alt={other.name || ""} width={32} height={32} fallbackType="avatar" fallbackClassName="bg-white/20 text-white" className="rounded-full object-cover" />
             ) : (
               <span className="text-white text-sm font-bold">{other?.name?.[0] || "?"}</span>
             )}

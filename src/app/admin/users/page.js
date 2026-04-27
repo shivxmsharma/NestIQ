@@ -3,7 +3,6 @@
 
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import Image from "next/image";
 import {
   Users,
   Search,
@@ -16,6 +15,7 @@ import {
 } from "lucide-react";
 
 import Link from "next/link";
+import SafeImage from "../../../components/common/SafeImage";
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState([]);
@@ -151,11 +151,13 @@ export default function AdminUsersPage() {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           {user.avatar ? (
-                            <Image
+                            <SafeImage
                               src={user.avatar}
                               alt={user.name || "User"}
                               width={40}
                               height={40}
+                              fallbackType="avatar"
+                              fallbackClassName="bg-indigo-500/20 text-indigo-400"
                               className="w-10 h-10 rounded-full object-cover shadow-md border border-white/10"
                             />
                           ) : (

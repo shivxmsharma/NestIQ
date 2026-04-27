@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
-import Image from "next/image";
 import { Home, Users, Search, IndianRupee, FileText, CheckCircle, Plus } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import SafeImage from "../../../components/common/SafeImage";
 
 export default function Properties() {
   const { data: session } = useSession();
@@ -196,7 +196,7 @@ export default function Properties() {
                 <div className="flex gap-4">
                   <div className="w-24 h-24 rounded-xl overflow-hidden shrink-0 relative bg-white/10">
                     {prop.photos?.[0]?.url || (typeof prop.photos?.[0] === 'string' && prop.photos[0]) ? (
-                      <Image src={prop.photos[0]?.url || prop.photos[0]} alt={prop.title || "Property"} fill className="object-cover" />
+                      <SafeImage src={prop.photos[0]?.url || prop.photos[0]} alt={prop.title || "Property"} fill fallbackType="property" fallbackClassName="bg-white/10 text-slate-500" className="object-cover" />
                     ) : (
                       <Home className="w-8 h-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-slate-500" />
                     )}
@@ -224,7 +224,7 @@ export default function Properties() {
                     <div className="flex items-center gap-2 text-sm">
                       <div className="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400">
                         {prop.lease?.tenant?.avatar || prop.lease?.tenant?.image ? (
-                          <Image src={prop.lease.tenant.avatar || prop.lease.tenant.image} alt="tenant" width={24} height={24} className="rounded-full" />
+                          <SafeImage src={prop.lease.tenant.avatar || prop.lease.tenant.image} alt="tenant" width={24} height={24} fallbackType="avatar" fallbackClassName="bg-indigo-500/20 text-indigo-400" className="rounded-full" />
                         ) : (
                           <Users className="w-3.5 h-3.5" />
                         )}

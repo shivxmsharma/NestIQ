@@ -3,9 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { User, Phone, CheckCircle2, XCircle, ShieldCheck, Mail, Briefcase, Settings, Image as ImageIcon } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import SafeImage from "../../../components/common/SafeImage";
 
 export default function ProfilePage() {
   const { data: session, update, status } = useSession();
@@ -239,11 +239,13 @@ export default function ProfilePage() {
                 <div className="relative group shrink-0">
                   {profile.avatar ? (
                     <div className="relative">
-                      <Image
+                      <SafeImage
                         src={profile.avatar}
                         alt={profile.name}
                         width={96}
                         height={96}
+                        fallbackType="avatar"
+                        fallbackClassName="bg-indigo-500/20 text-indigo-400"
                         className="w-24 h-24 rounded-full object-cover shadow-[0_0_30px_rgba(255,255,255,0.1)] ring-4 ring-white/10"
                       />
                       {uploadingAvatar && (
@@ -555,4 +557,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-

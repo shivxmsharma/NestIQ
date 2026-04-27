@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from 'react-leafl
 import L from 'leaflet';
 import { MapPin, X } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
+import SafeImage from '../common/SafeImage';
 
 // Fix Leaflet's broken default icon paths in Next.js
 delete L.Icon.Default.prototype._getIconUrl;
@@ -154,11 +155,13 @@ export default function PropertyMap({ hits }) {
               {/* Photo */}
               <div className="relative h-36 bg-white/5">
                 {activeHit.coverPhoto ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
+                  <SafeImage
                     src={activeHit.coverPhoto}
                     alt={activeHit.title}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    fill
+                    fallbackType="property"
+                    fallbackClassName="bg-white/5 text-slate-500"
+                    className="object-cover"
                   />
                 ) : (
                   <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>

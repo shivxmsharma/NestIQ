@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { getPusherClient } from "../../lib/pusherClient";
 import { MessageCircle, Home, Loader2 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import SafeImage from "../common/SafeImage";
 
 export default function ChatInbox({ onSelectConversation, selectedId }) {
   const { data: session } = useSession();
@@ -147,7 +147,7 @@ export default function ChatInbox({ onSelectConversation, selectedId }) {
             {/* Avatar */}
             <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0 overflow-hidden">
               {other?.avatar ? (
-                <Image src={other.avatar} alt={other.name || ""} width={40} height={40} className="rounded-full object-cover" />
+                <SafeImage src={other.avatar} alt={other.name || ""} width={40} height={40} fallbackType="avatar" fallbackClassName="bg-indigo-500/20 text-indigo-400" className="rounded-full object-cover" />
               ) : (
                 <span className="text-indigo-400 font-bold text-sm">{other?.name?.[0] || "?"}</span>
               )}

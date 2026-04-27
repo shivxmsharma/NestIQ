@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { format } from "date-fns";
 import {
@@ -15,6 +14,7 @@ import {
   Star,
   ChevronDown
 } from "lucide-react";
+import SafeImage from "../../../components/common/SafeImage";
 
 export default function AdminPropertiesPage() {
   const [properties, setProperties] = useState([]);
@@ -226,11 +226,13 @@ export default function AdminPropertiesPage() {
                         <div className="flex items-center gap-4">
                           <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-slate-800 border border-white/10">
                             {property.photos?.[0]?.url ? (
-                              <Image
+                              <SafeImage
                                 src={property.photos[0].url}
                                 alt={property.title}
                                 width={56}
                                 height={56}
+                                fallbackType="property"
+                                fallbackClassName="bg-slate-800 text-slate-500"
                                 className="w-full h-full object-cover"
                               />
                             ) : (
