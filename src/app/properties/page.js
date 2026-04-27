@@ -446,8 +446,8 @@ export default function PropertiesPage() {
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 relative z-10">
 
           {/* Ambient Glows */}
-          <div className="fixed top-0 left-0 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none -z-10" />
-          <div className="fixed bottom-0 right-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px] pointer-events-none -z-10" />
+          <div className="fixed top-0 left-0 w-125 h-125 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none -z-10" />
+          <div className="fixed bottom-0 right-0 w-125 h-125 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none -z-10" />
 
           {viewMode === 'grid' ? (
             <>

@@ -83,7 +83,7 @@ export default function Maintenance() {
   const getStatusColor = (status) => {
     switch (status) {
       case "open": return "bg-rose-500/10 text-rose-400 border-rose-500/20";
-      case "in_progress": return "bg-amber-500/10 text-amber-400 border-amber-500/20";
+      case "in-progress": return "bg-amber-500/10 text-amber-400 border-amber-500/20";
       case "resolved":
       case "closed": return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
       default: return "bg-slate-500/10 text-slate-400 border-slate-500/20";
@@ -124,7 +124,7 @@ export default function Maintenance() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {[
           { label: "Open Tickets", value: tickets.filter(t => t.status === "open").length, icon: AlertTriangle, color: "text-rose-400" },
-          { label: "In Progress", value: tickets.filter(t => t.status === "in_progress").length, icon: Clock, color: "text-amber-400" },
+          { label: "In Progress", value: tickets.filter(t => t.status === "in-progress").length, icon: Clock, color: "text-amber-400" },
           { label: "Resolved", value: tickets.filter(t => ["resolved", "closed"].includes(t.status)).length, icon: CheckCircle, color: "text-emerald-400" },
           { label: "Total Requests", value: tickets.length, icon: Wrench, color: "text-indigo-400" },
         ].map((stat, i) => (
@@ -199,11 +199,11 @@ export default function Maintenance() {
                   {isLandlord && ticket.status !== "resolved" && (
                     <div className="flex flex-wrap gap-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity mt-4 md:mt-0">
                       {ticket.status === "open" && (
-                        <button onClick={() => handleUpdateStatus(ticket._id, "in_progress")} className="px-4 py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 text-sm font-semibold rounded-xl transition-colors">
+                        <button onClick={() => handleUpdateStatus(ticket._id, "in-progress")} className="px-4 py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 text-sm font-semibold rounded-xl transition-colors">
                           Mark In Progress
                         </button>
                       )}
-                      {(ticket.status === "open" || ticket.status === "in_progress") && (
+                      {(ticket.status === "open" || ticket.status === "in-progress") && (
                         <button onClick={() => handleUpdateStatus(ticket._id, "resolved")} className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 text-sm font-semibold rounded-xl transition-all">
                           Resolve
                         </button>

@@ -7,7 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "node scripts/seed.mjs",
+    "sync:algolia": "node scripts/sync-algolia.mjs"
   },
   "dependencies": {
     "@google/genai": "^1.50.1",

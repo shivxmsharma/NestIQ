@@ -1,5 +1,5 @@
-import { Geist } from "next/font/google";
 import "./globals.css";
+import { Suspense } from "react";
 import SessionProvider from "../components/providers/SessionProvider";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
@@ -10,11 +10,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../lib/auth";
 import dbConnect from "../lib/db";
 import PlatformSettings from "../lib/models/PlatformSettings";
-
-const geist = Geist({
-  variable: "--font-geist",
-  subsets: ["latin"],
-});
 
 export const metadata = {
   metadataBase: new URL("https://nestiq.in"),
@@ -62,7 +57,7 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <body className={`${geist.variable} font-sans antialiased bg-[#070b14] text-white selection:bg-indigo-500/30`}>
+      <body className="font-sans antialiased bg-[#070b14] text-white selection:bg-indigo-500/30">
         <SessionProvider>
           {showMaintenanceBlock && <MaintenanceOverlay />}
 
@@ -81,7 +76,11 @@ export default async function RootLayout({ children }) {
           </div>
 
           <div className="relative z-10 flex flex-col min-h-screen">
-            {!showMaintenanceBlock && <Navbar />}
+            {!showMaintenanceBlock && (
+              <Suspense fallback={null}>
+                <Navbar />
+              </Suspense>
+            )}
             <main className="flex-1">
               {showMaintenanceBlock ? (
                 <div className="flex flex-col items-center justify-center min-h-screen">

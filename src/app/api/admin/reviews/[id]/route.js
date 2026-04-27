@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../../lib/auth';
-import dbConnect from '../../../../lib/db';
-import Review from '../../../../lib/models/Review';
-import User from '../../../../lib/models/User';
+import { authOptions } from '../../../../../lib/auth';
+import dbConnect from '../../../../../lib/db';
+import Review from '../../../../../lib/models/Review';
+import User from '../../../../../lib/models/User';
 
 // Status update (hide / flag / publish)
 export async function PATCH(req, { params }) {
@@ -19,7 +19,7 @@ export async function PATCH(req, { params }) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
 
     const review = await Review.findById(id);
