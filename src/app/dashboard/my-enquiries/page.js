@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { MessageSquare, MapPin, Calendar, X } from 'lucide-react';
 import Link from 'next/link';
+import SafeImage from '../../../components/common/SafeImage';
 
 export default function MyEnquiriesPage() {
   const [enquiries, setEnquiries] = useState([]);
@@ -54,10 +55,9 @@ export default function MyEnquiriesPage() {
             <div key={e._id} className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.4)] rounded-3xl p-5">
               <div className="flex gap-4">
                 {/* Property thumb */}
-                <div className="w-20 h-16 rounded-xl overflow-hidden shrink-0 bg-white/5">
+                <div className="relative w-20 h-16 rounded-xl overflow-hidden shrink-0 bg-white/5">
                   {e.property?.photos?.[0]?.url
-                    // eslint-disable-next-line @next/next/no-img-element
-                    ? <img src={e.property.photos[0].url} alt="" className="w-full h-full object-cover" />
+                    ? <SafeImage src={e.property.photos[0].url} alt="" fill fallbackType="property" fallbackClassName="bg-white/5 text-slate-500" className="w-full h-full object-cover" />
                     : <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl">🏠</div>
                   }
                 </div>

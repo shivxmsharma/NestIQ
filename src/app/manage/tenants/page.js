@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import Image from 'next/image';
 import { Users, Phone, Mail, MessageSquare, Home, Filter, Activity, Clock, LogOut } from 'lucide-react';
 import { format } from 'date-fns';
+import SafeImage from '../../../components/common/SafeImage';
 
 export default function TenantsPage() {
   const { data: session, status } = useSession();
@@ -124,7 +124,7 @@ export default function TenantsPage() {
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-full overflow-hidden relative bg-white/10 border border-white/20 shrink-0">
                       {tenant.avatar ? (
-                        <Image src={tenant.avatar} alt={tenant.name} fill className="object-cover" />
+                        <SafeImage src={tenant.avatar} alt={tenant.name} fill fallbackType="avatar" fallbackClassName="bg-white/10 text-slate-300" className="object-cover" />
                       ) : (
                         <span className="w-full h-full flex items-center justify-center text-lg font-bold text-slate-300">
                           {tenant.name?.charAt(0)}

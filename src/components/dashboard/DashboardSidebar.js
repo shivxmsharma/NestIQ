@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
-import Image from 'next/image';
 import { useUnreadCount } from '../../hooks/useUnreadCount';
+import SafeImage from '../common/SafeImage';
 import {
   LayoutDashboard, Building2, MessageSquare,
   Heart, Calendar, PlusCircle, LogOut, ChevronRight,
@@ -40,7 +40,7 @@ export default function DashboardSidebar({ user }) {
       <div className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.4)] rounded-3xl p-5 mb-4">
         <div className="flex items-center gap-3">
           {user?.image ? (
-            <Image src={user.image} alt={user.name || ''} width={40} height={40} className="rounded-full shadow-[0_0_15px_rgba(255,255,255,0.1)]" />
+            <SafeImage src={user.image} alt={user.name || ''} width={40} height={40} fallbackType="avatar" fallbackClassName="bg-indigo-500/20 text-indigo-300" className="rounded-full shadow-[0_0_15px_rgba(255,255,255,0.1)]" />
           ) : (
             <div className="w-10 h-10 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold shadow-[0_0_15px_rgba(79,70,229,0.2)]">
               {user?.name?.[0]?.toUpperCase() || 'U'}

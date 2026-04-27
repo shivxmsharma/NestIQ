@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Heart, MapPin, Building2 } from 'lucide-react';
 import Link from 'next/link';
+import SafeImage from '../../../components/common/SafeImage';
 
 export default function SavedPropertiesPage() {
   const [saved, setSaved] = useState([]);
@@ -52,8 +53,7 @@ export default function SavedPropertiesPage() {
             <div key={p._id} className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.4)] rounded-3xl overflow-hidden">
               <div className="relative h-40">
                 {p.photos?.[0]?.url
-                  // eslint-disable-next-line @next/next/no-img-element
-                  ? <img src={p.photos[0].url} alt="" className="w-full h-full object-cover" />
+                  ? <SafeImage src={p.photos[0].url} alt="" fill fallbackType="property" fallbackClassName="bg-white/5 text-slate-500" className="w-full h-full object-cover" />
                   : (
                     <div className="w-full h-full bg-white/5 flex items-center justify-center">
                       <Building2 size={32} className="text-gray-300" />

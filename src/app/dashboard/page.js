@@ -8,6 +8,7 @@ import User from '../../lib/models/User';
 import mongoose from 'mongoose';
 import Link from 'next/link';
 import { Building2, Eye, MessageSquare, Heart, Calendar, PlusCircle, ArrowRight, Search } from 'lucide-react';
+import SafeImage from '../../components/common/SafeImage';
 
 async function getBuyerStats(userId) {
   await connectDB();
@@ -144,12 +145,8 @@ export default async function DashboardPage() {
             <div className="space-y-2">
               {stats.recentEnquiries.map((e) => (
                 <div key={e._id.toString()} className="flex items-center gap-3 p-3 bg-white/5 rounded-2xl border border-white/5 shadow-sm hover:bg-white/10 transition-colors">
-                  <div className="w-12 h-10 rounded-lg overflow-hidden shrink-0 bg-[#0b1120]/50 border border-white/5 shadow-inner">
-                    {e.property?.photos?.[0]?.url
-                      // eslint-disable-next-line @next/next/no-img-element
-                      ? <img src={e.property.photos[0].url} alt="" className="w-full h-full object-cover" />
-                      : <div className="w-full h-full flex items-center justify-center"><Building2 size={14} className="text-slate-500 text-[13px] font-light" /></div>
-                    }
+                  <div className="relative w-12 h-10 rounded-lg overflow-hidden shrink-0 bg-[#0b1120]/50 border border-white/5 shadow-inner">
+                    <SafeImage src={e.property?.photos?.[0]?.url} alt="" fill fallbackType="property" fallbackClassName="bg-[#0b1120]/50 text-slate-500" className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-white font-medium truncate">{e.property?.title || 'Property'}</p>
@@ -265,12 +262,8 @@ export default async function DashboardPage() {
             <div className="space-y-2">
               {stats.recentListings.map((p) => (
                 <div key={p._id.toString()} className="flex items-center gap-3 p-3 bg-white/5 rounded-2xl border border-white/5 shadow-sm hover:bg-white/10 transition-colors">
-                  <div className="w-12 h-10 rounded-lg overflow-hidden shrink-0 bg-[#0b1120]/50 border border-white/5 shadow-inner">
-                    {p.photos?.[0]?.url
-                      // eslint-disable-next-line @next/next/no-img-element
-                      ? <img src={p.photos[0].url} alt="" className="w-full h-full object-cover" />
-                      : <div className="w-full h-full flex items-center justify-center"><Building2 size={16} className="text-slate-500 text-[13px] font-light" /></div>
-                    }
+                  <div className="relative w-12 h-10 rounded-lg overflow-hidden shrink-0 bg-[#0b1120]/50 border border-white/5 shadow-inner">
+                    <SafeImage src={p.photos?.[0]?.url} alt="" fill fallbackType="property" fallbackClassName="bg-[#0b1120]/50 text-slate-500" className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-white font-medium truncate">

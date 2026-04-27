@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { Star, ShieldAlert, EyeOff, Eye, UserX, UserCheck } from "lucide-react";
 import toast from "react-hot-toast";
+import SafeImage from "../common/SafeImage";
 
 export default function AdminReviewsClient({ initialReviews }) {
   const [reviews, setReviews] = useState(initialReviews || []);
@@ -125,7 +125,7 @@ export default function AdminReviewsClient({ initialReviews }) {
                   <div className="flex items-center gap-3">
                     <div className="relative w-8 h-8 rounded-full overflow-hidden shrink-0 bg-indigo-500/20">
                       {review.reviewer?.avatar ? (
-                        <Image src={review.reviewer.avatar} alt="Avatar" fill className="object-cover" />
+                        <SafeImage src={review.reviewer.avatar} alt="Avatar" fill fallbackType="avatar" fallbackClassName="bg-indigo-500/20 text-indigo-400" className="object-cover" />
                       ) : (
                         <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-indigo-400">
                           {review.reviewer?.name.charAt(0)}
@@ -144,7 +144,7 @@ export default function AdminReviewsClient({ initialReviews }) {
                   <div className="flex items-center gap-3">
                     <div className="relative w-8 h-8 rounded-full overflow-hidden shrink-0 bg-indigo-500/20">
                       {review.reviewee?.avatar ? (
-                        <Image src={review.reviewee.avatar} alt="Avatar" fill className="object-cover" />
+                        <SafeImage src={review.reviewee.avatar} alt="Avatar" fill fallbackType="avatar" fallbackClassName="bg-indigo-500/20 text-indigo-400" className="object-cover" />
                       ) : (
                         <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-indigo-400">
                           {review.reviewee?.name?.charAt(0)}

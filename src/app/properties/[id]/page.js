@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
@@ -17,6 +16,7 @@ import PropertyAIInsights from "../../../components/ai/PropertyAiInsights";
 import AIAssistant from "../../../components/ai/AiAssistant";
 import UserReviewsSection from "../../../components/property/UserReviewsSection";
 import PropertyCard from "../../../components/property/PropertyCard";
+import SafeImage from "../../../components/common/SafeImage";
 
 const SinglePropertyMap = dynamic(() => import("../../../components/map/SinglePropertyMap"), { ssr: false });
 
@@ -279,12 +279,14 @@ export default function PropertyDetailPage() {
             <div className="relative w-full md:w-[60%] h-full cursor-pointer">
               {photos.length > 0 ? (
                 <>
-                  <Image
+                  <SafeImage
                     src={photos[activePhoto]?.url}
                     alt={property.title}
                     fill
+                    fallbackType="property"
+                    fallbackClassName="bg-white/5 text-slate-500"
                     className="object-cover transition-transform duration-600 ease-out hover:scale-[1.03]"
-                    priority
+                    preload
                   />
 
                   {/* Mobile Carousel Controls */}
@@ -360,10 +362,12 @@ export default function PropertyDetailPage() {
                     onClick={() => { if (photo) setActivePhoto(gridIndex) }}
                   >
                     {photo ? (
-                      <Image
+                      <SafeImage
                         src={photo.url}
                         alt={`Gallery view ${gridIndex}`}
                         fill
+                        fallbackType="property"
+                        fallbackClassName="bg-white/5 text-slate-600"
                         className={`object-cover transition-transform duration-600 ${activePhoto === gridIndex ? "opacity-50 scale-105" : "group-hover/thumb:scale-110"}`}
                       />
                     ) : null}
@@ -534,7 +538,7 @@ export default function PropertyDetailPage() {
               <div className="flex items-center gap-4 mb-6 pb-6 border-b border-white/10">
                 <div className="relative w-14 h-14 rounded-2xl overflow-hidden bg-indigo-500/20 border border-indigo-500/30 shrink-0">
                   {owner.avatar ? (
-                    <Image src={owner.avatar} alt={owner.name} fill className="object-cover" />
+                    <SafeImage src={owner.avatar} alt={owner.name} fill fallbackType="avatar" fallbackClassName="bg-indigo-500/20 text-indigo-300" className="object-cover" />
                   ) : (
                     <span className="w-full h-full flex items-center justify-center text-indigo-400 font-bold text-xl">
                       {owner.name?.[0]?.toUpperCase()}

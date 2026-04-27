@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import algoliasearch from 'algoliasearch/lite';
 import {
@@ -21,6 +20,7 @@ import {
   MapPin, BedDouble, Bath, Maximize2,
   Heart, BadgeCheck, Map as MapIcon, Grid3X3,
 } from 'lucide-react';
+import SafeImage from '../../components/common/SafeImage';
 
 const PropertyMap = dynamic(() => import('../../components/map/PropertyMap'), {
   ssr: false,
@@ -93,10 +93,12 @@ function HitCard({ hit }) {
         {/* ── Image ── */}
         <div className="relative h-52 overflow-hidden shrink-0">
           {hit.coverPhoto ? (
-            <Image
+            <SafeImage
               src={hit.coverPhoto}
               alt={hit.title}
               fill
+              fallbackType="property"
+              fallbackClassName="bg-white/5 text-slate-600"
               className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
             />
           ) : (
@@ -253,7 +255,7 @@ function MapLayout() {
             >
               <div className="relative w-24 h-20 shrink-0 rounded-lg overflow-hidden bg-white/5">
                 {hit.coverPhoto ? (
-                  <Image src={hit.coverPhoto} alt="" fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <SafeImage src={hit.coverPhoto} alt="" fill fallbackType="property" fallbackClassName="bg-white/5 text-slate-600" className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <MapPin size={24} className="text-slate-600" />

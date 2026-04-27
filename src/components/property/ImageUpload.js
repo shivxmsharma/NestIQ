@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import Image from "next/image";
 import { X, ImagePlus, Loader2, Star } from "lucide-react";
+import SafeImage from "../common/SafeImage";
 
 export default function ImageUpload({ images, onChange, maxImages = 10 }) {
   const [uploading, setUploading] = useState(false);
@@ -138,10 +138,12 @@ export default function ImageUpload({ images, onChange, maxImages = 10 }) {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {images.map((img, index) => (
             <div key={img.publicId || index} className="relative group rounded-2xl overflow-hidden aspect-4/3 bg-white/5 border border-white/10 shadow-sm">
-              <Image
+              <SafeImage
                 src={img.url}
                 alt={`Property photo ${index + 1}`}
                 fill
+                fallbackType="property"
+                fallbackClassName="bg-white/5 text-slate-500"
                 className="object-cover transition-transform duration-600 group-hover:scale-[1.05]"
               />
 

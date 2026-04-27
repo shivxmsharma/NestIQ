@@ -15,7 +15,7 @@ import {
   IndianRupee,
   Star
 } from "lucide-react";
-import Image from "next/image";
+import SafeImage from "../common/SafeImage";
 
 export default function AdminSidebar({ user }) {
   const pathname = usePathname();
@@ -48,11 +48,13 @@ export default function AdminSidebar({ user }) {
 
         <div className="flex items-center gap-4 relative z-10">
           {user?.avatar ? (
-            <Image
+            <SafeImage
               src={user.avatar}
               alt={user.name || "Admin"}
               width={56}
               height={56}
+              fallbackType="avatar"
+              fallbackClassName="bg-indigo-500 text-white"
               className="w-14 h-14 rounded-full object-cover border-2 border-indigo-500/50 shadow-xl"
             />
           ) : (

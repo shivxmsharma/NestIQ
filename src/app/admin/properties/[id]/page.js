@@ -5,10 +5,10 @@ import User from "../../../../lib/models/User";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../lib/auth";
 import { redirect } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { CheckCircle, XCircle, ArrowLeft, MapPin, Building2, Calendar, Clock, IndianRupee } from "lucide-react";
 import AdminPropertyActions from "../../../../components/admin/AdminPropertyActions";
+import SafeImage from "../../../../components/common/SafeImage";
 
 export const dynamic = "force-dynamic";
 
@@ -67,7 +67,7 @@ export default async function AdminPropertyDetailsPage({ params }) {
               {property.images && property.images.length > 0 ? (
                 property.images.map((img, idx) => (
                   <div key={idx} className="relative aspect-video rounded-xl overflow-hidden border border-white/10">
-                    <Image src={img} alt={`Property Image ${idx + 1}`} fill className="object-cover hover:scale-105 transition-transform duration-500" />
+                    <SafeImage src={img} alt={`Property Image ${idx + 1}`} fill fallbackType="property" fallbackClassName="bg-black/40 text-slate-500" className="object-cover hover:scale-105 transition-transform duration-500" />
                   </div>
                 ))
               ) : (

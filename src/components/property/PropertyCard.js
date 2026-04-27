@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import { MapPin, BedDouble, Bath, Maximize2, Heart, BadgeCheck, Zap, Eye } from "lucide-react";
 import TrustBadge from "./TrustBadge";
+import SafeImage from "../common/SafeImage";
 
 function formatPrice(price, listingType) {
   if (listingType === "rent" || listingType === "pg") {
@@ -14,7 +14,7 @@ function formatPrice(price, listingType) {
 }
 
 export default function PropertyCard({ property, saved = false, onSave, variant = "light" }) {
-  const coverImage = property.photos?.[0]?.url || "/placeholder-property.jpg";
+  const coverImage = property.photos?.[0]?.url;
   const { _id, title, listingType, propertyType, price, address, details, isReraVerified, trustScore, views } = property;
 
   const listingColors = {
@@ -31,10 +31,12 @@ export default function PropertyCard({ property, saved = false, onSave, variant 
 
         {/* ── Image ── */}
         <div className="relative h-52 overflow-hidden shrink-0">
-          <Image
+          <SafeImage
             src={coverImage}
             alt={title}
             fill
+            fallbackType="property"
+            fallbackClassName={isDark ? "bg-white/5 text-slate-600" : "bg-slate-100 text-slate-400"}
             className="object-cover group-hover:scale-110 transition-transform duration-600 ease-out"
           />
 

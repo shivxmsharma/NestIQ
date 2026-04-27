@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { Calendar, Clock, MapPin, CheckCircle, XCircle, Loader2, User, Phone } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
+import SafeImage from '../../../components/common/SafeImage';
 
 const STATUS_CONFIG = {
   requested: { label: 'Pending Confirmation', color: 'bg-amber-500/10 border-amber-500/20 text-amber-400', icon: Clock },
@@ -147,10 +147,12 @@ export default function VisitsPage() {
                 {/* Property thumbnail */}
                 <div className="w-full sm:w-28 h-40 sm:h-28 rounded-2xl overflow-hidden bg-white/5 ring-1 ring-white/10 shrink-0 relative group-hover:ring-white/20 transition-all">
                   {photo ? (
-                    <Image
+                    <SafeImage
                       src={photo}
                       alt="property"
                       fill
+                      fallbackType="property"
+                      fallbackClassName="bg-white/5 text-slate-600"
                       className="object-cover"
                     />
                   ) : (

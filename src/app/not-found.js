@@ -12,7 +12,7 @@ export default function NotFound() {
         </h1>
         <h2 className="text-3xl font-bold text-white mt-8 mb-4">Location Not Found</h2>
         <p className="text-slate-400 max-w-md mx-auto mb-10 text-lg">
-          We couldn't locate the property or page you're searching for. It might have been sold, rented, or removed from our listings.
+          We could not locate the property or page you are searching for. It might have been sold, rented, or removed from our listings.
         </p>
         <Link
           href="/"

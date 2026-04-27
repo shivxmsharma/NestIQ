@@ -3,10 +3,10 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import Image from 'next/image';
 import { FileText, FileCheck, FileX, Download, Calendar, IndianRupee, Home, Clock, AlertCircle, X, ShieldCheck } from 'lucide-react';
 import { format } from 'date-fns';
 import Script from 'next/script';
+import SafeImage from '../../../components/common/SafeImage';
 
 export default function DocumentsPage() {
   const { data: session } = useSession();
@@ -393,10 +393,12 @@ export default function DocumentsPage() {
                   {/* Property Thumbnail */}
                   <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden shrink-0 relative bg-white/10 border border-white/10">
                     {lease.property?.photos?.[0]?.url || (typeof lease.property?.photos?.[0] === 'string' && lease.property?.photos?.[0]) ? (
-                      <Image
+                      <SafeImage
                         src={lease.property.photos[0]?.url || lease.property.photos[0]}
                         alt="Property"
                         fill
+                        fallbackType="property"
+                        fallbackClassName="bg-white/10 text-slate-500"
                         className="object-cover"
                       />
                     ) : (
@@ -429,7 +431,7 @@ export default function DocumentsPage() {
                         <div className="flex items-center gap-2">
                           <div className="w-6 h-6 rounded-full bg-white/10 overflow-hidden relative shrink-0">
                             {otherParty?.avatar ? (
-                              <Image src={otherParty.avatar} alt="User" fill className="object-cover" />
+                              <SafeImage src={otherParty.avatar} alt="User" fill fallbackType="avatar" fallbackClassName="bg-white/10 text-slate-400" className="object-cover" />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-xs font-bold text-slate-400">
                                 {otherParty?.name?.charAt(0) || '?'}

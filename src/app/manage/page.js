@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Copy, PlusCircle, User, Zap, AlertCircle, Building2 } from "lucide-react";
-import Image from "next/image";
+import SafeImage from "../../components/common/SafeImage";
 
 export default function ManageDashboard() {
   const { data: session } = useSession();
@@ -91,7 +91,7 @@ export default function ManageDashboard() {
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-xl overflow-hidden relative shrink-0">
                         {lease.property?.photos?.[0]?.url ? (
-                          <Image src={lease.property.photos[0].url} alt="Property" fill className="object-cover" />
+                          <SafeImage src={lease.property.photos[0].url} alt="Property" fill fallbackType="property" fallbackClassName="bg-slate-800 text-slate-500" className="object-cover" />
                         ) : (
                           <div className="w-full h-full bg-slate-800 flex items-center justify-center"><Building2 className="w-5 h-5 text-slate-500" /></div>
                         )}

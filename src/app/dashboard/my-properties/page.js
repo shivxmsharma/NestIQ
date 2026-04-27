@@ -5,6 +5,7 @@ import Property from '../../../lib/models/Property';
 import Link from 'next/link';
 import { Edit, Eye, MapPin, SearchX, PlusCircle, Building2, Edit3 } from 'lucide-react';
 import DeletePropertyButton from '../../../components/dashboard/DeletePropertyButton';
+import SafeImage from '../../../components/common/SafeImage';
 
 export const metadata = { title: 'My Listings — NestIQ' };
 
@@ -49,10 +50,9 @@ export default async function MyPropertiesPage() {
             <div key={p._id.toString()} className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.4)] rounded-3xl">
               <div className="flex gap-4 p-4">
                 {/* Thumbnail */}
-                <div className="w-28 h-22 rounded-xl overflow-hidden shrink-0 bg-white/5">
+                <div className="relative w-28 h-22 rounded-xl overflow-hidden shrink-0 bg-white/5">
                   {p.photos?.[0]?.url
-                    // eslint-disable-next-line @next/next/no-img-element
-                    ? <img src={p.photos[0].url} alt="" className="w-full h-full object-cover" />
+                    ? <SafeImage src={p.photos[0].url} alt="" fill fallbackType="property" fallbackClassName="bg-white/5 text-slate-500" className="w-full h-full object-cover" />
                     : <div className="w-full h-full flex items-center justify-center"><Building2 size={22} className="text-gray-300" /></div>
                   }
                 </div>

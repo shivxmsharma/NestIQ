@@ -51,7 +51,7 @@ export default async function AdminReviewsPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#111827]/80 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-[0_0_50px_rgba(0,0,0,0.3)]">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">Trust System Moderation</h1>
-          <p className="text-slate-400">Monitor community feedback. Flagged or hidden reviews don't count towards user Trust Scores.</p>
+          <p className="text-slate-400">Monitor community feedback. Flagged or hidden reviews do not count towards user Trust Scores.</p>
         </div>
       </div>
       
